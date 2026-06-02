@@ -20,6 +20,8 @@ import { renderActionButtons, initActionButtons } from './components/action-butt
 import { N8nClient } from './api/n8n-client.js';
 import { fetchWorkflows, fetchExecutions } from './api/n8n-api.js';
 import { isAuthenticated, showAuthGate } from './utils/auth.js';
+import { filterSystem } from './utils/advanced-filters.js';
+import { initFilterPanel } from './components/filter-panel.js';
 
 const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
 let autoRefreshTimer = null;
@@ -53,8 +55,9 @@ function processData() {
   // Render timeline
   renderTimeline(executions);
 
-  // Render workflows
-  renderWorkflows('', 'all');
+  // Render workflows with advanced filtering
+  const filteredWorkflows = filterSystem.applyFilters(workflows, executions);
+  renderWorkflows('', 'all', filteredWorkflows);
 
   // AI Features
   renderAnomalyPanel(workflows, executions);
@@ -233,6 +236,12 @@ function initializeApp() {
   initSearch();
   initNLPQuery();
   initLiveModeToggle();
+  initFilterPanel();
+  
+  // Listen for filter updates
+  window.addEventListener('filtersUpdated', () => {
+    processData();
+  });
   
   // Initialize API client for actions (if API key is available)
   const apiKey = localStorage.getItem('n8n_api_key') || window.N8N_API_KEY;

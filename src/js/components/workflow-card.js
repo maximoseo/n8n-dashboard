@@ -9,13 +9,14 @@ import { getN8nWorkflowUrl, getGoogleSheetUrl, hasGoogleSheet } from '../utils/w
  * Render workflow cards to the grid
  * @param {string} searchQuery - Search term to filter by
  * @param {string} filter - Status filter ('all', 'active', 'inactive')
+ * @param {Array|null} customWorkflows - Optional pre-filtered workflows array
  */
-export function renderWorkflows(searchQuery = '', filter = 'all') {
+export function renderWorkflows(searchQuery = '', filter = 'all', customWorkflows = null) {
   const container = document.getElementById('workflowsGrid');
   if (!container) return;
 
   const workflows = getWorkflows();
-  const filtered = filterWorkflows(searchQuery, filter);
+  const filtered = customWorkflows || filterWorkflows(searchQuery, filter);
   const workflowStats = getWorkflowStats();
 
   // Update count
