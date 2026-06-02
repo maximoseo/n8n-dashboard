@@ -1,9 +1,9 @@
-/* Workflow Links Section */
+/* Workflow Links Section - Compact & Prominent */
 .workflow-links {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  padding-top: 12px;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid var(--border-light);
 }
 
@@ -12,38 +12,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 6px;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 4px;
   text-decoration: none;
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   transition: all 0.2s ease;
-  border: 1px solid var(--border);
+  border: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .workflow-link-btn:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
-/* n8n Link Button */
+/* n8n Link Button - Prominent Red/Pink */
 .n8n-link {
-  background: linear-gradient(135deg, var(--n8n-color, #ea4b71) 0%, var(--n8n-color-dark, #d63d60) 100%);
+  background: linear-gradient(135deg, #ea4b71 0%, #d63d60 100%);
   color: white;
-  border-color: transparent;
 }
 
 .n8n-link:hover {
-  background: linear-gradient(135deg, var(--n8n-color-dark, #d63d60) 0%, var(--n8n-color-darker, #c22f52) 100%);
+  background: linear-gradient(135deg, #d63d60 0%, #c22f52 100%);
   color: white;
 }
 
-/* Google Sheet Link Button */
+/* Google Sheet Link Button - Prominent Green */
 .sheet-link {
   background: linear-gradient(135deg, #0f9d58 0%, #0b8043 100%);
   color: white;
-  border-color: transparent;
 }
 
 .sheet-link:hover {
@@ -52,7 +51,7 @@
 }
 
 .link-icon {
-  font-size: 1rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
 }
