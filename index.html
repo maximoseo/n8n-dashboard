@@ -30,10 +30,32 @@
       </div>
     </div>
 
+    <!-- Live Indicator -->
+    <div class="live-bar">
+      <div id="liveIndicator" class="live-indicator">🔴 Paused</div>
+      <div id="liveCounter" class="live-counter"></div>
+    </div>
+
+    <!-- Anomaly Panel -->
+    <div class="anomaly-panel" id="anomalyPanel">
+      <div class="anomaly-header">
+        <span>🧠 AI Insights & Anomalies</span>
+      </div>
+      <div class="anomaly-content" id="anomalyContent">
+        <div class="anomaly-empty">Loading analysis...</div>
+      </div>
+    </div>
+
     <!-- Search -->
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="searchInput" placeholder="Search workflows by name, ID, or tags...">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search workflows or ask: 'show failed workflows', 'איזה workflows פעילים?'">
+    </div>
+
+    <!-- NLP Query Result -->
+    <div class="nlp-result" id="nlpResult" style="display:none;">
+      <span id="nlpMessage"></span>
+      <button class="nlp-clear" id="nlpClear">✕</button>
     </div>
 
     <!-- Stats Grid -->

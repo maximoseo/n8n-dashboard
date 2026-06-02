@@ -1,18 +1,25 @@
 import { LOCALE } from './utils/constants.js';
 import { formatDateTime } from './utils/helpers.js';
 import { calculateExecutionStats, executionsData } from './stores/execution-store.js';
+import { workflowsData } from './stores/workflow-store.js';
 import { renderDonutChart, renderTimeline } from './charts/execution-chart.js';
 import { renderWorkflows } from './components/workflow-card.js';
 import { initThemeToggle } from './components/theme-toggle.js';
 import { initSearch } from './components/search.js';
+import { renderHealthBadge } from './components/health-badge.js';
+import { renderAnomalyPanel } from './components/anomaly-panel.js';
+import { renderLiveCounter } from './components/live-counter.js';
+import { calculateHealthScore } from './utils/health-score.js';
+import { detectAnomalies } from './utils/anomaly-detector.js';
+import { parseQuery } from './utils/nlp-query.js';
 
 /**
  * Process data and update the dashboard
- * Orchestrates stats calculation, DOM updates, and rendering
  */
 function processData() {
   const stats = calculateExecutionStats();
   const executions = executionsData.data || [];
+  const workflows = workflowsData.data || [];
 
   // Update stats in DOM
   document.getElementById('totalWorkflows').textContent = stats.totalWorkflows;
@@ -36,6 +43,10 @@ function processData() {
 
   // Render workflows
   renderWorkflows('', 'all');
+
+  // AI Features
+  renderAnomalyPanel(workflows, executions);
+  renderLiveCounter(executions);
 }
 
 /**
@@ -54,12 +65,51 @@ function initRefreshButton() {
 }
 
 /**
+ * Initialize NLP query
+ */
+function initNLPQuery() {
+  const searchInput = document.getElementById('searchInput');
+  const nlpResult = document.getElementById('nlpResult');
+  const nlpMessage = document.getElementById('nlpMessage');
+  const nlpClear = document.getElementById('nlpClear');
+  
+  if (!searchInput || !nlpResult || !nlpMessage || !nlpClear) return;
+
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const query = searchInput.value.trim();
+      if (!query) return;
+
+      const workflows = workflowsData.data || [];
+      const executions = executionsData.data || [];
+      const result = parseQuery(query, workflows, executions);
+
+      if (result.type === 'filter' && result.workflows.length > 0) {
+        nlpMessage.textContent = result.message;
+        nlpResult.style.display = 'flex';
+        renderWorkflows('', 'all', result.workflows);
+      } else {
+        nlpMessage.textContent = `No results for "${query}"`;
+        nlpResult.style.display = 'flex';
+      }
+    }
+  });
+
+  nlpClear.addEventListener('click', () => {
+    nlpResult.style.display = 'none';
+    searchInput.value = '';
+    renderWorkflows('', 'all');
+  });
+}
+
+/**
  * Initialize the application
  */
 function init() {
   initThemeToggle();
   initRefreshButton();
   initSearch();
+  initNLPQuery();
   processData();
 }
 
