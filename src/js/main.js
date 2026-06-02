@@ -12,6 +12,12 @@ import { renderLiveCounter } from './components/live-counter.js';
 import { calculateHealthScore } from './utils/health-score.js';
 import { detectAnomalies } from './utils/anomaly-detector.js';
 import { parseQuery } from './utils/nlp-query.js';
+import { renderHeatmap } from './charts/heatmap-chart.js';
+import { renderTrendChart } from './charts/trend-chart.js';
+import { renderSLACard } from './utils/sla-tracker.js';
+import { renderCostCard } from './utils/cost-estimator.js';
+import { renderActionButtons, initActionButtons } from './components/action-buttons.js';
+import { N8nClient } from './api/n8n-client.js';
 
 /**
  * Process data and update the dashboard
@@ -47,6 +53,12 @@ function processData() {
   // AI Features
   renderAnomalyPanel(workflows, executions);
   renderLiveCounter(executions);
+
+  // Analytics
+  renderSLACard(executions);
+  renderCostCard(workflows, executions);
+  renderTrendChart(executions);
+  renderHeatmap(executions);
 }
 
 /**
@@ -110,6 +122,14 @@ function init() {
   initRefreshButton();
   initSearch();
   initNLPQuery();
+  
+  // Initialize API client for actions (if API key is available)
+  const apiKey = localStorage.getItem('n8n_api_key') || window.N8N_API_KEY;
+  if (apiKey) {
+    const apiClient = new N8nClient(apiKey);
+    initActionButtons(apiClient);
+  }
+  
   processData();
 }
 
