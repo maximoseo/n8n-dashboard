@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>n8n Dashboard - MaximoSEO</title>
+<style>
+  :root { --bg: #0f172a; --surface: #1e293b; --border: #334155; --text: #f1f5f9; --muted: #94a3b8; --accent: #6366f1; --green: #10b981; --red: #ef4444; --yellow: #f59e0b; --blue: #3b82f6; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height:1.6; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .header { display:flex; align-items:center; justify-content:space-between; padding:20px 0; border-bottom:1px solid var(--border); margin-bottom:30px; }
+  .header h1 { font-size:1.8em; }
+  .header h1 span { color: var(--accent); }
+  .header .meta { color: var(--muted); font-size:0.85em; }
+  .stats { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:30px; }
+  .stat-card { background: var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .stat-card .label { color: var(--muted); font-size:0.85em; margin-bottom:4px; }
+  .stat-card .value { font-size:2em; font-weight:700; }
+  .stat-card .value.green { color: var(--green); }
+  .stat-card .value.red { color: var(--red); }
+  .stat-card .value.blue { color: var(--blue); }
+  .stat-card .value.yellow { color: var(--yellow); }
+  .charts { display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:30px; }
+  .chart-box { background: var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .chart-box h3 { margin-bottom:15px; color: var(--muted); font-size:0.95em; }
+  .bar-chart { display:flex; align-items:flex-end; gap:4px; height:120px; }
+  .bar { flex:1; background: var(--accent); border-radius:4px 4px 0 0; min-width:8px; }
+  .bar.error { background: var(--red); }
+  .bar.success { background: var(--green); }
+  .donut { display:flex; align-items:center; gap:20px; }
+  .donut-legend { display:flex; flex-direction:column; gap:8px; }
+  .donut-legend .item { display:flex; align-items:center; gap:8px; }
+  .donut-legend .dot { width:12px; height:12px; border-radius:50%; }
+  .table-box { background: var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:30px; overflow-x:auto; }
+  .table-box h3 { margin-bottom:15px; color: var(--muted); font-size:0.95em; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:right; color: var(--muted); font-size:0.8em; text-transform:uppercase; padding:8px 12px; border-bottom:2px solid var(--border); }
+  td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tr:hover { background: rgba(99,102,241,0.05); }
+  .muted { color: var(--muted); }
+  .badge { font-size:0.75em; padding:2px 8px; border-radius:20px; }
+  .badge.active { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge.inactive { background: rgba(148,163,184,0.15); color: var(--muted); }
+  .tag { font-size:0.7em; padding:1px 6px; border-radius:4px; background: rgba(99,102,241,0.15); color: var(--accent); margin-left:4px; }
+  .rate-bar { width:80px; height:6px; background: var(--border); border-radius:3px; overflow:hidden; display:inline-block; vertical-align:middle; }
+  .rate-fill { height:100%; border-radius:3px; }
+  .footer { text-align:center; color: var(--muted); font-size:0.8em; padding:20px 0; border-top:1px solid var(--border); }
+  @media (max-width: 768px) { .charts { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>n8n <span>Dashboard</span></h1>
+      <div class="meta">MaximoSEO - Automation Monitoring</div>
+    </div>
+    <div class="meta">Last updated: 2026-06-02 04:54:56<br>Source: websiseo.app.n8n.cloud</div>
+  </div>
+  <div class="stats">
+    <div class="stat-card"><div class="label">Total Workflows</div><div class="value blue">100</div></div>
+    <div class="stat-card"><div class="label">Active Workflows</div><div class="value green">33</div></div>
+    <div class="stat-card"><div class="label">Inactive Workflows</div><div class="value yellow">67</div></div>
+    <div class="stat-card"><div class="label">Recent Executions</div><div class="value">100</div></div>
+    <div class="stat-card"><div class="label">Successful</div><div class="value green">99</div></div>
+    <div class="stat-card"><div class="label">Failed</div><div class="value red">0</div></div>
+  </div>
+  <div class="charts">
+    <div class="chart-box">
+      <h3>Execution Status Distribution</h3>
+      <div class="donut">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#334155" stroke-width="16"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="16" stroke-dasharray="310.86 3.1399999999999864" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#ef4444" stroke-width="16" stroke-dasharray="0.0 314.0" stroke-dashoffset="-310.86" transform="rotate(-90 60 60)"/>
+          <text x="60" y="55" text-anchor="middle" fill="#f1f5f9" font-size="18" font-weight="bold">99%</text>
+          <text x="60" y="72" text-anchor="middle" fill="#94a3b8" font-size="10">success</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="item"><div class="dot" style="background:#10b981"></div> Success: 99</div>
+          <div class="item"><div class="dot" style="background:#ef4444"></div> Error: 0</div>
+          <div class="item"><div class="dot" style="background:#334155"></div> Other: 1</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-box">
+      <h3>Recent Executions Timeline</h3>
+      <div class="bar-chart" id="timeline"></div>
+    </div>
+  </div>
+  <div class="table-box">
+    <h3>All Workflows (100)</h3>
+    <table>
+      <thead><tr><th>Workflow</th><th>Status</th><th>Executions</th><th>Success</th><th>Failed</th><th>Success Rate</th><th>Tags</th><th>Last Updated</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>https://y-m-systems.co.il/ - פרסום תוכן - כולל H1</strong><br><small class="muted">3HVtSua9QmSuQZBL</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>1</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0.0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תדמית</span><span class="tag">https://y-m-systems.co.i</span></td>
+          <td><small>2026-06-02</small></td>
+        </tr>
+        <tr>
+          <td><strong>Scan Disconnected Clients - GS - JET- Michael</strong><br><small class="muted">At7PVor76sc3YjMI</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>1</td>
+          <td><span style="color:#10b981">✓ 1</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:100.0%;background:#10b981"></div></div><small>100%</small></td>
+          <td></td>
+          <td><small>2026-02-13</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://mshrclean.co.il/ -  אתר חנות</strong><br><small class="muted">00U5X8i5VtNaw817</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">חנות</span><span class="tag">https://mshrclean.co.il/</span></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>My workflow 3</strong><br><small class="muted">08XglDYrhWwxMtUL</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-03-17</small></td>
+        </tr>
+        <tr>
+          <td><strong>WEBSITE -ללא H1 copy - Tomer</strong><br><small class="muted">0B6eKH71Jn2L2Me2</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2025-12-30</small></td>
+        </tr>
+        <tr>
+          <td><strong>oritmartin.com - אתר חנות</strong><br><small class="muted">0D48FEuCagOtw5JZ</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תומר</span><span class="tag">oritmartin.com</span></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - medatech.com/he/</strong><br><small class="muted">0MQ8yrGDFONvuLhn</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-04-30</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.univers-transit.co.il/</strong><br><small class="muted">13SEAZrNVSip5FUL</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">univers-transit.co.il</span><span class="tag">תומר</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://phenome-networks.com/en/</strong><br><small class="muted">1HCMTq6K6wyeBBLL</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תומר</span></td>
+          <td><small>2026-05-27</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://ranan.co.il/ - אוטומציית תוכן</strong><br><small class="muted">1UyVBhuW7nl5BRcv</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://ranan.co.il/</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.sentice.com/ - ללא H1</strong><br><small class="muted">1W7CvaNEe50cbhdf</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://www.sentice.com/</span></td>
+          <td><small>2026-01-05</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://cubatravel.co.il/</strong><br><small class="muted">1WhGRzRIu3j5uXSd</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר חנות - HTML -https://aleadesign.co.il/</strong><br><small class="muted">1v7kUbSTAwO6YDhf</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">חנות</span><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-05-24</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML  https://tmost.co.il/</strong><br><small class="muted">1x0GwmGwfYIbYBX2</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">כרמית</span></td>
+          <td><small>2026-05-17</small></td>
+        </tr>
+        <tr>
+          <td><strong>zarihazan.com - MAOR - אוטומצית תוכן</strong><br><small class="muted">22zztGLhWh8xxt1j</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-01-12</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.kcamping.co.il/ - פרסום תוכן - כולל H1</strong><br><small class="muted">24nBmKgvtyDpzqM3</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">kcamping.co.il</span></td>
+          <td><small>2025-12-28</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://arubot.co.il/</strong><br><small class="muted">25JbO1AoHtiLUNTv</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">arubot.co.il/</span><span class="tag">תומר</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>sefiyoga.co.il-N8N</strong><br><small class="muted">2AWIhTLl2ijn5pWP</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-05</small></td>
+        </tr>
+        <tr>
+          <td><strong>topsun.co.il/ - אתר חנות</strong><br><small class="muted">2QhPYnQwoiR45wSQ</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.doritjudaica.co.il/ -  אתר חנות</strong><br><small class="muted">2g86ccMfCvIAfVVM</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>GEO MAIN API Web</strong><br><small class="muted">35zToVH7dMVzpecI</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-04-23</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://vehidarta.com/-  אתר חנות - FIXED</strong><br><small class="muted">3EMwsRpILuvayYN0</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">כרמית</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://nurse.placeemployees.co.il/</strong><br><small class="muted">3Pf4kqjS4Dy8Auo5</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">אתר תוכן</span><span class="tag">nurse.placeemployees.co.</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://oranim-pharm.co.il/ -  אתר חנות</strong><br><small class="muted">3X7QeUW7Bzom4ugt</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">oranim-pharm.co.il</span><span class="tag">תומר</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://dogsstate.co.il/</strong><br><small class="muted">3el3P4RWamGikIo7</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תומר</span><span class="tag">dogsstate.co.il</span></td>
+          <td><small>2026-03-10</small></td>
+        </tr>
+        <tr>
+          <td><strong>PBN Check WLive V3 Token</strong><br><small class="muted">3jDr5gfZ0cI37Gyj</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">Michael</span></td>
+          <td><small>2026-02-17</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - עברית 9825555.co.il/</strong><br><small class="muted">47tPYj5E9syG61Rp</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-04-30</small></td>
+        </tr>
+        <tr>
+          <td><strong>noyasushi.co.il - חנות</strong><br><small class="muted">4Jzwkl9xQAmHrlAe</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.afik.co.il/ - פרסום תוכן - כולל H1</strong><br><small class="muted">4Q96WzeaPNBdDEpw</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תדמית</span><span class="tag">https://www.afik.co.il/</span></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://gayaflowers.com/ - פרסום תוכן - ללא H1 - רק לנתק מהאתר!</strong><br><small class="muted">4RRwLmB8cURRHWia</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-02-12</small></td>
+        </tr>
+        <tr>
+          <td><strong>forward-hovalot.co.il - MAOR - אוטומציות תוכן</strong><br><small class="muted">4jesNKb1rlXJEnnA</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>asismotors אתר תוכן</strong><br><small class="muted">4w0gSa0t9Nz6suGy</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תבנית העתקה - אתר  תוכן</span></td>
+          <td><small>2026-06-01</small></td>
+        </tr>
+        <tr>
+          <td><strong>N8n babylis.co.il- אוטומציה תוכן כרמית</strong><br><small class="muted">52cD3t4QCDKJeYjv</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://dtas.co.il/ - אתר חנות</strong><br><small class="muted">5EmF4EHacDJI8axk</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר חנות - HTML - עברית - https://brandoo.co.il/</strong><br><small class="muted">5I26imn6pDgY7URw</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-03-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>My Sub-Workflow 1</strong><br><small class="muted">5Phno2Agt2PzKADB</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-01-01</small></td>
+        </tr>
+        <tr>
+          <td><strong>tovifarber.com - N8N אתר תוכן</strong><br><small class="muted">5a98fWLBXfxfzLsr</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">אתר תוכן</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://olimpus-hovalot.co.il/</strong><br><small class="muted">5hXelc4nVIZGExok</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>N8n https://r-s.co.il/ אוטומציה תוכן כרמית</strong><br><small class="muted">5iCakE8HzSyNpq9R</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>smoovee-ltd.com - פרסום כתבות - נסיון</strong><br><small class="muted">5kNVbjX9X7IizTZk</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">smoovee-ltd.com/</span></td>
+          <td><small>2025-12-16</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://cosmetics-express.co.il/</strong><br><small class="muted">5t2s3V2DchZp3GYD</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">cosmetics-express.co.il</span><span class="tag">תומר</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://volvoselekt.co.il/ (fixed by Manus)</strong><br><small class="muted">61rVDigvxJjPpyw2</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-10</small></td>
+        </tr>
+        <tr>
+          <td><strong>Victor Test https://wheel-e.co.il/ - חנות copy</strong><br><small class="muted">6Ml5mlaI9awvSOHf</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-02-22</small></td>
+        </tr>
+        <tr>
+          <td><strong>Pbn3 Articles by VIC Webhook</strong><br><small class="muted">6QKqrWy1sgmMYCwe</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-04-09</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://goof1.co.il/</strong><br><small class="muted">6V4eTLzjk6vHTcbk</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">אתר תוכן</span><span class="tag">https://goof1.co.il/</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>smoovee-ltd.com - פרסום כתבות</strong><br><small class="muted">6iZqCXGGEAEs5TUl</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">smoovee-ltd.com/</span></td>
+          <td><small>2025-12-15</small></td>
+        </tr>
+        <tr>
+          <td><strong>Image Generation Test</strong><br><small class="muted">6ijEsC9j67gNixhj</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2025-12-11</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.sentice.com/ -כולל H1</strong><br><small class="muted">6kMMXWXXtwEJFSXE</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://www.sentice.com/</span></td>
+          <td><small>2026-01-06</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - עברית - forward-hovalot.co.il - MAOR</strong><br><small class="muted">6zhwG2tnMqY1qw5W</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-02-08</small></td>
+        </tr>
+        <tr>
+          <td><strong>influencermarketing.ai -כולל H1</strong><br><small class="muted">77M9PNzn5CW0Ywm9</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">influencermarketing.ai</span></td>
+          <td><small>2026-05-28</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://countrychic.co.il/ -  אתר חנות</strong><br><small class="muted">7ECiJLxycTJjHxUQ</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>N8n tmost.co.il - תוכן</strong><br><small class="muted">7UYRpXPLc0Yj0nOa</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">כרמית</span></td>
+          <td><small>2026-06-01</small></td>
+        </tr>
+        <tr>
+          <td><strong>lynkco.co.il</strong><br><small class="muted">7WBbSIojTFYfkjUi</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תומר</span><span class="tag">lynkco.co.il</span></td>
+          <td><small>2026-04-19</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://guy-finance.com/</strong><br><small class="muted">7beCVIkXccyXSadj</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://guy-finance.com/</span><span class="tag">תדמית</span></td>
+          <td><small>2026-04-28</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://neem.co.il/ - חנות</strong><br><small class="muted">7fS4SVrWPp1Fp1Uv</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>Content Planner - Google Sheets</strong><br><small class="muted">85epVpTv2dEATtzNOC-GT</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-02-03</small></td>
+        </tr>
+        <tr>
+          <td><strong>credit360.co.il -ללא H1</strong><br><small class="muted">8BNd09h0Xmn30hKD</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-03-19</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://derechhakadur.co.il/</strong><br><small class="muted">8URDwjTA15ogNxTe</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>PBN2 Token Scan</strong><br><small class="muted">8Xhb81Zj34xJ4cyx</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-06</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML -rvm.co.il/</strong><br><small class="muted">8tqZfXP19r8EIPtO</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-04-30</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - עברית -https://coffeeol.co.il/</strong><br><small class="muted">93EOosVGuwHHrY9l</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-03-30</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://placeemployees.co.il/</strong><br><small class="muted">9DdzVtJINImngETb</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.shiran-eruim.co.il/ - פרסום תוכן - אתר חנות H1</strong><br><small class="muted">9EnmJk46fj54RbI0</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">חנות</span><span class="tag">https://www.shiran-eruim</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.drleshem.com/</strong><br><small class="muted">9LKcyCSEoLqOZcuu</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">אתר תוכן</span><span class="tag">https://www.drleshem.com</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>אתר תוכן - topsun.co.il/</strong><br><small class="muted">9LhX6S9lGCwE4ID9</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תבנית העתקה - אתר  תוכן</span></td>
+          <td><small>2026-01-29</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML  https://concrete-sawing.com/</strong><br><small class="muted">9LvwTbw6kmJ7Ldyq</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-01-11</small></td>
+        </tr>
+        <tr>
+          <td><strong>Pbn3 PenielYouTube Search</strong><br><small class="muted">9vpKnMDbCBpCfI2q</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-28</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML -topmedica.co.il/</strong><br><small class="muted">9xclOaUAUgopmNlQ</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-01-29</small></td>
+        </tr>
+        <tr>
+          <td><strong>Test - Wix Blog</strong><br><small class="muted">ADXK8tvxkaH--ma228SJJ</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-01-30</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - עברית - arbelpro.co.il</strong><br><small class="muted">AU7aRvcl9YjAZkGN</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-04-06</small></td>
+        </tr>
+        <tr>
+          <td><strong>PBN  Check Application password - Michael</strong><br><small class="muted">AcY0AryYkeNAyhGl</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-02-15</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.roniphysio.co.il/</strong><br><small class="muted">AhMSbwmz2VudLqIR</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">תדמית</span><span class="tag">https://www.roniphysio.c</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>Reprots all articles to Portal - Michael</strong><br><small class="muted">AmJKpfKXu4YfXXpB</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-22</small></td>
+        </tr>
+        <tr>
+          <td><strong>Testing Wordpress Article - Updated Version copy</strong><br><small class="muted">AqEBmBuoxSVoY640</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">marketing-automation</span></td>
+          <td><small>2025-12-16</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.roniphysio.co.il/ - חנות copy</strong><br><small class="muted">AujAEWS5Thuvpvqn</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://www.roniphysio.c</span><span class="tag">חנות</span></td>
+          <td><small>2026-03-31</small></td>
+        </tr>
+        <tr>
+          <td><strong>Test & Fix Rank Math Meta</strong><br><small class="muted">AzJofPzR0jdY2rQX</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-02-01</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.woodwizard.co.il/</strong><br><small class="muted">BDtPnbDl0D154DeS</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://www.woodwizard.c</span><span class="tag">תדמית</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב עמוד קיים - Same Page Design</strong><br><small class="muted">BbFeiSghptol8iyV</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב עמוד קיים</span></td>
+          <td><small>2026-02-19</small></td>
+        </tr>
+        <tr>
+          <td><strong>כותב תוכן לאתר AIN8N גרסה V1</strong><br><small class="muted">Bhe2nzmcUuOKVSdm</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-01-08</small></td>
+        </tr>
+        <tr>
+          <td><strong>galshipping.co.il - Info Web</strong><br><small class="muted">BlsJe7SwEXTDqp9M</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-06-02</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://orieder.co.il/ - N8N</strong><br><small class="muted">BpHuS49E5BNkEeso</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">אתר תוכן</span></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>Test & Fix Yoast Meta</strong><br><small class="muted">BqBQ29UXCYX3zpFp</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">Michael</span></td>
+          <td><small>2026-02-17</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://ohglass.co.il/ - פרסום תוכן - אתר חנות H1 copy copy</strong><br><small class="muted">BynSs6HXfUMMEkZ1</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">חנות</span><span class="tag">https://ohglass.co.il/</span></td>
+          <td><small>2026-05-25</small></td>
+        </tr>
+        <tr>
+          <td><strong>Bot AI Agent</strong><br><small class="muted">C6tWsMtKxCXWpjGz</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-04-16</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://homytlv.com/ - פרסום תוכן - אתר חנות H1 copy</strong><br><small class="muted">CAXA0nKzKVQV6FcV</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://homytlv.com/</span><span class="tag">חנות</span></td>
+          <td><small>2026-03-19</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.plant-ditech.com/ -כולל H1 copy</strong><br><small class="muted">CBsTKYtEUXblPelw</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://www.plant-ditech</span><span class="tag">אתר תוכן אנגלית</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://idans.co.il/ -  אתר חנות copy</strong><br><small class="muted">CU1VKx3mAV0D8nbT</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">https://idans.co.il/</span><span class="tag">חנות</span></td>
+          <td><small>2026-02-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://wtc.co.il/</strong><br><small class="muted">CU97j3Tp1V6HOJH7</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - אנגלית</strong><br><small class="muted">CZKPbLXdkx08wBnJ</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-03-10</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - עברית - sogrimdira.co.il</strong><br><small class="muted">CnHi8nBzLxJm4zUf</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-04-06</small></td>
+        </tr>
+        <tr>
+          <td><strong>עיצוב אתר - HTML - עברית https://fortknox.co.il/</strong><br><small class="muted">D6UeZESJewvIeXJ5</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">עיצוב אתר + תמונות</span></td>
+          <td><small>2026-01-11</small></td>
+        </tr>
+        <tr>
+          <td><strong>tesla-market.co.il/  אתר חנות</strong><br><small class="muted">DA8FHxobHJOIusIX</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">כרמית</span><span class="tag">חנות</span></td>
+          <td><small>2026-05-24</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://www.biopharmax.co.il/</strong><br><small class="muted">DBo9N2rishmATScs</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">אתר תוכן</span><span class="tag">https://www.baranesgroup</span></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>N8N rvm.co.il - אתר תוכן</strong><br><small class="muted">DC0y6ROxMAyZFEKL</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>Victor Test - https://sovina.co.il/ - פרסום תוכן - אתר חנות H1 copy copy</strong><br><small class="muted">DL6u8IAuzPByhvWm</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td><span class="tag">חנות</span><span class="tag">https://sovina.co.il/</span></td>
+          <td><small>2026-04-01</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://brandoo.co.il/ - חנות</strong><br><small class="muted">DP1IdQqXCtldVs75</small></td>
+          <td><span class="badge active">● Active</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>arbelpro.co.il - MAOR - אוטומציות תוכן</strong><br><small class="muted">DSae8zqYXIprGoU9</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-04-06</small></td>
+        </tr>
+        <tr>
+          <td><strong>Pbn3 PenielYouTube Search BACKUPORG</strong><br><small class="muted">DbK2xEgWJOMdoxZ0</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-10</small></td>
+        </tr>
+        <tr>
+          <td><strong>https://garden-accessoris.com/ - חנות</strong><br><small class="muted">DsSc93kmXO3S9zfG</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-05-26</small></td>
+        </tr>
+        <tr>
+          <td><strong>Victor Test</strong><br><small class="muted">DsxOhhSmb0D9eaKK</small></td>
+          <td><span class="badge inactive">● Inactive</span></td>
+          <td>0</td>
+          <td><span style="color:#10b981">✓ 0</span></td>
+          <td><span style="color:#ef4444">✗ 0</span></td>
+          <td><div class="rate-bar"><div class="rate-fill" style="width:0%;background:#ef4444"></div></div><small>0%</small></td>
+          <td></td>
+          <td><small>2026-02-12</small></td>
+        </tr></tbody>
+    </table>
+  </div>
+  <div class="table-box">
+    <h3>Recent Executions</h3>
+    <table>
+      <thead><tr><th>Status</th><th>Workflow</th><th>Time</th><th>Mode</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span style="color:#f59e0b;font-size:1.2em">⏳</span> canceled</td>
+          <td><strong>https://y-m-systems.co.il/ - פרסום תוכן - כולל H1</strong><br><small class="muted">3HVtSua9QmSuQZBL</small></td>
+          <td><small>2026-06-02 04:54:56</small></td>
+          <td><small>manual</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>tgpFt7aiqe0kO0SS</strong><br><small class="muted">tgpFt7aiqe0kO0SS</small></td>
+          <td><small>2026-06-02 04:46:56</small></td>
+          <td><small>manual</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>tgpFt7aiqe0kO0SS</strong><br><small class="muted">tgpFt7aiqe0kO0SS</small></td>
+          <td><small>2026-06-02 04:28:26</small></td>
+          <td><small>manual</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>Scan Disconnected Clients - GS - JET- Michael</strong><br><small class="muted">At7PVor76sc3YjMI</small></td>
+          <td><small>2026-06-02 04:00:54</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:17:03</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:17:00</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:59</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:58</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:55</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:54</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:52</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:50</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:48</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:45</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:43</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:41</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:39</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:37</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:36</small></td>
+          <td><small>webhook</small></td>
+        </tr>
+        <tr>
+          <td><span style="color:#10b981;font-size:1.2em">✓</span> success</td>
+          <td><strong>w20BuQds5obhFpYk</strong><br><small class="muted">w20BuQds5obhFpYk</small></td>
+          <td><small>2026-06-02 02:16:34</small></td>
+          <td><small>webhook</small></td>
+        </tr></tbody>
+    </table>
+  </div>
+  <div class="footer">n8n Dashboard by MaximoSEO - Auto-generated 2026-06-02 07:59</div>
+</div>
+<script>
+const executions = [{"id": "35544", "finished": false, "mode": "manual", "retryOf": null, "retrySuccessId": null, "status": "canceled", "startedAt": "2026-06-02T04:54:55.366Z", "stoppedAt": "2026-06-02T04:54:56.853Z", "workflowId": "3HVtSua9QmSuQZBL", "waitTill": null}, {"id": "35541", "finished": true, "mode": "manual", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T04:28:43.479Z", "stoppedAt": "2026-06-02T04:46:56.191Z", "workflowId": "tgpFt7aiqe0kO0SS", "waitTill": null}, {"id": "35540", "finished": true, "mode": "manual", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T04:06:59.112Z", "stoppedAt": "2026-06-02T04:28:26.912Z", "workflowId": "tgpFt7aiqe0kO0SS", "waitTill": null}, {"id": "35539", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T04:00:49.860Z", "stoppedAt": "2026-06-02T04:00:54.897Z", "workflowId": "At7PVor76sc3YjMI", "waitTill": null}, {"id": "35538", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:17:01.117Z", "stoppedAt": "2026-06-02T02:17:03.130Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35537", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:17:00.222Z", "stoppedAt": "2026-06-02T02:17:00.989Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35536", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:58.198Z", "stoppedAt": "2026-06-02T02:16:59.989Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35535", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:55.793Z", "stoppedAt": "2026-06-02T02:16:58.063Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35534", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:54.585Z", "stoppedAt": "2026-06-02T02:16:55.641Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35533", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:52.817Z", "stoppedAt": "2026-06-02T02:16:54.451Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35532", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:50.395Z", "stoppedAt": "2026-06-02T02:16:52.673Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35531", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:48.404Z", "stoppedAt": "2026-06-02T02:16:50.273Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35530", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:45.482Z", "stoppedAt": "2026-06-02T02:16:48.256Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35529", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:43.465Z", "stoppedAt": "2026-06-02T02:16:45.303Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35528", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:41.196Z", "stoppedAt": "2026-06-02T02:16:43.320Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35527", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:39.177Z", "stoppedAt": "2026-06-02T02:16:41.055Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35526", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:37.921Z", "stoppedAt": "2026-06-02T02:16:39.043Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35525", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:36.140Z", "stoppedAt": "2026-06-02T02:16:37.800Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35524", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:34.403Z", "stoppedAt": "2026-06-02T02:16:36.020Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35523", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:32.853Z", "stoppedAt": "2026-06-02T02:16:34.284Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35522", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:31.079Z", "stoppedAt": "2026-06-02T02:16:32.635Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35521", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:29.036Z", "stoppedAt": "2026-06-02T02:16:30.919Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35520", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:27.195Z", "stoppedAt": "2026-06-02T02:16:28.912Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35519", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:24.735Z", "stoppedAt": "2026-06-02T02:16:27.080Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35518", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:22.893Z", "stoppedAt": "2026-06-02T02:16:24.602Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35517", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:20.797Z", "stoppedAt": "2026-06-02T02:16:22.763Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35516", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:19.094Z", "stoppedAt": "2026-06-02T02:16:20.655Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35515", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:15.597Z", "stoppedAt": "2026-06-02T02:16:18.964Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35514", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:13.197Z", "stoppedAt": "2026-06-02T02:16:15.442Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}, {"id": "35513", "finished": true, "mode": "webhook", "retryOf": null, "retrySuccessId": null, "status": "success", "startedAt": "2026-06-02T02:16:10.604Z", "stoppedAt": "2026-06-02T02:16:13.078Z", "workflowId": "w20BuQds5obhFpYk", "waitTill": null}];
+const timeline = document.getElementById('timeline');
+const maxH = 100;
+executions.reverse().forEach(ex => {
+  const bar = document.createElement('div');
+  bar.className = 'bar ' + (ex.status === 'success' ? 'success' : ex.status === 'error' || ex.status === 'failed' ? 'error' : '');
+  const h = Math.max(10, Math.random() * maxH * 0.6 + maxH * 0.4);
+  bar.style.height = h + 'px';
+  bar.title = ex.workflowId + ' - ' + ex.status;
+  timeline.appendChild(bar);
+});
+</script>
+</body>
+</html>
