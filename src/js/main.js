@@ -18,6 +18,7 @@ import { renderSLACard } from './utils/sla-tracker.js';
 import { renderCostCard } from './utils/cost-estimator.js';
 import { renderActionButtons, initActionButtons } from './components/action-buttons.js';
 import { N8nClient } from './api/n8n-client.js';
+import { isAuthenticated, showAuthGate } from './utils/auth.js';
 
 /**
  * Process data and update the dashboard
@@ -118,6 +119,12 @@ function initNLPQuery() {
  * Initialize the application
  */
 function init() {
+  // Check authentication
+  if (!isAuthenticated()) {
+    showAuthGate();
+    return;
+  }
+  
   initThemeToggle();
   initRefreshButton();
   initSearch();
@@ -131,6 +138,11 @@ function init() {
   }
   
   processData();
+  
+  // Register service worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
 }
 
 // Start the application when DOM is ready
