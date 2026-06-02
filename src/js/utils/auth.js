@@ -17,7 +17,7 @@ export function logout() {
   sessionStorage.removeItem(AUTH_KEY);
 }
 
-export function showAuthGate() {
+export function showAuthGate(onSuccess) {
   const container = document.querySelector('.container');
   if (!container) return;
   
@@ -38,18 +38,21 @@ export function showAuthGate() {
   container.style.filter = 'blur(10px)';
   container.style.pointerEvents = 'none';
   
-  document.getElementById('authSubmit').addEventListener('click', () => {
+  const handleAuth = () => {
     const pass = document.getElementById('authPassword').value;
     if (authenticate(pass)) {
       authDiv.remove();
       container.style.filter = '';
       container.style.pointerEvents = '';
+      if (onSuccess) onSuccess();
     } else {
       document.getElementById('authError').style.display = 'block';
     }
-  });
+  };
+  
+  document.getElementById('authSubmit').addEventListener('click', handleAuth);
   
   document.getElementById('authPassword').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') document.getElementById('authSubmit').click();
+    if (e.key === 'Enter') handleAuth();
   });
 }

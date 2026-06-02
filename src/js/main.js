@@ -121,10 +121,17 @@ function initNLPQuery() {
 function init() {
   // Check authentication
   if (!isAuthenticated()) {
-    showAuthGate();
+    showAuthGate(() => {
+      // After successful auth, initialize the app
+      initializeApp();
+    });
     return;
   }
   
+  initializeApp();
+}
+
+function initializeApp() {
   initThemeToggle();
   initRefreshButton();
   initSearch();
