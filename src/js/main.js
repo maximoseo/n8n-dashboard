@@ -241,10 +241,10 @@ function initializeApp() {
     initActionButtons(apiClient);
   }
   
-  // Load live data first, then process
-  refreshLiveData().then(() => {
-    processData();
-  });
+  // Load live data first, then process (fallback to embedded data)
+  refreshLiveData()
+    .then(() => processData())
+    .catch(() => processData());
   
   // Register service worker for PWA
   if ('serviceWorker' in navigator) {
