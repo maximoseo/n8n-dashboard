@@ -95,12 +95,10 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
           <span class="link-icon">⚙️</span>
           <span>Open in n8n</span>
         </a>
-        ${hasSheet ? `
-          <a href="${sheetUrl}" target="_blank" rel="noopener noreferrer" class="workflow-link-btn sheet-link">
-            <span class="link-icon">📊</span>
-            <span>View Sheet</span>
-          </a>
-        ` : ''}
+        <a href="${sheetUrl || '#'}" target="_blank" rel="noopener noreferrer" class="workflow-link-btn sheet-link ${!hasSheet ? 'disabled' : ''}" ${!hasSheet ? 'title="No sheet linked"' : ''}>
+          <span class="link-icon">📊</span>
+          <span>${hasSheet ? 'View Sheet' : 'No Sheet'}</span>
+        </a>
       </div>
 
       <div class="workflow-footer">
