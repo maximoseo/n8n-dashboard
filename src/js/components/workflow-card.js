@@ -1,6 +1,8 @@
 import { filterWorkflows, getWorkflows } from '../stores/workflow-store.js';
-import { getWorkflowStats } from '../stores/execution-store.js';
+import { getWorkflowStats, executionsData } from '../stores/execution-store.js';
 import { formatDate, calculateSuccessRate } from '../utils/helpers.js';
+import { renderHealthBadge } from './health-badge.js';
+import { renderActionButtons } from './action-buttons.js';
 
 /**
  * Render workflow cards to the grid
@@ -46,6 +48,7 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
   const successRate = calculateSuccessRate(stats.success, stats.total);
   const tags = (wf.tags || []).slice(0, 3).map(t => `<span class="tag">${t.name}</span>`).join('');
   const updatedDate = formatDate(wf.updatedAt);
+  const executions = executionsData.data || [];
 
   return `
     <div class="workflow-card">
@@ -54,9 +57,12 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
           <div class="workflow-name">${wf.name}</div>
           <div class="workflow-id">${wf.id}</div>
         </div>
-        <div class="status-badge ${wf.active ? 'active' : 'inactive'}">
-          <span class="status-dot"></span>
-          ${wf.active ? 'Active' : 'Inactive'}
+        <div class="workflow-badges">
+          <div class="status-badge ${wf.active ? 'active' : 'inactive'}">
+            <span class="status-dot"></span>
+            ${wf.active ? 'Active' : 'Inactive'}
+          </div>
+          ${renderHealthBadge(wf, executions)}
         </div>
       </div>
       
@@ -74,6 +80,8 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
           <div class="workflow-stat-label">Failed</div>
         </div>
       </div>
+
+      ${renderActionButtons(wf)}
 
       <div class="workflow-footer">
         <div class="workflow-tags">${tags || '<span style="color: var(--text-muted); font-size: 0.75rem;">No tags</span>'}</div>

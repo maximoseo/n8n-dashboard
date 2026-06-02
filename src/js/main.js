@@ -18,7 +18,12 @@ import { renderSLACard } from './utils/sla-tracker.js';
 import { renderCostCard } from './utils/cost-estimator.js';
 import { renderActionButtons, initActionButtons } from './components/action-buttons.js';
 import { N8nClient } from './api/n8n-client.js';
+import { fetchWorkflows, fetchExecutions } from './api/n8n-api.js';
 import { isAuthenticated, showAuthGate } from './utils/auth.js';
+
+const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
+let autoRefreshTimer = null;
+let isLiveMode = false;
 
 /**
  * Process data and update the dashboard
@@ -69,12 +74,103 @@ function initRefreshButton() {
   const refreshBtn = document.getElementById('refreshBtn');
   if (!refreshBtn) return;
 
-  refreshBtn.addEventListener('click', () => {
+  refreshBtn.addEventListener('click', async () => {
     refreshBtn.classList.add('loading');
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
+    if (isLiveMode) {
+      await refreshLiveData();
+      refreshBtn.classList.remove('loading');
+    } else {
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    }
   });
+}
+
+/**
+ * Refresh data from live API
+ */
+async function refreshLiveData() {
+  try {
+    const [workflows, executions] = await Promise.all([
+      fetchWorkflows(),
+      fetchExecutions(100)
+    ]);
+    
+    if (workflows.length > 0) {
+      workflowsData.data = workflows;
+    }
+    if (executions.length > 0) {
+      executionsData.data = executions;
+    }
+    
+    processData();
+    updateLiveIndicator(true);
+  } catch (error) {
+    console.error('Failed to refresh live data:', error);
+    updateLiveIndicator(false);
+  }
+}
+
+/**
+ * Start auto-refresh
+ */
+function startAutoRefresh() {
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  autoRefreshTimer = setInterval(refreshLiveData, AUTO_REFRESH_INTERVAL);
+  isLiveMode = true;
+  updateLiveIndicator(true);
+}
+
+/**
+ * Stop auto-refresh
+ */
+function stopAutoRefresh() {
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
+  isLiveMode = false;
+  updateLiveIndicator(false);
+}
+
+/**
+ * Update live indicator
+ */
+function updateLiveIndicator(isLive) {
+  const indicator = document.getElementById('liveIndicator');
+  if (!indicator) return;
+  
+  if (isLive) {
+    indicator.textContent = '🟢 Live';
+    indicator.title = 'Auto-refreshing every 30 seconds';
+  } else {
+    indicator.textContent = '⚪ Offline';
+    indicator.title = 'Using cached data';
+  }
+}
+
+/**
+ * Initialize live mode toggle
+ */
+function initLiveModeToggle() {
+  const toggle = document.getElementById('liveModeToggle');
+  if (!toggle) return;
+  
+  toggle.addEventListener('click', () => {
+    if (isLiveMode) {
+      stopAutoRefresh();
+      toggle.textContent = '▶️ Start Live';
+    } else {
+      startAutoRefresh();
+      toggle.textContent = '⏸️ Stop Live';
+      refreshLiveData(); // Immediate refresh
+    }
+  });
+  
+  // Auto-start live mode
+  startAutoRefresh();
+  toggle.textContent = '⏸️ Stop Live';
 }
 
 /**
@@ -136,6 +232,7 @@ function initializeApp() {
   initRefreshButton();
   initSearch();
   initNLPQuery();
+  initLiveModeToggle();
   
   // Initialize API client for actions (if API key is available)
   const apiKey = localStorage.getItem('n8n_api_key') || window.N8N_API_KEY;
@@ -144,7 +241,10 @@ function initializeApp() {
     initActionButtons(apiClient);
   }
   
-  processData();
+  // Load live data first, then process
+  refreshLiveData().then(() => {
+    processData();
+  });
   
   // Register service worker for PWA
   if ('serviceWorker' in navigator) {
