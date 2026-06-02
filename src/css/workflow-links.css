@@ -1,0 +1,69 @@
+/* Workflow Links Section */
+.workflow-links {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+
+.workflow-link-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border);
+}
+
+.workflow-link-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* n8n Link Button */
+.n8n-link {
+  background: linear-gradient(135deg, var(--n8n-color, #ea4b71) 0%, var(--n8n-color-dark, #d63d60) 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.n8n-link:hover {
+  background: linear-gradient(135deg, var(--n8n-color-dark, #d63d60) 0%, var(--n8n-color-darker, #c22f52) 100%);
+  color: white;
+}
+
+/* Google Sheet Link Button */
+.sheet-link {
+  background: linear-gradient(135deg, #0f9d58 0%, #0b8043 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.sheet-link:hover {
+  background: linear-gradient(135deg, #0b8043 0%, #076b35 100%);
+  color: white;
+}
+
+.link-icon {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .workflow-links {
+    flex-direction: column;
+  }
+  
+  .workflow-link-btn {
+    width: 100%;
+  }
+}

@@ -3,6 +3,7 @@ import { getWorkflowStats, executionsData } from '../stores/execution-store.js';
 import { formatDate, calculateSuccessRate } from '../utils/helpers.js';
 import { renderHealthBadge } from './health-badge.js';
 import { renderActionButtons } from './action-buttons.js';
+import { getN8nWorkflowUrl, getGoogleSheetUrl, hasGoogleSheet } from '../utils/workflow-links.js';
 
 /**
  * Render workflow cards to the grid
@@ -49,6 +50,11 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
   const tags = (wf.tags || []).slice(0, 3).map(t => `<span class="tag">${t.name}</span>`).join('');
   const updatedDate = formatDate(wf.updatedAt);
   const executions = executionsData.data || [];
+  
+  // Generate links
+  const n8nUrl = getN8nWorkflowUrl(wf.id);
+  const sheetUrl = getGoogleSheetUrl(wf);
+  const hasSheet = sheetUrl !== null;
 
   return `
     <div class="workflow-card">
@@ -82,6 +88,19 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
       </div>
 
       ${renderActionButtons(wf)}
+
+      <div class="workflow-links">
+        <a href="${n8nUrl}" target="_blank" rel="noopener noreferrer" class="workflow-link-btn n8n-link">
+          <span class="link-icon">⚙️</span>
+          <span>Open in n8n</span>
+        </a>
+        ${hasSheet ? `
+          <a href="${sheetUrl}" target="_blank" rel="noopener noreferrer" class="workflow-link-btn sheet-link">
+            <span class="link-icon">📊</span>
+            <span>View Sheet</span>
+          </a>
+        ` : ''}
+      </div>
 
       <div class="workflow-footer">
         <div class="workflow-tags">${tags || '<span style="color: var(--text-muted); font-size: 0.75rem;">No tags</span>'}</div>
