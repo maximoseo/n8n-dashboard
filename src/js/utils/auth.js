@@ -1,5 +1,5 @@
 const AUTH_KEY = 'n8n_dashboard_auth';
-const AUTH_PASS = 'maximo2026';
+const AUTH_PASS = 'Maximo2026!';
 
 export function isAuthenticated() {
   return sessionStorage.getItem(AUTH_KEY) === 'true';
