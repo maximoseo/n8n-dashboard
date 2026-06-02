@@ -1,4 +1,4 @@
-const N8N_BASE_URL = 'https://websiseo.app.n8n.cloud/api/v1';
+const N8N_BASE_URL = '/api/n8n';
 
 export class N8nClient {
   constructor(apiKey) {
