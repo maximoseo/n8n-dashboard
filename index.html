@@ -1,1050 +1,130 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>n8n Dashboard - MaximoSEO</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --surface: rgba(30, 41, 59, 0.7);
-    --surface-hover: rgba(30, 41, 59, 0.9);
-    --border: rgba(51, 65, 85, 0.5);
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    --accent: #6366f1;
-    --accent-hover: #4f46e5;
-    --success: #10b981;
-    --success-bg: rgba(16, 185, 129, 0.1);
-    --error: #ef4444;
-    --error-bg: rgba(239, 68, 68, 0.1);
-    --warning: #f59e0b;
-    --warning-bg: rgba(245, 158, 11, 0.1);
-    --info: #3b82f6;
-    --info-bg: rgba(59, 130, 246, 0.1);
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  [data-theme="light"] {
-    --bg-primary: #f8fafc;
-    --bg-secondary: #ffffff;
-    --bg-tertiary: #e2e8f0;
-    --surface: rgba(255, 255, 255, 0.9);
-    --surface-hover: rgba(255, 255, 255, 1);
-    --border: rgba(226, 232, 240, 0.8);
-    --text-primary: #0f172a;
-    --text-secondary: #334155;
-    --text-muted: #64748b;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-
-  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
-
-  /* Header */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 24px 0;
-    margin-bottom: 32px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .header-content h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-    background: linear-gradient(135deg, var(--accent), var(--info));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .header-meta {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-  }
-
-  .header-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .theme-toggle {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 10px;
-    cursor: pointer;
-    transition: var(--transition);
-    color: var(--text-primary);
-    font-size: 1.2rem;
-  }
-
-  .theme-toggle:hover {
-    background: var(--surface-hover);
-    transform: scale(1.05);
-  }
-
-  .refresh-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md);
-    padding: 10px 20px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .refresh-btn:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .refresh-btn.loading {
-    opacity: 0.7;
-    pointer-events: none;
-  }
-
-  .refresh-btn.loading::after {
-    content: '';
-    width: 16px;
-    height: 16px;
-    border: 2px solid white;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  /* Search */
-  .search-box {
-    position: relative;
-    margin-bottom: 24px;
-  }
-
-  .search-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 14px 20px 14px 48px;
-    font-size: 1rem;
-    color: var(--text-primary);
-    transition: var(--transition);
-    backdrop-filter: blur(10px);
-  }
-
-  .search-input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-  }
-
-  .search-icon {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    font-size: 1.2rem;
-  }
-
-  /* Stats Grid */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-    margin-bottom: 32px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    transition: var(--transition);
-    backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, var(--card-color) 0%, transparent 70%);
-    opacity: 0.1;
-    transition: var(--transition);
-  }
-
-  .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--card-color);
-  }
-
-  .stat-card:hover::before {
-    opacity: 0.2;
-  }
-
-  .stat-label {
-    color: var(--text-muted);
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .stat-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--card-color);
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-
-  .stat-trend {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  /* Charts Section */
-  .charts-section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 32px;
-  }
-
-  .chart-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    backdrop-filter: blur(10px);
-    transition: var(--transition);
-  }
-
-  .chart-card:hover {
-    box-shadow: var(--shadow-md);
-  }
-
-  .chart-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .chart-icon {
-    font-size: 1.5rem;
-  }
-
-  /* Donut Chart */
-  .donut-container {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    justify-content: center;
-  }
-
-  .donut-chart {
-    position: relative;
-    width: 180px;
-    height: 180px;
-  }
-
-  .donut-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-
-  .donut-percentage {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--success);
-    line-height: 1;
-  }
-
-  .donut-label {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
-
-  .donut-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.95rem;
-  }
-
-  .legend-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-
-  .legend-label {
-    color: var(--text-secondary);
-    flex: 1;
-  }
-
-  .legend-value {
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  /* Timeline Chart */
-  .timeline-chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    height: 160px;
-    padding: 20px 0;
-  }
-
-  .timeline-bar {
-    flex: 1;
-    background: var(--accent);
-    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    min-width: 12px;
-    transition: var(--transition);
-    cursor: pointer;
-    position: relative;
-  }
-
-  .timeline-bar:hover {
-    opacity: 0.8;
-    transform: scaleY(1.05);
-  }
-
-  .timeline-bar.success { background: var(--success); }
-  .timeline-bar.error { background: var(--error); }
-
-  .timeline-bar::before {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    padding: 6px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: var(--transition);
-    margin-bottom: 8px;
-  }
-
-  .timeline-bar:hover::before {
-    opacity: 1;
-  }
-
-  /* Workflows Section */
-  .workflows-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    backdrop-filter: blur(10px);
-  }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-
-  .section-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .filter-tabs {
-    display: flex;
-    gap: 8px;
-  }
-
-  .filter-tab {
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 8px 16px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: var(--transition);
-  }
-
-  .filter-tab:hover {
-    background: var(--surface-hover);
-    color: var(--text-primary);
-  }
-
-  .filter-tab.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-  }
-
-  /* Workflow Cards */
-  .workflows-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 16px;
-  }
-
-  .workflow-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    transition: var(--transition);
-    cursor: pointer;
-  }
-
-  .workflow-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--accent);
-  }
-
-  .workflow-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .workflow-name {
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-primary);
-    margin-bottom: 4px;
-    line-height: 1.4;
-  }
-
-  .workflow-id {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-family: monospace;
-  }
-
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .status-badge.active {
-    background: var(--success-bg);
-    color: var(--success);
-  }
-
-  .status-badge.inactive {
-    background: var(--bg-tertiary);
-    color: var(--text-muted);
-  }
-
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
-  }
-
-  .status-badge.active .status-dot {
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  .workflow-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 16px 0;
-    padding: 12px;
-    background: var(--bg-primary);
-    border-radius: var(--radius-sm);
-  }
-
-  .workflow-stat {
-    text-align: center;
-  }
-
-  .workflow-stat-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .workflow-stat-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
-
-  .workflow-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-  }
-
-  .workflow-tags {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    background: var(--accent);
-    color: white;
-    padding: 2px 8px;
-    border-radius: var(--radius-sm);
-    font-size: 0.7rem;
-    font-weight: 500;
-  }
-
-  .workflow-updated {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
-
-  /* Empty State */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
-  }
-
-  .empty-state-icon {
-    font-size: 4rem;
-    margin-bottom: 16px;
-    opacity: 0.5;
-  }
-
-  .empty-state-text {
-    font-size: 1.125rem;
-    margin-bottom: 8px;
-  }
-
-  /* Footer */
-  .footer {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-    padding: 32px 0;
-    margin-top: 48px;
-    border-top: 1px solid var(--border);
-  }
-
-  /* Responsive */
-  @media (max-width: 1024px) {
-    .charts-section { grid-template-columns: 1fr; }
-  }
-
-  @media (max-width: 768px) {
-    .container { padding: 16px; }
-    .header { flex-direction: column; align-items: flex-start; gap: 16px; }
-    .header-actions { width: 100%; justify-content: space-between; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .workflows-grid { grid-template-columns: 1fr; }
-    .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .filter-tabs { width: 100%; overflow-x: auto; }
-  }
-
-  @media (max-width: 480px) {
-    .stats-grid { grid-template-columns: 1fr; }
-    .stat-value { font-size: 2rem; }
-    .donut-container { flex-direction: column; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>n8n Dashboard - MaximoSEO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/css/main.css">
 </head>
 <body>
-<div class="container">
-  <!-- Header -->
-  <div class="header">
-    <div class="header-content">
-      <h1>n8n Dashboard</h1>
-      <div class="header-meta">
-        <span>MaximoSEO • Automation Monitoring</span>
-        <span>•</span>
-        <span id="lastUpdated">Last updated: Loading...</span>
-      </div>
-    </div>
-    <div class="header-actions">
-      <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
-      <button class="refresh-btn" id="refreshBtn">
-        <span>🔄</span>
-        <span>Refresh</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Search -->
-  <div class="search-box">
-    <span class="search-icon">🔍</span>
-    <input type="text" class="search-input" id="searchInput" placeholder="Search workflows by name, ID, or tags...">
-  </div>
-
-  <!-- Stats Grid -->
-  <div class="stats-grid" id="statsGrid">
-    <div class="stat-card" style="--card-color: var(--info);">
-      <div class="stat-label">Total Workflows</div>
-      <div class="stat-value" id="totalWorkflows">-</div>
-      <div class="stat-trend">All workflows in system</div>
-    </div>
-    <div class="stat-card" style="--card-color: var(--success);">
-      <div class="stat-label">Active Workflows</div>
-      <div class="stat-value" id="activeWorkflows">-</div>
-      <div class="stat-trend">Currently running</div>
-    </div>
-    <div class="stat-card" style="--card-color: var(--warning);">
-      <div class="stat-label">Inactive Workflows</div>
-      <div class="stat-value" id="inactiveWorkflows">-</div>
-      <div class="stat-trend">Paused or stopped</div>
-    </div>
-    <div class="stat-card" style="--card-color: var(--accent);">
-      <div class="stat-label">Recent Executions</div>
-      <div class="stat-value" id="recentExecutions">-</div>
-      <div class="stat-trend">Last 100 runs</div>
-    </div>
-    <div class="stat-card" style="--card-color: var(--success);">
-      <div class="stat-label">Successful</div>
-      <div class="stat-value" id="successfulExecutions">-</div>
-      <div class="stat-trend">Completed without errors</div>
-    </div>
-    <div class="stat-card" style="--card-color: var(--error);">
-      <div class="stat-label">Failed</div>
-      <div class="stat-value" id="failedExecutions">-</div>
-      <div class="stat-trend">Encountered errors</div>
-    </div>
-  </div>
-
-  <!-- Charts Section -->
-  <div class="charts-section">
-    <!-- Donut Chart -->
-    <div class="chart-card">
-      <div class="chart-title">
-        <span class="chart-icon">📊</span>
-        <span>Execution Status Distribution</span>
-      </div>
-      <div class="donut-container">
-        <div class="donut-chart">
-          <svg width="180" height="180" viewBox="0 0 180 180" id="donutChart">
-            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg-tertiary)" stroke-width="20"/>
-          </svg>
-          <div class="donut-center">
-            <div class="donut-percentage" id="successRate">-</div>
-            <div class="donut-label">success rate</div>
-          </div>
-        </div>
-        <div class="donut-legend" id="donutLegend"></div>
-      </div>
-    </div>
-
-    <!-- Timeline Chart -->
-    <div class="chart-card">
-      <div class="chart-title">
-        <span class="chart-icon">📈</span>
-        <span>Recent Executions Timeline</span>
-      </div>
-      <div class="timeline-chart" id="timelineChart"></div>
-    </div>
-  </div>
-
-  <!-- Workflows Section -->
-  <div class="workflows-section">
-    <div class="section-header">
-      <div class="section-title">
-        <span>📋</span>
-        <span>All Workflows</span>
-        <span id="workflowCount" style="color: var(--text-muted); font-weight: 400;"></span>
-      </div>
-      <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="all">All</button>
-        <button class="filter-tab" data-filter="active">Active</button>
-        <button class="filter-tab" data-filter="inactive">Inactive</button>
-      </div>
-    </div>
-    <div class="workflows-grid" id="workflowsGrid"></div>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    n8n Dashboard by MaximoSEO • Auto-generated from n8n API • <span id="footerTimestamp"></span>
-  </div>
-</div>
-
-<script>
-// Data will be injected here by build script
-const workflowsData = {"data": [{"id": "00U5X8i5VtNaw817", "name": "https://mshrclean.co.il/ -  \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": true, "createdAt": "2026-05-18T06:52:37.317Z", "updatedAt": "2026-05-25T10:57:18.783Z", "tags": [{"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}, {"id": "sy9CaDNKC646kONt", "name": "https://mshrclean.co.il/"}]}, {"id": "08XglDYrhWwxMtUL", "name": "My workflow 3", "active": false, "createdAt": "2026-03-17T18:30:52.778Z", "updatedAt": "2026-03-17T18:30:52.778Z", "tags": []}, {"id": "0B6eKH71Jn2L2Me2", "name": "WEBSITE -\u05dc\u05dc\u05d0 H1 copy - Tomer", "active": false, "createdAt": "2025-12-28T06:11:39.035Z", "updatedAt": "2025-12-30T06:15:44.484Z", "tags": []}, {"id": "0D48FEuCagOtw5JZ", "name": "oritmartin.com - \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": true, "createdAt": "2026-03-18T12:26:51.518Z", "updatedAt": "2026-05-25T11:54:09.285Z", "tags": [{"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}, {"id": "yg3QE2n7IqTB3e3n", "name": "oritmartin.com"}]}, {"id": "0MQ8yrGDFONvuLhn", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - medatech.com/he/", "active": false, "createdAt": "2026-01-15T08:23:50.798Z", "updatedAt": "2026-04-30T08:02:52.983Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "13SEAZrNVSip5FUL", "name": "https://www.univers-transit.co.il/", "active": true, "createdAt": "2026-01-28T07:42:35.910Z", "updatedAt": "2026-05-26T06:42:20.049Z", "tags": [{"id": "7nG04WUVBFxu9Svq", "name": "univers-transit.co.il"}, {"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}]}, {"id": "1HCMTq6K6wyeBBLL", "name": "https://phenome-networks.com/en/", "active": true, "createdAt": "2026-05-06T09:37:20.207Z", "updatedAt": "2026-05-27T09:07:58.001Z", "tags": [{"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}]}, {"id": "1UyVBhuW7nl5BRcv", "name": "https://ranan.co.il/ - \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d9\u05ea \u05ea\u05d5\u05db\u05df", "active": false, "createdAt": "2026-01-12T12:15:33.319Z", "updatedAt": "2026-05-26T07:01:19.493Z", "tags": [{"id": "bptP0LIa1bgIeOiF", "name": "https://ranan.co.il/"}]}, {"id": "1W7CvaNEe50cbhdf", "name": "https://www.sentice.com/ - \u05dc\u05dc\u05d0 H1", "active": false, "createdAt": "2026-01-05T14:37:11.753Z", "updatedAt": "2026-01-05T14:39:20.000Z", "tags": [{"id": "r19kLefJGAoJeCom", "name": "https://www.sentice.com/"}]}, {"id": "1WhGRzRIu3j5uXSd", "name": "https://cubatravel.co.il/", "active": true, "createdAt": "2026-02-22T08:49:05.965Z", "updatedAt": "2026-05-25T11:52:04.671Z", "tags": []}, {"id": "1v7kUbSTAwO6YDhf", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea - HTML -https://aleadesign.co.il/", "active": false, "createdAt": "2026-05-24T07:15:49.266Z", "updatedAt": "2026-05-24T08:23:51.000Z", "tags": [{"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}, {"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "1x0GwmGwfYIbYBX2", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML  https://tmost.co.il/", "active": false, "createdAt": "2026-05-17T08:27:20.911Z", "updatedAt": "2026-05-17T08:29:27.159Z", "tags": [{"id": "OrC2gopMSZE7MaAh", "name": "\u05db\u05e8\u05de\u05d9\u05ea"}]}, {"id": "22zztGLhWh8xxt1j", "name": "zarihazan.com - MAOR - \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05ea \u05ea\u05d5\u05db\u05df", "active": false, "createdAt": "2026-01-06T07:31:03.981Z", "updatedAt": "2026-01-12T04:28:15.000Z", "tags": []}, {"id": "24nBmKgvtyDpzqM3", "name": "https://www.kcamping.co.il/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05db\u05d5\u05dc\u05dc H1", "active": false, "createdAt": "2025-12-28T05:44:09.053Z", "updatedAt": "2025-12-28T08:05:44.609Z", "tags": [{"id": "9HMMQVHlKyAQx01S", "name": "kcamping.co.il"}]}, {"id": "25JbO1AoHtiLUNTv", "name": "https://arubot.co.il/", "active": false, "createdAt": "2026-01-20T07:35:46.341Z", "updatedAt": "2026-05-26T07:00:50.173Z", "tags": [{"id": "8TsUbmdSjulxzXXh", "name": "arubot.co.il/"}, {"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}]}, {"id": "2AWIhTLl2ijn5pWP", "name": "sefiyoga.co.il-N8N", "active": false, "createdAt": "2026-04-13T08:52:12.361Z", "updatedAt": "2026-05-05T04:43:05.575Z", "tags": []}, {"id": "2QhPYnQwoiR45wSQ", "name": "topsun.co.il/ - \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": true, "createdAt": "2026-02-03T10:57:13.475Z", "updatedAt": "2026-05-26T05:17:04.073Z", "tags": []}, {"id": "2g86ccMfCvIAfVVM", "name": "https://www.doritjudaica.co.il/ -  \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": false, "createdAt": "2026-02-08T07:05:45.538Z", "updatedAt": "2026-05-26T07:09:45.120Z", "tags": []}, {"id": "35zToVH7dMVzpecI", "name": "GEO MAIN API Web", "active": false, "createdAt": "2026-04-23T10:29:32.135Z", "updatedAt": "2026-04-23T10:30:24.606Z", "tags": []}, {"id": "3EMwsRpILuvayYN0", "name": "https://vehidarta.com/-  \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea - FIXED", "active": true, "createdAt": "2026-05-12T05:47:04.783Z", "updatedAt": "2026-05-26T04:42:03.073Z", "tags": [{"id": "OrC2gopMSZE7MaAh", "name": "\u05db\u05e8\u05de\u05d9\u05ea"}]}, {"id": "3HVtSua9QmSuQZBL", "name": "https://y-m-systems.co.il/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05db\u05d5\u05dc\u05dc H1", "active": false, "createdAt": "2026-05-24T08:15:02.184Z", "updatedAt": "2026-06-02T04:54:53.437Z", "tags": [{"id": "EEiYEt4dLhYM8tjy", "name": "\u05ea\u05d3\u05de\u05d9\u05ea"}, {"id": "ixeAe5H2QvFr05L0", "name": "https://y-m-systems.co.i"}]}, {"id": "3Pf4kqjS4Dy8Auo5", "name": "https://nurse.placeemployees.co.il/", "active": false, "createdAt": "2026-01-27T18:40:52.495Z", "updatedAt": "2026-05-26T06:58:16.831Z", "tags": [{"id": "7aZ3Ps7y800U2WxH", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df"}, {"id": "DZ9lhsyAwxjw3N6J", "name": "nurse.placeemployees.co."}]}, {"id": "3X7QeUW7Bzom4ugt", "name": "https://oranim-pharm.co.il/ -  \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": true, "createdAt": "2026-01-26T09:06:16.041Z", "updatedAt": "2026-05-26T05:32:11.702Z", "tags": [{"id": "QVdOslAewHeA0FL8", "name": "oranim-pharm.co.il"}, {"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}]}, {"id": "3el3P4RWamGikIo7", "name": "https://dogsstate.co.il/", "active": false, "createdAt": "2026-03-10T12:27:48.996Z", "updatedAt": "2026-03-10T12:35:38.000Z", "tags": [{"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}, {"id": "dZ1yheYAF8JtL2GO", "name": "dogsstate.co.il"}]}, {"id": "3jDr5gfZ0cI37Gyj", "name": "PBN Check WLive V3 Token", "active": false, "createdAt": "2026-02-17T08:49:27.973Z", "updatedAt": "2026-02-17T09:31:52.080Z", "tags": [{"id": "rwoigr7GD1k00mZ5", "name": "Michael"}]}, {"id": "47tPYj5E9syG61Rp", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - \u05e2\u05d1\u05e8\u05d9\u05ea 9825555.co.il/", "active": false, "createdAt": "2026-04-27T07:47:09.061Z", "updatedAt": "2026-04-30T08:02:55.347Z", "tags": []}, {"id": "4Jzwkl9xQAmHrlAe", "name": "noyasushi.co.il - \u05d7\u05e0\u05d5\u05ea", "active": true, "createdAt": "2026-03-09T12:10:59.541Z", "updatedAt": "2026-05-25T11:36:09.738Z", "tags": []}, {"id": "4Q96WzeaPNBdDEpw", "name": "https://www.afik.co.il/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05db\u05d5\u05dc\u05dc H1", "active": false, "createdAt": "2026-05-19T06:09:28.917Z", "updatedAt": "2026-05-25T10:46:11.571Z", "tags": [{"id": "EEiYEt4dLhYM8tjy", "name": "\u05ea\u05d3\u05de\u05d9\u05ea"}, {"id": "XAOB5z7KVsy3qE8m", "name": "https://www.afik.co.il/"}]}, {"id": "4RRwLmB8cURRHWia", "name": "https://gayaflowers.com/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05dc\u05dc\u05d0 H1 - \u05e8\u05e7 \u05dc\u05e0\u05ea\u05e7 \u05de\u05d4\u05d0\u05ea\u05e8!", "active": false, "createdAt": "2025-12-29T12:29:58.350Z", "updatedAt": "2026-02-12T21:42:50.999Z", "tags": []}, {"id": "4jesNKb1rlXJEnnA", "name": "forward-hovalot.co.il - MAOR - \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d5\u05ea \u05ea\u05d5\u05db\u05df", "active": true, "createdAt": "2026-02-08T11:27:50.782Z", "updatedAt": "2026-05-25T11:51:19.230Z", "tags": []}, {"id": "4w0gSa0t9Nz6suGy", "name": "asismotors \u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df", "active": true, "createdAt": "2025-12-25T09:05:16.888Z", "updatedAt": "2026-06-01T03:53:26.227Z", "tags": [{"id": "ws3rR87VsBaFrUXW", "name": "\u05ea\u05d1\u05e0\u05d9\u05ea \u05d4\u05e2\u05ea\u05e7\u05d4 - \u05d0\u05ea\u05e8  \u05ea\u05d5\u05db\u05df"}]}, {"id": "52cD3t4QCDKJeYjv", "name": "N8n babylis.co.il- \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d4 \u05ea\u05d5\u05db\u05df \u05db\u05e8\u05de\u05d9\u05ea", "active": false, "createdAt": "2026-04-20T06:23:05.167Z", "updatedAt": "2026-05-25T11:14:46.741Z", "tags": []}, {"id": "5EmF4EHacDJI8axk", "name": "https://dtas.co.il/ - \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": false, "createdAt": "2026-01-15T08:49:34.700Z", "updatedAt": "2026-05-26T05:11:08.034Z", "tags": []}, {"id": "5I26imn6pDgY7URw", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea - HTML - \u05e2\u05d1\u05e8\u05d9\u05ea - https://brandoo.co.il/", "active": false, "createdAt": "2026-03-25T13:30:06.551Z", "updatedAt": "2026-03-26T08:21:55.232Z", "tags": []}, {"id": "5Phno2Agt2PzKADB", "name": "My Sub-Workflow 1", "active": false, "createdAt": "2026-01-01T13:16:21.032Z", "updatedAt": "2026-01-01T13:16:21.032Z", "tags": []}, {"id": "5a98fWLBXfxfzLsr", "name": "tovifarber.com - N8N \u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df", "active": true, "createdAt": "2026-04-28T08:51:20.050Z", "updatedAt": "2026-05-26T05:00:49.050Z", "tags": [{"id": "7aZ3Ps7y800U2WxH", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df"}]}, {"id": "5hXelc4nVIZGExok", "name": "https://olimpus-hovalot.co.il/", "active": true, "createdAt": "2026-02-16T18:09:17.100Z", "updatedAt": "2026-05-25T11:49:36.545Z", "tags": []}, {"id": "5iCakE8HzSyNpq9R", "name": "N8n https://r-s.co.il/ \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d4 \u05ea\u05d5\u05db\u05df \u05db\u05e8\u05de\u05d9\u05ea", "active": true, "createdAt": "2026-05-11T06:29:16.038Z", "updatedAt": "2026-05-25T11:22:58.926Z", "tags": []}, {"id": "5kNVbjX9X7IizTZk", "name": "smoovee-ltd.com - \u05e4\u05e8\u05e1\u05d5\u05dd \u05db\u05ea\u05d1\u05d5\u05ea - \u05e0\u05e1\u05d9\u05d5\u05df", "active": false, "createdAt": "2025-12-16T03:38:24.093Z", "updatedAt": "2025-12-16T18:56:46.000Z", "tags": [{"id": "J4sFZkqkCWFOspZf", "name": "smoovee-ltd.com/"}]}, {"id": "5t2s3V2DchZp3GYD", "name": "https://cosmetics-express.co.il/", "active": true, "createdAt": "2026-01-19T07:04:18.868Z", "updatedAt": "2026-05-26T04:55:38.104Z", "tags": [{"id": "Fwe38n6KC4z15R2W", "name": "cosmetics-express.co.il"}, {"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}]}, {"id": "61rVDigvxJjPpyw2", "name": "https://volvoselekt.co.il/ (fixed by Manus)", "active": false, "createdAt": "2026-05-10T07:10:32.812Z", "updatedAt": "2026-05-10T07:10:32.812Z", "tags": []}, {"id": "6Ml5mlaI9awvSOHf", "name": "Victor Test https://wheel-e.co.il/ - \u05d7\u05e0\u05d5\u05ea copy", "active": false, "createdAt": "2026-02-19T19:33:46.722Z", "updatedAt": "2026-02-22T04:33:28.106Z", "tags": []}, {"id": "6QKqrWy1sgmMYCwe", "name": "Pbn3 Articles by VIC Webhook", "active": true, "createdAt": "2026-03-25T07:21:13.607Z", "updatedAt": "2026-04-09T12:54:49.916Z", "tags": []}, {"id": "6V4eTLzjk6vHTcbk", "name": "https://goof1.co.il/", "active": true, "createdAt": "2026-02-08T08:24:49.995Z", "updatedAt": "2026-05-26T06:09:10.031Z", "tags": [{"id": "7aZ3Ps7y800U2WxH", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df"}, {"id": "bwEY6SdorGC1XiBw", "name": "https://goof1.co.il/"}]}, {"id": "6iZqCXGGEAEs5TUl", "name": "smoovee-ltd.com - \u05e4\u05e8\u05e1\u05d5\u05dd \u05db\u05ea\u05d1\u05d5\u05ea", "active": false, "createdAt": "2025-12-15T10:55:44.388Z", "updatedAt": "2025-12-15T19:53:16.000Z", "tags": [{"id": "J4sFZkqkCWFOspZf", "name": "smoovee-ltd.com/"}]}, {"id": "6ijEsC9j67gNixhj", "name": "Image Generation Test", "active": false, "createdAt": "2025-12-11T20:07:59.802Z", "updatedAt": "2025-12-11T23:09:36.000Z", "tags": []}, {"id": "6kMMXWXXtwEJFSXE", "name": "https://www.sentice.com/ -\u05db\u05d5\u05dc\u05dc H1", "active": false, "createdAt": "2026-01-05T14:39:54.248Z", "updatedAt": "2026-01-06T08:04:15.365Z", "tags": [{"id": "r19kLefJGAoJeCom", "name": "https://www.sentice.com/"}]}, {"id": "6zhwG2tnMqY1qw5W", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - \u05e2\u05d1\u05e8\u05d9\u05ea - forward-hovalot.co.il - MAOR", "active": false, "createdAt": "2026-02-08T11:28:20.537Z", "updatedAt": "2026-02-08T11:31:33.260Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "77M9PNzn5CW0Ywm9", "name": "influencermarketing.ai -\u05db\u05d5\u05dc\u05dc H1", "active": true, "createdAt": "2025-12-25T05:04:11.635Z", "updatedAt": "2026-05-28T05:02:46.615Z", "tags": [{"id": "F2Dm0xoA0pVutFGN", "name": "influencermarketing.ai"}]}, {"id": "7ECiJLxycTJjHxUQ", "name": "https://countrychic.co.il/ -  \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": true, "createdAt": "2026-02-12T12:18:03.475Z", "updatedAt": "2026-05-26T06:08:07.381Z", "tags": []}, {"id": "7UYRpXPLc0Yj0nOa", "name": "N8n tmost.co.il - \u05ea\u05d5\u05db\u05df", "active": false, "createdAt": "2026-05-17T06:19:07.927Z", "updatedAt": "2026-06-01T12:32:33.624Z", "tags": [{"id": "OrC2gopMSZE7MaAh", "name": "\u05db\u05e8\u05de\u05d9\u05ea"}]}, {"id": "7WBbSIojTFYfkjUi", "name": "lynkco.co.il", "active": false, "createdAt": "2026-04-12T09:34:25.231Z", "updatedAt": "2026-04-19T12:03:09.795Z", "tags": [{"id": "bAQ5UBM4nFLDhksc", "name": "\u05ea\u05d5\u05de\u05e8"}, {"id": "lSHLwIhAdECFjQNh", "name": "lynkco.co.il"}]}, {"id": "7beCVIkXccyXSadj", "name": "https://guy-finance.com/", "active": false, "createdAt": "2026-03-05T17:21:25.457Z", "updatedAt": "2026-04-28T05:21:57.410Z", "tags": [{"id": "5ab9cPRMc81HtO0c", "name": "https://guy-finance.com/"}, {"id": "EEiYEt4dLhYM8tjy", "name": "\u05ea\u05d3\u05de\u05d9\u05ea"}]}, {"id": "7fS4SVrWPp1Fp1Uv", "name": "https://neem.co.il/ - \u05d7\u05e0\u05d5\u05ea", "active": false, "createdAt": "2026-05-11T07:45:13.082Z", "updatedAt": "2026-05-25T10:55:53.784Z", "tags": []}, {"id": "85epVpTv2dEATtzNOC-GT", "name": "Content Planner - Google Sheets", "active": false, "createdAt": "2026-02-02T11:02:05.987Z", "updatedAt": "2026-02-03T07:44:20.822Z", "tags": []}, {"id": "8BNd09h0Xmn30hKD", "name": "credit360.co.il -\u05dc\u05dc\u05d0 H1", "active": false, "createdAt": "2025-12-24T12:46:16.613Z", "updatedAt": "2026-03-19T10:10:44.244Z", "tags": []}, {"id": "8URDwjTA15ogNxTe", "name": "https://derechhakadur.co.il/", "active": true, "createdAt": "2026-02-19T07:26:24.071Z", "updatedAt": "2026-05-26T06:10:11.827Z", "tags": []}, {"id": "8Xhb81Zj34xJ4cyx", "name": "PBN2 Token Scan", "active": true, "createdAt": "2026-03-01T12:35:37.223Z", "updatedAt": "2026-05-06T16:16:49.913Z", "tags": []}, {"id": "8tqZfXP19r8EIPtO", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML -rvm.co.il/", "active": false, "createdAt": "2026-02-16T13:06:34.315Z", "updatedAt": "2026-04-30T08:02:57.732Z", "tags": []}, {"id": "93EOosVGuwHHrY9l", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - \u05e2\u05d1\u05e8\u05d9\u05ea -https://coffeeol.co.il/", "active": false, "createdAt": "2026-03-30T10:39:47.055Z", "updatedAt": "2026-03-30T10:41:01.199Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "9DdzVtJINImngETb", "name": "https://placeemployees.co.il/", "active": false, "createdAt": "2026-01-25T11:34:20.920Z", "updatedAt": "2026-05-26T06:56:58.369Z", "tags": []}, {"id": "9EnmJk46fj54RbI0", "name": "https://www.shiran-eruim.co.il/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea H1", "active": true, "createdAt": "2026-03-05T07:46:10.612Z", "updatedAt": "2026-05-26T06:00:36.334Z", "tags": [{"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}, {"id": "o40ZAHBeU9SIza0m", "name": "https://www.shiran-eruim"}]}, {"id": "9LKcyCSEoLqOZcuu", "name": "https://www.drleshem.com/", "active": true, "createdAt": "2026-01-20T09:16:49.058Z", "updatedAt": "2026-05-26T04:41:30.582Z", "tags": [{"id": "7aZ3Ps7y800U2WxH", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df"}, {"id": "h0RDrMzwiuFPTTwj", "name": "https://www.drleshem.com"}]}, {"id": "9LhX6S9lGCwE4ID9", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df - topsun.co.il/", "active": false, "createdAt": "2026-01-28T07:48:55.442Z", "updatedAt": "2026-01-29T06:53:30.000Z", "tags": [{"id": "ws3rR87VsBaFrUXW", "name": "\u05ea\u05d1\u05e0\u05d9\u05ea \u05d4\u05e2\u05ea\u05e7\u05d4 - \u05d0\u05ea\u05e8  \u05ea\u05d5\u05db\u05df"}]}, {"id": "9LvwTbw6kmJ7Ldyq", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML  https://concrete-sawing.com/", "active": false, "createdAt": "2026-01-11T07:41:48.648Z", "updatedAt": "2026-01-11T08:31:44.970Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "9vpKnMDbCBpCfI2q", "name": "Pbn3 PenielYouTube Search", "active": true, "createdAt": "2026-05-08T14:26:09.467Z", "updatedAt": "2026-05-28T21:13:55.456Z", "tags": []}, {"id": "9xclOaUAUgopmNlQ", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML -topmedica.co.il/", "active": false, "createdAt": "2026-01-26T09:24:10.974Z", "updatedAt": "2026-01-29T07:18:23.000Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "ADXK8tvxkaH--ma228SJJ", "name": "Test - Wix Blog", "active": false, "createdAt": "2026-01-29T23:55:11.355Z", "updatedAt": "2026-01-30T00:46:43.889Z", "tags": []}, {"id": "AU7aRvcl9YjAZkGN", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - \u05e2\u05d1\u05e8\u05d9\u05ea - arbelpro.co.il", "active": false, "createdAt": "2026-04-06T05:49:24.786Z", "updatedAt": "2026-04-06T06:06:25.667Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "AcY0AryYkeNAyhGl", "name": "PBN  Check Application password - Michael", "active": false, "createdAt": "2026-02-15T09:07:17.451Z", "updatedAt": "2026-02-15T21:34:17.169Z", "tags": []}, {"id": "AhMSbwmz2VudLqIR", "name": "https://www.roniphysio.co.il/", "active": false, "createdAt": "2026-03-03T14:15:24.541Z", "updatedAt": "2026-05-26T06:49:30.467Z", "tags": [{"id": "EEiYEt4dLhYM8tjy", "name": "\u05ea\u05d3\u05de\u05d9\u05ea"}, {"id": "RkcB5Lt3jnGFwb7L", "name": "https://www.roniphysio.c"}]}, {"id": "AmJKpfKXu4YfXXpB", "name": "Reprots all articles to Portal - Michael", "active": true, "createdAt": "2026-05-21T13:46:56.253Z", "updatedAt": "2026-05-22T13:21:16.519Z", "tags": []}, {"id": "AqEBmBuoxSVoY640", "name": "Testing Wordpress Article - Updated Version copy", "active": false, "createdAt": "2025-12-14T17:58:49.726Z", "updatedAt": "2025-12-16T20:58:01.000Z", "tags": [{"id": "Bg8zTdFmJvahonEQ", "name": "marketing-automation"}]}, {"id": "At7PVor76sc3YjMI", "name": "Scan Disconnected Clients - GS - JET- Michael", "active": true, "createdAt": "2026-02-13T00:13:05.776Z", "updatedAt": "2026-02-13T00:13:05.776Z", "tags": []}, {"id": "AujAEWS5Thuvpvqn", "name": "https://www.roniphysio.co.il/ - \u05d7\u05e0\u05d5\u05ea copy", "active": false, "createdAt": "2026-03-02T12:27:48.882Z", "updatedAt": "2026-03-31T06:00:41.179Z", "tags": [{"id": "RkcB5Lt3jnGFwb7L", "name": "https://www.roniphysio.c"}, {"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}]}, {"id": "AzJofPzR0jdY2rQX", "name": "Test & Fix Rank Math Meta", "active": false, "createdAt": "2026-02-01T06:35:58.694Z", "updatedAt": "2026-02-01T07:25:48.054Z", "tags": []}, {"id": "BDtPnbDl0D154DeS", "name": "https://www.woodwizard.co.il/", "active": false, "createdAt": "2026-02-25T06:37:05.188Z", "updatedAt": "2026-05-26T06:50:45.531Z", "tags": [{"id": "5DpvfjgFmQ0aQnHB", "name": "https://www.woodwizard.c"}, {"id": "EEiYEt4dLhYM8tjy", "name": "\u05ea\u05d3\u05de\u05d9\u05ea"}]}, {"id": "BbFeiSghptol8iyV", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05e2\u05de\u05d5\u05d3 \u05e7\u05d9\u05d9\u05dd - Same Page Design", "active": false, "createdAt": "2026-02-19T05:58:18.345Z", "updatedAt": "2026-02-19T05:58:18.345Z", "tags": [{"id": "3U3DR0Em0HT6Qn2B", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05e2\u05de\u05d5\u05d3 \u05e7\u05d9\u05d9\u05dd"}]}, {"id": "Bhe2nzmcUuOKVSdm", "name": "\u05db\u05d5\u05ea\u05d1 \u05ea\u05d5\u05db\u05df \u05dc\u05d0\u05ea\u05e8 AIN8N \u05d2\u05e8\u05e1\u05d4 V1", "active": false, "createdAt": "2025-12-09T04:38:01.411Z", "updatedAt": "2026-01-08T10:37:39.000Z", "tags": []}, {"id": "BlsJe7SwEXTDqp9M", "name": "galshipping.co.il - Info Web", "active": false, "createdAt": "2026-06-01T20:45:38.110Z", "updatedAt": "2026-06-02T03:53:16.310Z", "tags": []}, {"id": "BpHuS49E5BNkEeso", "name": "https://orieder.co.il/ - N8N", "active": true, "createdAt": "2026-04-13T10:17:29.799Z", "updatedAt": "2026-05-25T11:16:05.419Z", "tags": [{"id": "7aZ3Ps7y800U2WxH", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df"}]}, {"id": "BqBQ29UXCYX3zpFp", "name": "Test & Fix Yoast Meta", "active": false, "createdAt": "2025-12-31T07:08:27.709Z", "updatedAt": "2026-02-17T09:32:36.935Z", "tags": [{"id": "rwoigr7GD1k00mZ5", "name": "Michael"}]}, {"id": "BynSs6HXfUMMEkZ1", "name": "https://ohglass.co.il/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea H1 copy copy", "active": true, "createdAt": "2026-03-07T18:48:39.394Z", "updatedAt": "2026-05-25T11:26:38.023Z", "tags": [{"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}, {"id": "bowbrzuAyLQMEqH1", "name": "https://ohglass.co.il/"}]}, {"id": "C6tWsMtKxCXWpjGz", "name": "Bot AI Agent", "active": false, "createdAt": "2026-04-16T09:36:30.799Z", "updatedAt": "2026-04-16T10:19:47.608Z", "tags": []}, {"id": "CAXA0nKzKVQV6FcV", "name": "https://homytlv.com/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea H1 copy", "active": false, "createdAt": "2026-03-06T13:15:05.366Z", "updatedAt": "2026-03-19T08:36:10.701Z", "tags": [{"id": "Uz0riyffhaY00HnR", "name": "https://homytlv.com/"}, {"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}]}, {"id": "CBsTKYtEUXblPelw", "name": "https://www.plant-ditech.com/ -\u05db\u05d5\u05dc\u05dc H1 copy", "active": false, "createdAt": "2026-01-19T04:19:56.354Z", "updatedAt": "2026-05-26T07:05:21.603Z", "tags": [{"id": "RB1oEIPHVUqKVf7a", "name": "https://www.plant-ditech"}, {"id": "YgtcWy9HxfLxQ9rr", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df \u05d0\u05e0\u05d2\u05dc\u05d9\u05ea"}]}, {"id": "CU1VKx3mAV0D8nbT", "name": "https://idans.co.il/ -  \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea copy", "active": false, "createdAt": "2026-02-04T18:45:25.157Z", "updatedAt": "2026-02-26T05:30:19.000Z", "tags": [{"id": "9uLPOfiVPRbn53YI", "name": "https://idans.co.il/"}, {"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}]}, {"id": "CU97j3Tp1V6HOJH7", "name": "https://wtc.co.il/", "active": true, "createdAt": "2026-02-16T13:10:19.180Z", "updatedAt": "2026-05-26T05:08:49.483Z", "tags": []}, {"id": "CZKPbLXdkx08wBnJ", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - \u05d0\u05e0\u05d2\u05dc\u05d9\u05ea", "active": false, "createdAt": "2025-12-25T05:32:04.038Z", "updatedAt": "2026-03-10T11:02:09.086Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "CnHi8nBzLxJm4zUf", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - \u05e2\u05d1\u05e8\u05d9\u05ea - sogrimdira.co.il", "active": false, "createdAt": "2026-04-06T08:47:22.016Z", "updatedAt": "2026-04-06T09:00:31.693Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "D6UeZESJewvIeXJ5", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 - HTML - \u05e2\u05d1\u05e8\u05d9\u05ea https://fortknox.co.il/", "active": false, "createdAt": "2026-01-11T07:41:49.240Z", "updatedAt": "2026-01-11T08:31:31.305Z", "tags": [{"id": "fkJn3AIgolMPaez3", "name": "\u05e2\u05d9\u05e6\u05d5\u05d1 \u05d0\u05ea\u05e8 + \u05ea\u05de\u05d5\u05e0\u05d5\u05ea"}]}, {"id": "DA8FHxobHJOIusIX", "name": "tesla-market.co.il/  \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea", "active": false, "createdAt": "2026-05-24T07:07:46.272Z", "updatedAt": "2026-05-24T08:37:44.159Z", "tags": [{"id": "OrC2gopMSZE7MaAh", "name": "\u05db\u05e8\u05de\u05d9\u05ea"}, {"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}]}, {"id": "DBo9N2rishmATScs", "name": "https://www.biopharmax.co.il/", "active": true, "createdAt": "2026-02-03T06:06:37.843Z", "updatedAt": "2026-05-26T05:42:17.372Z", "tags": [{"id": "7aZ3Ps7y800U2WxH", "name": "\u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df"}, {"id": "FBmjC1mSrxyRXyTn", "name": "https://www.baranesgroup"}]}, {"id": "DC0y6ROxMAyZFEKL", "name": "N8N rvm.co.il - \u05d0\u05ea\u05e8 \u05ea\u05d5\u05db\u05df", "active": true, "createdAt": "2026-02-16T13:07:18.279Z", "updatedAt": "2026-05-26T04:31:29.044Z", "tags": []}, {"id": "DL6u8IAuzPByhvWm", "name": "Victor Test - https://sovina.co.il/ - \u05e4\u05e8\u05e1\u05d5\u05dd \u05ea\u05d5\u05db\u05df - \u05d0\u05ea\u05e8 \u05d7\u05e0\u05d5\u05ea H1 copy copy", "active": true, "createdAt": "2026-03-30T15:10:26.040Z", "updatedAt": "2026-04-01T07:39:58.340Z", "tags": [{"id": "bSkKDnTEfecRXXLA", "name": "\u05d7\u05e0\u05d5\u05ea"}, {"id": "tzXgNDfB8CZFNkfS", "name": "https://sovina.co.il/"}]}, {"id": "DP1IdQqXCtldVs75", "name": "https://brandoo.co.il/ - \u05d7\u05e0\u05d5\u05ea", "active": true, "createdAt": "2026-04-07T08:10:33.330Z", "updatedAt": "2026-05-26T06:36:51.927Z", "tags": []}, {"id": "DSae8zqYXIprGoU9", "name": "arbelpro.co.il - MAOR - \u05d0\u05d5\u05d8\u05d5\u05de\u05e6\u05d9\u05d5\u05ea \u05ea\u05d5\u05db\u05df", "active": false, "createdAt": "2026-04-06T05:41:17.539Z", "updatedAt": "2026-04-06T05:42:09.000Z", "tags": []}, {"id": "DbK2xEgWJOMdoxZ0", "name": "Pbn3 PenielYouTube Search BACKUPORG", "active": false, "createdAt": "2026-05-10T05:01:31.682Z", "updatedAt": "2026-05-10T05:01:31.682Z", "tags": []}, {"id": "DsSc93kmXO3S9zfG", "name": "https://garden-accessoris.com/ - \u05d7\u05e0\u05d5\u05ea", "active": false, "createdAt": "2026-02-22T07:16:05.697Z", "updatedAt": "2026-05-26T06:55:12.070Z", "tags": []}, {"id": "DsxOhhSmb0D9eaKK", "name": "Victor Test", "active": false, "createdAt": "2026-02-12T21:43:10.489Z", "updatedAt": "2026-02-12T21:47:27.003Z", "tags": []}]};
-const executionsData = {"data": [{"id": "35544", "workflowId": "3HVtSua9QmSuQZBL", "status": "canceled", "startedAt": "2026-06-02T04:54:55.366Z", "stoppedAt": "2026-06-02T04:54:56.853Z", "mode": "manual"}, {"id": "35541", "workflowId": "tgpFt7aiqe0kO0SS", "status": "success", "startedAt": "2026-06-02T04:28:43.479Z", "stoppedAt": "2026-06-02T04:46:56.191Z", "mode": "manual"}, {"id": "35540", "workflowId": "tgpFt7aiqe0kO0SS", "status": "success", "startedAt": "2026-06-02T04:06:59.112Z", "stoppedAt": "2026-06-02T04:28:26.912Z", "mode": "manual"}, {"id": "35539", "workflowId": "At7PVor76sc3YjMI", "status": "success", "startedAt": "2026-06-02T04:00:49.860Z", "stoppedAt": "2026-06-02T04:00:54.897Z", "mode": "webhook"}, {"id": "35538", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:17:01.117Z", "stoppedAt": "2026-06-02T02:17:03.130Z", "mode": "webhook"}, {"id": "35537", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:17:00.222Z", "stoppedAt": "2026-06-02T02:17:00.989Z", "mode": "webhook"}, {"id": "35536", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:58.198Z", "stoppedAt": "2026-06-02T02:16:59.989Z", "mode": "webhook"}, {"id": "35535", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:55.793Z", "stoppedAt": "2026-06-02T02:16:58.063Z", "mode": "webhook"}, {"id": "35534", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:54.585Z", "stoppedAt": "2026-06-02T02:16:55.641Z", "mode": "webhook"}, {"id": "35533", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:52.817Z", "stoppedAt": "2026-06-02T02:16:54.451Z", "mode": "webhook"}, {"id": "35532", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:50.395Z", "stoppedAt": "2026-06-02T02:16:52.673Z", "mode": "webhook"}, {"id": "35531", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:48.404Z", "stoppedAt": "2026-06-02T02:16:50.273Z", "mode": "webhook"}, {"id": "35530", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:45.482Z", "stoppedAt": "2026-06-02T02:16:48.256Z", "mode": "webhook"}, {"id": "35529", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:43.465Z", "stoppedAt": "2026-06-02T02:16:45.303Z", "mode": "webhook"}, {"id": "35528", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:41.196Z", "stoppedAt": "2026-06-02T02:16:43.320Z", "mode": "webhook"}, {"id": "35527", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:39.177Z", "stoppedAt": "2026-06-02T02:16:41.055Z", "mode": "webhook"}, {"id": "35526", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:37.921Z", "stoppedAt": "2026-06-02T02:16:39.043Z", "mode": "webhook"}, {"id": "35525", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:36.140Z", "stoppedAt": "2026-06-02T02:16:37.800Z", "mode": "webhook"}, {"id": "35524", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:34.403Z", "stoppedAt": "2026-06-02T02:16:36.020Z", "mode": "webhook"}, {"id": "35523", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:32.853Z", "stoppedAt": "2026-06-02T02:16:34.284Z", "mode": "webhook"}, {"id": "35522", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:31.079Z", "stoppedAt": "2026-06-02T02:16:32.635Z", "mode": "webhook"}, {"id": "35521", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:29.036Z", "stoppedAt": "2026-06-02T02:16:30.919Z", "mode": "webhook"}, {"id": "35520", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:27.195Z", "stoppedAt": "2026-06-02T02:16:28.912Z", "mode": "webhook"}, {"id": "35519", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:24.735Z", "stoppedAt": "2026-06-02T02:16:27.080Z", "mode": "webhook"}, {"id": "35518", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:22.893Z", "stoppedAt": "2026-06-02T02:16:24.602Z", "mode": "webhook"}, {"id": "35517", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:20.797Z", "stoppedAt": "2026-06-02T02:16:22.763Z", "mode": "webhook"}, {"id": "35516", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:19.094Z", "stoppedAt": "2026-06-02T02:16:20.655Z", "mode": "webhook"}, {"id": "35515", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:15.597Z", "stoppedAt": "2026-06-02T02:16:18.964Z", "mode": "webhook"}, {"id": "35514", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:13.197Z", "stoppedAt": "2026-06-02T02:16:15.442Z", "mode": "webhook"}, {"id": "35513", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:10.604Z", "stoppedAt": "2026-06-02T02:16:13.078Z", "mode": "webhook"}, {"id": "35512", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:09.162Z", "stoppedAt": "2026-06-02T02:16:10.473Z", "mode": "webhook"}, {"id": "35511", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:07.674Z", "stoppedAt": "2026-06-02T02:16:09.030Z", "mode": "webhook"}, {"id": "35510", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:06.226Z", "stoppedAt": "2026-06-02T02:16:07.496Z", "mode": "webhook"}, {"id": "35509", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:04.184Z", "stoppedAt": "2026-06-02T02:16:06.094Z", "mode": "webhook"}, {"id": "35508", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:02.532Z", "stoppedAt": "2026-06-02T02:16:04.023Z", "mode": "webhook"}, {"id": "35507", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:16:00.054Z", "stoppedAt": "2026-06-02T02:16:02.386Z", "mode": "webhook"}, {"id": "35506", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:58.125Z", "stoppedAt": "2026-06-02T02:15:59.919Z", "mode": "webhook"}, {"id": "35505", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:56.688Z", "stoppedAt": "2026-06-02T02:15:58.000Z", "mode": "webhook"}, {"id": "35504", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:54.630Z", "stoppedAt": "2026-06-02T02:15:56.480Z", "mode": "webhook"}, {"id": "35503", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:52.424Z", "stoppedAt": "2026-06-02T02:15:54.474Z", "mode": "webhook"}, {"id": "35502", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:50.039Z", "stoppedAt": "2026-06-02T02:15:52.300Z", "mode": "webhook"}, {"id": "35501", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:48.212Z", "stoppedAt": "2026-06-02T02:15:49.915Z", "mode": "webhook"}, {"id": "35500", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:45.870Z", "stoppedAt": "2026-06-02T02:15:48.074Z", "mode": "webhook"}, {"id": "35499", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:43.474Z", "stoppedAt": "2026-06-02T02:15:45.751Z", "mode": "webhook"}, {"id": "35498", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:41.002Z", "stoppedAt": "2026-06-02T02:15:43.354Z", "mode": "webhook"}, {"id": "35497", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:39.749Z", "stoppedAt": "2026-06-02T02:15:40.887Z", "mode": "webhook"}, {"id": "35496", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:37.878Z", "stoppedAt": "2026-06-02T02:15:39.538Z", "mode": "webhook"}, {"id": "35495", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:34.964Z", "stoppedAt": "2026-06-02T02:15:37.746Z", "mode": "webhook"}, {"id": "35494", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:33.582Z", "stoppedAt": "2026-06-02T02:15:34.824Z", "mode": "webhook"}, {"id": "35493", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:31.366Z", "stoppedAt": "2026-06-02T02:15:33.460Z", "mode": "webhook"}, {"id": "35492", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:29.279Z", "stoppedAt": "2026-06-02T02:15:31.242Z", "mode": "webhook"}, {"id": "35491", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:26.868Z", "stoppedAt": "2026-06-02T02:15:29.160Z", "mode": "webhook"}, {"id": "35490", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:24.842Z", "stoppedAt": "2026-06-02T02:15:26.742Z", "mode": "webhook"}, {"id": "35489", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:22.779Z", "stoppedAt": "2026-06-02T02:15:24.681Z", "mode": "webhook"}, {"id": "35488", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:21.131Z", "stoppedAt": "2026-06-02T02:15:22.630Z", "mode": "webhook"}, {"id": "35487", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:19.644Z", "stoppedAt": "2026-06-02T02:15:20.986Z", "mode": "webhook"}, {"id": "35486", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:17.893Z", "stoppedAt": "2026-06-02T02:15:19.529Z", "mode": "webhook"}, {"id": "35485", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:16.508Z", "stoppedAt": "2026-06-02T02:15:17.764Z", "mode": "webhook"}, {"id": "35484", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:14.519Z", "stoppedAt": "2026-06-02T02:15:16.380Z", "mode": "webhook"}, {"id": "35483", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:12.280Z", "stoppedAt": "2026-06-02T02:15:14.395Z", "mode": "webhook"}, {"id": "35482", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:10.851Z", "stoppedAt": "2026-06-02T02:15:12.089Z", "mode": "webhook"}, {"id": "35481", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:09.269Z", "stoppedAt": "2026-06-02T02:15:10.721Z", "mode": "webhook"}, {"id": "35480", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:07.408Z", "stoppedAt": "2026-06-02T02:15:09.140Z", "mode": "webhook"}, {"id": "35479", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:05.357Z", "stoppedAt": "2026-06-02T02:15:07.281Z", "mode": "webhook"}, {"id": "35478", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:03.044Z", "stoppedAt": "2026-06-02T02:15:05.230Z", "mode": "webhook"}, {"id": "35477", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:01.389Z", "stoppedAt": "2026-06-02T02:15:02.928Z", "mode": "webhook"}, {"id": "35476", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:15:00.336Z", "stoppedAt": "2026-06-02T02:15:01.245Z", "mode": "webhook"}, {"id": "35475", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:57.999Z", "stoppedAt": "2026-06-02T02:15:00.179Z", "mode": "webhook"}, {"id": "35474", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:55.846Z", "stoppedAt": "2026-06-02T02:14:57.869Z", "mode": "webhook"}, {"id": "35473", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:53.001Z", "stoppedAt": "2026-06-02T02:14:55.714Z", "mode": "webhook"}, {"id": "35472", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:50.853Z", "stoppedAt": "2026-06-02T02:14:52.884Z", "mode": "webhook"}, {"id": "35471", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:48.442Z", "stoppedAt": "2026-06-02T02:14:50.709Z", "mode": "webhook"}, {"id": "35470", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:46.103Z", "stoppedAt": "2026-06-02T02:14:48.300Z", "mode": "webhook"}, {"id": "35469", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:44.822Z", "stoppedAt": "2026-06-02T02:14:45.978Z", "mode": "webhook"}, {"id": "35468", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:43.187Z", "stoppedAt": "2026-06-02T02:14:44.620Z", "mode": "webhook"}, {"id": "35467", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:40.811Z", "stoppedAt": "2026-06-02T02:14:43.072Z", "mode": "webhook"}, {"id": "35466", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:38.376Z", "stoppedAt": "2026-06-02T02:14:40.676Z", "mode": "webhook"}, {"id": "35465", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:36.687Z", "stoppedAt": "2026-06-02T02:14:38.245Z", "mode": "webhook"}, {"id": "35464", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:34.533Z", "stoppedAt": "2026-06-02T02:14:36.566Z", "mode": "webhook"}, {"id": "35463", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:32.425Z", "stoppedAt": "2026-06-02T02:14:34.408Z", "mode": "webhook"}, {"id": "35462", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:30.255Z", "stoppedAt": "2026-06-02T02:14:32.305Z", "mode": "webhook"}, {"id": "35461", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:28.431Z", "stoppedAt": "2026-06-02T02:14:30.121Z", "mode": "webhook"}, {"id": "35460", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:25.820Z", "stoppedAt": "2026-06-02T02:14:28.298Z", "mode": "webhook"}, {"id": "35459", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:22.526Z", "stoppedAt": "2026-06-02T02:14:25.686Z", "mode": "webhook"}, {"id": "35458", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:20.395Z", "stoppedAt": "2026-06-02T02:14:22.387Z", "mode": "webhook"}, {"id": "35457", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:18.907Z", "stoppedAt": "2026-06-02T02:14:20.262Z", "mode": "webhook"}, {"id": "35456", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:16.455Z", "stoppedAt": "2026-06-02T02:14:18.763Z", "mode": "webhook"}, {"id": "35455", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:14.458Z", "stoppedAt": "2026-06-02T02:14:16.253Z", "mode": "webhook"}, {"id": "35454", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:12.409Z", "stoppedAt": "2026-06-02T02:14:14.326Z", "mode": "webhook"}, {"id": "35453", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:10.614Z", "stoppedAt": "2026-06-02T02:14:12.288Z", "mode": "webhook"}, {"id": "35452", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:09.659Z", "stoppedAt": "2026-06-02T02:14:10.501Z", "mode": "webhook"}, {"id": "35451", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:07.847Z", "stoppedAt": "2026-06-02T02:14:09.521Z", "mode": "webhook"}, {"id": "35450", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:05.954Z", "stoppedAt": "2026-06-02T02:14:07.716Z", "mode": "webhook"}, {"id": "35449", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:14:03.342Z", "stoppedAt": "2026-06-02T02:14:05.838Z", "mode": "webhook"}, {"id": "35448", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:13:33.333Z", "stoppedAt": "2026-06-02T02:16:39.373Z", "mode": "webhook"}, {"id": "35447", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:13:30.601Z", "stoppedAt": "2026-06-02T02:13:33.202Z", "mode": "webhook"}, {"id": "35446", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:13:28.698Z", "stoppedAt": "2026-06-02T02:13:30.466Z", "mode": "webhook"}, {"id": "35445", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:13:26.265Z", "stoppedAt": "2026-06-02T02:13:28.571Z", "mode": "webhook"}, {"id": "35444", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:13:24.346Z", "stoppedAt": "2026-06-02T02:13:26.129Z", "mode": "webhook"}, {"id": "35443", "workflowId": "w20BuQds5obhFpYk", "status": "success", "startedAt": "2026-06-02T02:13:21.810Z", "stoppedAt": "2026-06-02T02:13:24.224Z", "mode": "webhook"}]};
-
-// Theme Management
-const themeToggle = document.getElementById('themeToggle');
-const savedTheme = localStorage.getItem('theme') || 'dark';
-document.documentElement.setAttribute('data-theme', savedTheme);
-themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-
-themeToggle.addEventListener('click', () => {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
-});
-
-// Refresh Button
-const refreshBtn = document.getElementById('refreshBtn');
-refreshBtn.addEventListener('click', () => {
-  refreshBtn.classList.add('loading');
-  setTimeout(() => {
-    location.reload();
-  }, 1000);
-});
-
-// Search Functionality
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', (e) => {
-  const query = e.target.value.toLowerCase();
-  renderWorkflows(query, currentFilter);
-});
-
-// Filter Tabs
-let currentFilter = 'all';
-document.querySelectorAll('.filter-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentFilter = tab.dataset.filter;
-    renderWorkflows(searchInput.value.toLowerCase(), currentFilter);
-  });
-});
-
-// Process Data
-function processData() {
-  const workflows = workflowsData.data || [];
-  const executions = executionsData.data || [];
-
-  // Calculate stats
-  const totalWorkflows = workflows.length;
-  const activeWorkflows = workflows.filter(w => w.active).length;
-  const inactiveWorkflows = totalWorkflows - activeWorkflows;
-  const recentExecutions = executions.length;
-  const successfulExecutions = executions.filter(e => e.status === 'success').length;
-  const failedExecutions = executions.filter(e => e.status === 'error' || e.status === 'failed').length;
-
-  // Update stats
-  document.getElementById('totalWorkflows').textContent = totalWorkflows;
-  document.getElementById('activeWorkflows').textContent = activeWorkflows;
-  document.getElementById('inactiveWorkflows').textContent = inactiveWorkflows;
-  document.getElementById('recentExecutions').textContent = recentExecutions;
-  document.getElementById('successfulExecutions').textContent = successfulExecutions;
-  document.getElementById('failedExecutions').textContent = failedExecutions;
-
-  // Update timestamp
-  const now = new Date();
-  document.getElementById('lastUpdated').textContent = `Last updated: ${now.toLocaleString('he-IL')}`;
-  document.getElementById('footerTimestamp').textContent = now.toLocaleString('he-IL');
-
-  // Render donut chart
-  renderDonutChart(successfulExecutions, failedExecutions, recentExecutions);
-
-  // Render timeline
-  renderTimeline(executions);
-
-  // Render workflows
-  renderWorkflows('', 'all');
-}
-
-function renderDonutChart(success, failed, total) {
-  const svg = document.getElementById('donutChart');
-  const legend = document.getElementById('donutLegend');
-  
-  const successRate = total > 0 ? Math.round((success / total) * 100) : 0;
-  const other = total - success - failed;
-
-  document.getElementById('successRate').textContent = successRate + '%';
-
-  // Calculate arc lengths
-  const radius = 70;
-  const circumference = 2 * Math.PI * radius;
-  const successArc = (success / total) * circumference;
-  const failedArc = (failed / total) * circumference;
-  const otherArc = (other / total) * circumference;
-
-  // Clear existing circles
-  while (svg.children.length > 1) {
-    svg.removeChild(svg.lastChild);
-  }
-
-  // Add success arc
-  const successCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  successCircle.setAttribute('cx', '90');
-  successCircle.setAttribute('cy', '90');
-  successCircle.setAttribute('r', '70');
-  successCircle.setAttribute('fill', 'none');
-  successCircle.setAttribute('stroke', 'var(--success)');
-  successCircle.setAttribute('stroke-width', '20');
-  successCircle.setAttribute('stroke-dasharray', `${successArc} ${circumference - successArc}`);
-  successCircle.setAttribute('stroke-dashoffset', '0');
-  successCircle.setAttribute('transform', 'rotate(-90 90 90)');
-  svg.appendChild(successCircle);
-
-  // Add failed arc
-  if (failed > 0) {
-    const failedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    failedCircle.setAttribute('cx', '90');
-    failedCircle.setAttribute('cy', '90');
-    failedCircle.setAttribute('r', '70');
-    failedCircle.setAttribute('fill', 'none');
-    failedCircle.setAttribute('stroke', 'var(--error)');
-    failedCircle.setAttribute('stroke-width', '20');
-    failedCircle.setAttribute('stroke-dasharray', `${failedArc} ${circumference - failedArc}`);
-    failedCircle.setAttribute('stroke-dashoffset', `-${successArc}`);
-    failedCircle.setAttribute('transform', 'rotate(-90 90 90)');
-    svg.appendChild(failedCircle);
-  }
-
-  // Add other arc
-  if (other > 0) {
-    const otherCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    otherCircle.setAttribute('cx', '90');
-    otherCircle.setAttribute('cy', '90');
-    otherCircle.setAttribute('r', '70');
-    otherCircle.setAttribute('fill', 'none');
-    otherCircle.setAttribute('stroke', 'var(--bg-tertiary)');
-    otherCircle.setAttribute('stroke-width', '20');
-    otherCircle.setAttribute('stroke-dasharray', `${otherArc} ${circumference - otherArc}`);
-    otherCircle.setAttribute('stroke-dashoffset', `-${successArc + failedArc}`);
-    otherCircle.setAttribute('transform', 'rotate(-90 90 90)');
-    svg.appendChild(otherCircle);
-  }
-
-  // Update legend
-  legend.innerHTML = `
-    <div class="legend-item">
-      <div class="legend-dot" style="background: var(--success);"></div>
-      <div class="legend-label">Success</div>
-      <div class="legend-value">${success}</div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background: var(--error);"></div>
-      <div class="legend-label">Failed</div>
-      <div class="legend-value">${failed}</div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background: var(--bg-tertiary);"></div>
-      <div class="legend-label">Other</div>
-      <div class="legend-value">${other}</div>
-    </div>
-  `;
-}
-
-function renderTimeline(executions) {
-  const container = document.getElementById('timelineChart');
-  container.innerHTML = '';
-
-  const last30 = executions.slice(0, 30).reverse();
-  const maxHeight = 140;
-
-  last30.forEach(ex => {
-    const bar = document.createElement('div');
-    bar.className = 'timeline-bar';
-    
-    if (ex.status === 'success') {
-      bar.classList.add('success');
-    } else if (ex.status === 'error' || ex.status === 'failed') {
-      bar.classList.add('error');
-    }
-
-    const height = Math.max(20, Math.random() * maxHeight * 0.7 + maxHeight * 0.3);
-    bar.style.height = height + 'px';
-    
-    const workflowId = ex.workflowId || 'Unknown';
-    const time = ex.stoppedAt || ex.startedAt || '';
-    bar.setAttribute('data-tooltip', `${workflowId} - ${ex.status} - ${time.slice(0, 19).replace('T', ' ')}`);
-    
-    container.appendChild(bar);
-  });
-}
-
-function renderWorkflows(searchQuery = '', filter = 'all') {
-  const container = document.getElementById('workflowsGrid');
-  const workflows = workflowsData.data || [];
-
-  // Calculate execution stats per workflow
-  const executions = executionsData.data || [];
-  const workflowStats = {};
-  
-  executions.forEach(ex => {
-    const wfId = ex.workflowId;
-    if (!workflowStats[wfId]) {
-      workflowStats[wfId] = { total: 0, success: 0, failed: 0 };
-    }
-    workflowStats[wfId].total++;
-    if (ex.status === 'success') workflowStats[wfId].success++;
-    if (ex.status === 'error' || ex.status === 'failed') workflowStats[wfId].failed++;
-  });
-
-  // Filter workflows
-  let filtered = workflows.filter(wf => {
-    // Filter by status
-    if (filter === 'active' && !wf.active) return false;
-    if (filter === 'inactive' && wf.active) return false;
-
-    // Filter by search
-    if (searchQuery) {
-      const name = wf.name.toLowerCase();
-      const id = wf.id.toLowerCase();
-      const tags = (wf.tags || []).map(t => t.name.toLowerCase()).join(' ');
-      return name.includes(searchQuery) || id.includes(searchQuery) || tags.includes(searchQuery);
-    }
-
-    return true;
-  });
-
-  // Update count
-  document.getElementById('workflowCount').textContent = `(${filtered.length} of ${workflows.length})`;
-
-  // Render cards
-  if (filtered.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <div class="empty-state-icon">🔍</div>
-        <div class="empty-state-text">No workflows found</div>
-        <div style="color: var(--text-muted);">Try adjusting your search or filters</div>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = filtered.map(wf => {
-    const stats = workflowStats[wf.id] || { total: 0, success: 0, failed: 0 };
-    const successRate = stats.total > 0 ? Math.round((stats.success / stats.total) * 100) : 0;
-    const tags = (wf.tags || []).slice(0, 3).map(t => `<span class="tag">${t.name}</span>`).join('');
-    const updatedDate = wf.updatedAt ? new Date(wf.updatedAt).toLocaleDateString('he-IL') : '-';
-
-    return `
-      <div class="workflow-card">
-        <div class="workflow-header">
-          <div>
-            <div class="workflow-name">${wf.name}</div>
-            <div class="workflow-id">${wf.id}</div>
-          </div>
-          <div class="status-badge ${wf.active ? 'active' : 'inactive'}">
-            <span class="status-dot"></span>
-            ${wf.active ? 'Active' : 'Inactive'}
-          </div>
-        </div>
-        
-        <div class="workflow-stats">
-          <div class="workflow-stat">
-            <div class="workflow-stat-value">${stats.total}</div>
-            <div class="workflow-stat-label">Runs</div>
-          </div>
-          <div class="workflow-stat">
-            <div class="workflow-stat-value" style="color: var(--success);">${stats.success}</div>
-            <div class="workflow-stat-label">Success</div>
-          </div>
-          <div class="workflow-stat">
-            <div class="workflow-stat-value" style="color: var(--error);">${stats.failed}</div>
-            <div class="workflow-stat-label">Failed</div>
-          </div>
-        </div>
-
-        <div class="workflow-footer">
-          <div class="workflow-tags">${tags || '<span style="color: var(--text-muted); font-size: 0.75rem;">No tags</span>'}</div>
-          <div class="workflow-updated">${updatedDate}</div>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <h1>n8n Dashboard</h1>
+        <div class="header-meta">
+          <span>MaximoSEO • Automation Monitoring</span>
+          <span>•</span>
+          <span id="lastUpdated">Last updated: Loading...</span>
         </div>
       </div>
-    `;
-  }).join('');
-}
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
+        <button class="refresh-btn" id="refreshBtn">
+          <span>🔄</span>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
 
-// Initialize
-processData();
-</script>
+    <!-- Search -->
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search workflows by name, ID, or tags...">
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card" style="--card-color: var(--info);">
+        <div class="stat-label">Total Workflows</div>
+        <div class="stat-value" id="totalWorkflows">-</div>
+        <div class="stat-trend">All workflows in system</div>
+      </div>
+      <div class="stat-card" style="--card-color: var(--success);">
+        <div class="stat-label">Active Workflows</div>
+        <div class="stat-value" id="activeWorkflows">-</div>
+        <div class="stat-trend">Currently running</div>
+      </div>
+      <div class="stat-card" style="--card-color: var(--warning);">
+        <div class="stat-label">Inactive Workflows</div>
+        <div class="stat-value" id="inactiveWorkflows">-</div>
+        <div class="stat-trend">Paused or stopped</div>
+      </div>
+      <div class="stat-card" style="--card-color: var(--accent);">
+        <div class="stat-label">Recent Executions</div>
+        <div class="stat-value" id="recentExecutions">-</div>
+        <div class="stat-trend">Last 100 runs</div>
+      </div>
+      <div class="stat-card" style="--card-color: var(--success);">
+        <div class="stat-label">Successful</div>
+        <div class="stat-value" id="successfulExecutions">-</div>
+        <div class="stat-trend">Completed without errors</div>
+      </div>
+      <div class="stat-card" style="--card-color: var(--error);">
+        <div class="stat-label">Failed</div>
+        <div class="stat-value" id="failedExecutions">-</div>
+        <div class="stat-trend">Encountered errors</div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <!-- Donut Chart -->
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="chart-icon">📊</span>
+          <span>Execution Status Distribution</span>
+        </div>
+        <div class="donut-container">
+          <div class="donut-chart">
+            <svg width="180" height="180" viewBox="0 0 180 180" id="donutChart">
+              <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg-tertiary)" stroke-width="20"/>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-percentage" id="successRate">-</div>
+              <div class="donut-label">success rate</div>
+            </div>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+
+      <!-- Timeline Chart -->
+      <div class="chart-card">
+        <div class="chart-title">
+          <span class="chart-icon">📈</span>
+          <span>Recent Executions Timeline</span>
+        </div>
+        <div class="timeline-chart" id="timelineChart"></div>
+      </div>
+    </div>
+
+    <!-- Workflows Section -->
+    <div class="workflows-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span>📋</span>
+          <span>All Workflows</span>
+          <span id="workflowCount" style="color: var(--text-muted); font-weight: 400;"></span>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="active">Active</button>
+          <button class="filter-tab" data-filter="inactive">Inactive</button>
+        </div>
+      </div>
+      <div class="workflows-grid" id="workflowsGrid"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      n8n Dashboard by MaximoSEO • Auto-generated from n8n API • <span id="footerTimestamp"></span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/js/main.js"></script>
 </body>
 </html>

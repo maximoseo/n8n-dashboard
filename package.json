@@ -1,0 +1,23 @@
+{
+  "name": "n8n-dashboard-v2",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "n8n Dashboard v2 - Built with Vite",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src/ --ext .js",
+    "lint:fix": "eslint src/ --ext .js --fix",
+    "format": "prettier --write \"src/**/*.{js,css,html}\""
+  },
+  "dependencies": {
+    "chart.js": "^4.4.7"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5",
+    "eslint": "^8.57.0",
+    "prettier": "^3.4.2"
+  }
+}
