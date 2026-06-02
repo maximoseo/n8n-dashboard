@@ -7,9 +7,6 @@ import { getN8nWorkflowUrl, getGoogleSheetUrl, hasGoogleSheet } from '../utils/w
 
 /**
  * Render workflow cards to the grid
- * @param {string} searchQuery - Search term to filter by
- * @param {string} filter - Status filter ('all', 'active', 'inactive')
- * @param {Array|null} customWorkflows - Optional pre-filtered workflows array
  */
 export function renderWorkflows(searchQuery = '', filter = 'all', customWorkflows = null) {
   const container = document.getElementById('workflowsGrid');
@@ -25,7 +22,6 @@ export function renderWorkflows(searchQuery = '', filter = 'all', customWorkflow
     countElement.textContent = `(${filtered.length} of ${workflows.length})`;
   }
 
-  // Render cards
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="empty-state" style="grid-column: 1 / -1;">
@@ -41,28 +37,27 @@ export function renderWorkflows(searchQuery = '', filter = 'all', customWorkflow
 }
 
 /**
- * Render a single workflow card
- * @param {Object} wf - Workflow object
- * @param {Object} stats - Execution stats for this workflow
- * @returns {string} HTML string for the card
+ * Render a single workflow card - Symmetric Design
  */
 function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
   const successRate = calculateSuccessRate(stats.success, stats.total);
-  const tags = (wf.tags || []).slice(0, 3).map(t => `<span class="tag">${t.name}</span>`).join('');
+  const tags = (wf.tags || []).slice(0, 2).map(t => `<span class="tag">${t.name}</span>`).join('');
   const updatedDate = formatDate(wf.updatedAt);
   const executions = executionsData.data || [];
   
-  // Generate links
   const n8nUrl = getN8nWorkflowUrl(wf.id);
   const sheetUrl = getGoogleSheetUrl(wf);
   const hasSheet = sheetUrl !== null;
+  
+  // Success rate color
+  const rateColor = successRate >= 90 ? 'var(--success)' : successRate >= 70 ? 'var(--warning)' : 'var(--error)';
 
   return `
     <div class="workflow-card">
       <div class="workflow-header">
-        <div>
+        <div class="workflow-info">
           <div class="workflow-name">${wf.name}</div>
-          <div class="workflow-id">${wf.id}</div>
+          <div class="workflow-id">🔗 ${wf.id}</div>
         </div>
         <div class="workflow-badges">
           <div class="status-badge ${wf.active ? 'active' : 'inactive'}">
@@ -86,6 +81,13 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
           <div class="workflow-stat-value" style="color: var(--error);">${stats.failed}</div>
           <div class="workflow-stat-label">Failed</div>
         </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;padding:0 4px;">
+        <div style="flex:1;height:6px;background:var(--bg-tertiary);border-radius:3px;overflow:hidden;">
+          <div style="width:${successRate}%;height:100%;background:${rateColor};border-radius:3px;transition:width 0.5s;"></div>
+        </div>
+        <span style="font-size:0.75rem;font-weight:700;color:${rateColor};">${successRate}%</span>
       </div>
 
       ${renderActionButtons(wf)}

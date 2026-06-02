@@ -1,6 +1,7 @@
 /* Main CSS - Modular imports */
 @import './tokens.css';
 @import './base.css';
+@import './sidebar.css';
 @import './components.css';
 @import './charts.css';
 @import './layout.css';

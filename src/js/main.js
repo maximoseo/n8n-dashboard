@@ -22,6 +22,7 @@ import { fetchWorkflows, fetchExecutions } from './api/n8n-api.js';
 import { isAuthenticated, showAuthGate } from './utils/auth.js';
 import { filterSystem } from './utils/advanced-filters.js';
 import { initFilterPanel } from './components/filter-panel.js';
+import { initSidebar } from './sidebar.js';
 
 const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
 let autoRefreshTimer = null;
@@ -231,6 +232,7 @@ function init() {
 }
 
 function initializeApp() {
+  initSidebar();
   initThemeToggle();
   initRefreshButton();
   initSearch();
