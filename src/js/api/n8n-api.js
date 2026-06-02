@@ -1,5 +1,5 @@
 // N8N API Configuration
-const N8N_BASE_URL = 'https://n8n.maximo-seo.com/api/v1';
+const N8N_BASE_URL = 'https://websiseo.app.n8n.cloud/api/v1';
 const N8N_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZTg3MjgzZS03YmQyLTRkZTctYjI3ZC03ZTMyZDc5YTU2MmYiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzQxMjcwMjI5fQ.yB8cFIR-r5OIkzGFKqZvWJqY8RfGiXOGUjkYiFyk';
 
 /**

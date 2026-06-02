@@ -3,7 +3,7 @@
  * Handles n8n workflow URLs and Google Sheet links
  */
 
-const N8N_BASE_URL = 'https://n8n.maximo-seo.com';
+const N8N_BASE_URL = 'https://websiseo.app.n8n.cloud';
 
 /**
  * Generate n8n workflow URL
