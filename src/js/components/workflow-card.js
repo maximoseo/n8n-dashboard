@@ -101,6 +101,10 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
           <span class="link-icon">📊</span>
           <span>${hasSheet ? 'View Sheet' : 'No Sheet'}</span>
         </a>
+        <button class="workflow-link-btn edit-link" onclick="openWorkflowEditor('${wf.id}')">
+          <span class="link-icon">✏️</span>
+          <span>Edit Workflow</span>
+        </button>
       </div>
 
       <div class="workflow-footer">
@@ -110,3 +114,20 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
     </div>
   `;
 }
+
+// Global function to open workflow editor
+window.openWorkflowEditor = async function(workflowId) {
+  // Dynamic import to avoid circular dependencies
+  const { WorkflowEditor } = await import('./workflow-editor.js');
+  
+  // Create editor container
+  let editorContainer = document.getElementById('workflow-editor-container');
+  if (!editorContainer) {
+    editorContainer = document.createElement('div');
+    editorContainer.id = 'workflow-editor-container';
+    document.body.appendChild(editorContainer);
+  }
+  
+  const editor = new WorkflowEditor(editorContainer);
+  await editor.load(workflowId);
+};
