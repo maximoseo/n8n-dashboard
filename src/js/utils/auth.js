@@ -40,7 +40,7 @@ export function showAuthGate(onSuccess) {
       <input type="password" id="authPassword" placeholder="Password" class="auth-input">
       <label class="remember-label" style="display:flex;align-items:center;gap:8px;margin:12px 0;cursor:pointer;font-size:14px;color:var(--text-secondary,#aaa);">
         <input type="checkbox" id="rememberMe" checked>
-        זכור אותי במחשב זה
+        Remember me on this computer
       </label>
       <button id="authSubmit" class="auth-btn">Unlock</button>
       <p id="authError" class="auth-error" style="display:none;">Wrong password</p>

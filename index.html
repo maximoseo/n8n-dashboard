@@ -93,7 +93,7 @@
     <!-- Search -->
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="searchInput" placeholder="Search workflows or ask: 'show failed workflows', 'איזה workflows פעילים?'">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search workflows or ask: 'show failed workflows', 'which workflows are active?'">
     </div>
 
     <!-- NLP Query Result -->
@@ -348,13 +348,13 @@
     17|    
     18|    <div id="pc-chat-messages" class="pc-chat-messages">
     19|      <div class="pc-message pc-system">
-    20|        <p>👋 שלום! שלח משימה ואעביר אותה לצוות Paperclip של <strong id="pc-company-msg">MaximoSEO</strong>.</p>
-    21|        <p style="margin-top:8px;font-size:12px;opacity:0.7;">דוגמאות: "בדוק את כל ה-workflows שנכשלו", "עדכן את דף הבית של galoz.co.il"</p>
+    <p>👋 Hello! Send a task and I'll forward it to the Paperclip team at <strong id="pc-company-msg">MaximoSEO</strong>.</p>
+    <p style="margin-top:8px;font-size:12px;opacity:0.7;">Examples: "Check all failed workflows", "Update the homepage of galoz.co.il"</p>
     22|      </div>
     23|    </div>
     24|    
     25|    <div class="pc-chat-input-area">
-    26|      <textarea id="pc-chat-input" class="pc-chat-input" placeholder="כתוב משימה..." rows="2"></textarea>
+    26|      <textarea id="pc-chat-input" class="pc-chat-input" placeholder="Type a task..." rows="2"></textarea>
     27|      <button id="pc-chat-send" class="pc-chat-send-btn">
     28|        <span>📤</span>
     29|      </button>
@@ -666,13 +666,13 @@
    335|    tasks.push(task);
    336|    saveTasks();
    337|
-   338|    addMessage(`⏳ שולח משימה <code>${taskId}</code> ל-${PC_CONFIG.company}...`, 'status');
+   338|    addMessage(`⏳ Sending task <code>${taskId}</code> to ${PC_CONFIG.company}...`, 'status');
    339|
    340|    try {
    341|      // Send to Telegram Bot
-   342|      const msg = `🆕 משימה חדשה מ-${PC_CONFIG.dashboardName}\n\n` +
-   343|                  `🏢 חברה: ${PC_CONFIG.company}\n` +
-   344|                  `📋 משימה: ${text}\n` +
+   342|      const msg = `🆕 New task from ${PC_CONFIG.dashboardName}\n\n` +
+   343|                  `🏢 Company: ${PC_CONFIG.company}\n` +
+   344|                  `📋 Task: ${text}\n` +
    345|                  `🆔 ID: ${taskId}`;
    346|
    347|      if (PC_CONFIG.telegramBotToken && PC_CONFIG.telegramChatId) {
@@ -689,7 +689,7 @@
    358|        if (res.ok) {
    359|          task.status = 'delivered';
    360|          saveTasks();
-   361|          addMessage(`✅ המשימה נשלחה ל-Paperclip!\n<code>${taskId}</code>\n\nהצוות של <strong>${PC_CONFIG.company}</strong> יעדכן כשיבוצע.`, 'system');
+   361|          addMessage(`✅ Task sent to Paperclip!\n<code>${taskId}</code>\n\nThe <strong>${PC_CONFIG.company}</strong> team will update when done.`, 'system');
    362|        } else {
    363|          throw new Error('Telegram API error');
    364|        }
@@ -697,12 +697,12 @@
    366|        // Fallback: store locally and show confirmation
    367|        task.status = 'queued';
    368|        saveTasks();
-   369|        addMessage(`📨 המשימה נשמרה בתור!\n<code>${taskId}</code>\n\nתועבר ל-Paperclip כשהחיבור יהיה זמין.`, 'system');
+   369|        addMessage(`📨 Task saved in queue!\n<code>${taskId}</code>\n\nWill be forwarded to Paperclip when connection is available.`, 'system');
    370|      }
    371|    } catch (err) {
    372|      task.status = 'error';
    373|      saveTasks();
-   374|      addMessage(`❌ שגיאה בשליחה. המשימה נשמרה מקומית ותישלח מאוחר יותר.`, 'error');
+   374|      addMessage(`❌ Send error. Task saved locally and will be sent later.`, 'error');
    375|    }
    376|
    377|    sendBtn.disabled = false;
@@ -726,7 +726,7 @@
    395|        existing.status = t.status;
    396|        existing.result = t.result;
    397|        if (t.status === 'completed') {
-   398|          addMessage(`✅ <strong>${t.id}</strong> בוצעה!\n${t.result || ''}`, 'status');
+   398|          addMessage(`✅ <strong>${t.id}</strong> Completed!\n${t.result || ''}`, 'status');
    399|          if (panel.style.display === 'none') {
    400|            unreadCount++;
    401|            badge.textContent = unreadCount;
@@ -743,7 +743,7 @@
    412|  // Show pending tasks on load
    413|  const pending = tasks.filter(t => t.status === 'sent' || t.status === 'queued');
    414|  if (pending.length > 0) {
-   415|    addMessage(`📋 ${pending.length} משימ${pending.length > 1 ? 'ות' : 'ה'} ממתינ${pending.length > 1 ? 'ות' : 'ה'} לתשובה.`, 'status');
+   415|    addMessage(`📋 ${pending.length} task${pending.length > 1 ? 's' : ''} waiting for response.`, 'status');
    416|  }
    417|})();
    418|</script>
