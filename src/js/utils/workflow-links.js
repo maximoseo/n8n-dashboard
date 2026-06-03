@@ -3,6 +3,8 @@
  * Handles n8n workflow URLs and Google Sheet links
  */
 
+import { getSheetUrlFromMapping } from '../stores/google-sheets-mapping.js';
+
 const N8N_BASE_URL = 'https://websiseo.app.n8n.cloud';
 
 /**
@@ -16,11 +18,18 @@ export function getN8nWorkflowUrl(workflowId) {
 
 /**
  * Extract Google Sheet URL from workflow tags or notes
+ * Priority: 1) Mapping file, 2) Tags, 3) Notes, 4) Name pattern
  * @param {Object} workflow - Workflow object
  * @returns {string|null} Google Sheet URL or null
  */
 export function getGoogleSheetUrl(workflow) {
-  // Option 1: Check tags for Google Sheet URL
+  // Priority 1: Check mapping file
+  const mappedUrl = getSheetUrlFromMapping(workflow.id);
+  if (mappedUrl) {
+    return mappedUrl;
+  }
+
+  // Option 2: Check tags for Google Sheet URL
   if (workflow.tags && Array.isArray(workflow.tags)) {
     const sheetTag = workflow.tags.find(tag => 
       tag.name && tag.name.includes('docs.google.com/spreadsheets')
@@ -30,7 +39,7 @@ export function getGoogleSheetUrl(workflow) {
     }
   }
 
-  // Option 2: Check workflow notes for Google Sheet URL
+  // Option 3: Check workflow notes for Google Sheet URL
   if (workflow.notes) {
     const sheetMatch = workflow.notes.match(/https:\/\/docs\.google\.com\/spreadsheets\/[^\s<>"']+/);
     if (sheetMatch) {
@@ -38,7 +47,7 @@ export function getGoogleSheetUrl(workflow) {
     }
   }
 
-  // Option 3: Check workflow name for sheet ID pattern
+  // Option 4: Check workflow name for sheet ID pattern
   const nameMatch = workflow.name?.match(/\[sheet:([a-zA-Z0-9-_]+)\]/);
   if (nameMatch) {
     return `https://docs.google.com/spreadsheets/d/${nameMatch[1]}`;
