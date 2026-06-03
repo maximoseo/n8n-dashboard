@@ -9,3 +9,19 @@
   }
 
   .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+
+/* Global Mobile Enhancements */
+@media (max-width: 768px) {
+  .container { padding: 16px; }
+  * { max-width: 100%; box-sizing: border-box; }
+  body { padding: 0 8px; }
+  table { font-size: 0.875rem; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 12px; }
+  body { padding: 0 4px; }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+}
