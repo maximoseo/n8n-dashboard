@@ -36,10 +36,9 @@ export function initSidebar() {
       } else if (section === 'filters') {
         e.preventDefault();
         document.querySelector('.advanced-filters')?.scrollIntoView({ behavior: 'smooth' });
-      } else if (section === 'urls-previewer' || section === 'kw-research') {
+      } else if (section === 'seo-tooling') {
         e.preventDefault();
         document.getElementById('seo-tooling')?.scrollIntoView({ behavior: 'smooth' });
-        window.dispatchEvent(new CustomEvent('seoProductTabRequested', { detail: { tab: section === 'urls-previewer' ? 'urls' : 'kw' } }));
       } else {
         const targetSection = document.getElementById(section);
         if (targetSection) {
