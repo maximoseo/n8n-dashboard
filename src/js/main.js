@@ -19,7 +19,7 @@ import { renderCostCard } from './utils/cost-estimator.js';
 import { renderActionButtons, initActionButtons } from './components/action-buttons.js';
 import { N8nClient } from './api/n8n-client.js';
 import { fetchWorkflows, fetchExecutions } from './api/n8n-api.js';
-import { isAuthenticated, showAuthGate } from './utils/auth.js';
+import { isAuthenticated, showAuthGate, renderAuthSessionControls } from './utils/auth.js';
 import { filterSystem } from './utils/advanced-filters.js';
 import { initFilterPanel } from './components/filter-panel.js';
 import { initSidebar } from './sidebar.js';
@@ -234,6 +234,7 @@ function init() {
 
 function initializeApp() {
   initSidebar();
+  renderAuthSessionControls();
   initThemeToggle();
   initRefreshButton();
   initSearch();
