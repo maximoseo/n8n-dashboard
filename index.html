@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>n8n Dashboard - MaximoSEO</title>
+  <link id="dynamicFavicon" rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#6366f1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +36,17 @@
       <a href="#filters" class="sidebar-link" data-section="filters">
         <span class="sidebar-icon">🔍</span>
         <span class="sidebar-label">Filters</span>
+      </a>
+      <div class="sidebar-divider"></div>
+      <a href="#urls-previewer" class="sidebar-link product-link" data-section="urls-previewer" data-product="urls">
+        <span class="sidebar-icon">🖼️</span>
+        <span class="sidebar-label">URLs Previewer</span>
+        <span class="sidebar-badge">SEO</span>
+      </a>
+      <a href="#kw-research" class="sidebar-link product-link" data-section="kw-research" data-product="kw">
+        <span class="sidebar-icon">🔎</span>
+        <span class="sidebar-label">KW Research</span>
+        <span class="sidebar-badge">KW</span>
       </a>
       <div class="sidebar-divider"></div>
       <a href="https://maximo-dashboard-company-paperclip.onrender.com/" target="_blank" rel="noopener noreferrer" class="sidebar-link sidebar-paperclip" data-section="paperclip">
@@ -320,6 +333,90 @@
       <div class="workflows-grid" id="workflowsGrid"></div>
     </div>
 
+
+
+    <!-- SEO Product Tabs -->
+    <section class="seo-products-section" id="seo-tooling" aria-labelledby="seoProductsTitle">
+      <div class="seo-products-hero">
+        <div>
+          <p class="seo-kicker">Unified SEO tooling inside the n8n command center</p>
+          <h2 id="seoProductsTitle">URLs Previewer + KW Research tabs</h2>
+          <p>Operational launchpads for the two live dashboards. The source products keep credentials and protected sessions server-side, while this dashboard gives the team a clear tab, status, intake queue and direct handoff links.</p>
+        </div>
+        <div class="seo-health-grid" id="seoHealthGrid" aria-label="Connected dashboard status"></div>
+      </div>
+
+      <div class="seo-tabbar" role="tablist" aria-label="SEO product tabs">
+        <button class="seo-tab active" type="button" role="tab" aria-selected="true" data-product-tab="urls">URLs Previewer</button>
+        <button class="seo-tab" type="button" role="tab" aria-selected="false" data-product-tab="kw">KW Research</button>
+      </div>
+
+      <article class="seo-product-panel active" id="urls-previewer" data-product-panel="urls" role="tabpanel">
+        <div class="product-panel-head">
+          <div>
+            <p class="seo-kicker">URLs Previewer workspace</p>
+            <h3>Responsive screenshots, WordPress sites, Parent ID scans and Sheet writeback</h3>
+          </div>
+          <div class="product-actions">
+            <a class="product-btn primary" href="https://urls-previewer.maximo-seo.ai/sites" target="_blank" rel="noopener noreferrer">Open Sites Workspace</a>
+            <a class="product-btn" href="https://urls-previewer.maximo-seo.ai/screenshots" target="_blank" rel="noopener noreferrer">Open Screenshot Tool</a>
+          </div>
+        </div>
+        <div class="product-grid">
+          <div class="product-card wide">
+            <h4>Batch preview intake</h4>
+            <p>Paste URLs here to prepare the screenshot/QA batch before opening the full Browserless-backed previewer.</p>
+            <textarea id="urlBatchInput" class="product-textarea" placeholder="https://promigun.co.il/&#10;https://alumotesh.co.il/"></textarea>
+            <div class="product-row">
+              <select id="urlBatchDevice" class="product-select" aria-label="Screenshot device preset">
+                <option value="393x852">iPhone 15 Pro · 393×852</option>
+                <option value="412x915">Pixel 8 · 412×915</option>
+                <option value="1280x800">MacBook Air · 1280×800</option>
+                <option value="1440x900">Desktop · 1440×900</option>
+              </select>
+              <button class="product-btn primary" type="button" data-seo-action="prepare-url-batch">Prepare batch</button>
+            </div>
+            <div id="urlBatchResult" class="prepared-list" aria-live="polite"></div>
+          </div>
+          <div class="product-card"><h4>Screenshot capabilities</h4><ul><li>Mobile and desktop viewport presets</li><li>Browserless primary screenshots with provider fallbacks</li><li>Batch compare, retry, download and PDF export in the source dashboard</li></ul></div>
+          <div class="product-card"><h4>WordPress sites</h4><ul><li>Saved site workspaces and credential test status</li><li>Parent ID scan history per site</li><li>Private application passwords remain encrypted in the source app</li></ul></div>
+          <div class="product-card"><h4>Writeback workflows</h4><ul><li>Google Sheets read-only mapping preview</li><li>Explicit confirmation before Parent ID writes</li><li>Footer Latest Articles discovery, preview and verified write</li></ul></div>
+        </div>
+      </article>
+
+      <article class="seo-product-panel" id="kw-research" data-product-panel="kw" role="tabpanel">
+        <div class="product-panel-head">
+          <div>
+            <p class="seo-kicker">KW Research workspace</p>
+            <h3>Project research, run history, overlap analysis, cannibalization checks and export-ready workbooks</h3>
+          </div>
+          <div class="product-actions">
+            <a class="product-btn primary" href="https://kw-research.maximo-seo.ai/dashboard" target="_blank" rel="noopener noreferrer">Open Authenticated Dashboard</a>
+            <a class="product-btn" href="https://kw-research.maximo-seo.ai/auth/login" target="_blank" rel="noopener noreferrer">Sign in</a>
+          </div>
+        </div>
+        <div class="product-grid">
+          <div class="product-card wide">
+            <h4>Keyword project intake</h4>
+            <p>Queue the research brief here, then open the authenticated product to run the real server-side pipeline.</p>
+            <div class="kw-form-grid">
+              <input id="kwProjectName" class="product-input" placeholder="Project name, e.g. Promigun SEO Research" />
+              <input id="kwHomepageUrl" class="product-input" placeholder="Homepage URL" />
+            </div>
+            <textarea id="kwSeedKeywords" class="product-textarea" placeholder="security products&#10;tactical equipment&#10;local service keyword"></textarea>
+            <div class="product-row">
+              <button class="product-btn primary" type="button" data-seo-action="queue-kw-project">Queue research brief</button>
+              <button class="product-btn" type="button" data-seo-action="clear-kw-queue">Clear local briefs</button>
+            </div>
+            <div id="kwQueueResult" class="prepared-list" aria-live="polite"></div>
+          </div>
+          <div class="product-card"><h4>Research pipeline</h4><ul><li>Project dashboards and run history</li><li>SERP intent, competitor discovery and validation agents</li><li>AI synthesis, content mapping and accountability actions</li></ul></div>
+          <div class="product-card"><h4>Analysis modules</h4><ul><li>Overlap and cannibalization views</li><li>Keyword tables, filters, saved views and CSV export</li><li>Content briefs and workbook generation</li></ul></div>
+          <div class="product-card"><h4>Security model</h4><ul><li>Authenticated dashboard opens in a separate protected tab</li><li>Research APIs, LLM keys and Firecrawl credentials stay server-side</li><li>This tab stores only non-secret local intake briefs</li></ul></div>
+        </div>
+      </article>
+    </section>
+
     <!-- Footer -->
     <div class="footer">
       n8n Dashboard by MaximoSEO • Auto-generated from n8n API • <span id="footerTimestamp"></span>
@@ -327,490 +424,6 @@
   </div>
 
   <script type="module" src="/src/js/main.js"></script>
-
-  <!-- Paperclip Chat Widget -->
-  <div data-pc-company="MaximoSEO">     1|<!-- Paperclip Chat Widget -->
-     2|<div id="paperclip-chat" class="pc-chat-widget">
-     3|  <button id="pc-chat-toggle" class="pc-chat-toggle" title="Paperclip Chat">
-     4|    <span class="pc-icon">💬</span>
-     5|    <span class="pc-badge" id="pc-badge" style="display:none;">0</span>
-     6|  </button>
-     7|  
-     8|  <div id="pc-chat-panel" class="pc-chat-panel" style="display:none;">
-     9|    <div class="pc-chat-header">
-    10|      <div class="pc-chat-title">
-    11|        <span>📎</span>
-    12|        <span>Paperclip Assistant</span>
-    13|      </div>
-    14|      <div class="pc-chat-company" id="pc-company-name">MaximoSEO</div>
-    15|      <button id="pc-chat-close" class="pc-chat-close-btn">✕</button>
-    16|    </div>
-    17|    
-    18|    <div id="pc-chat-messages" class="pc-chat-messages">
-    19|      <div class="pc-message pc-system">
-    <p>👋 Hello! Send a task and I'll forward it to the Paperclip team at <strong id="pc-company-msg">MaximoSEO</strong>.</p>
-    <p style="margin-top:8px;font-size:12px;opacity:0.7;">Examples: "Check all failed workflows", "Update the homepage of galoz.co.il"</p>
-    22|      </div>
-    23|    </div>
-    24|    
-    25|    <div class="pc-chat-input-area">
-    26|      <textarea id="pc-chat-input" class="pc-chat-input" placeholder="Type a task..." rows="2"></textarea>
-    27|      <button id="pc-chat-send" class="pc-chat-send-btn">
-    28|        <span>📤</span>
-    29|      </button>
-    30|    </div>
-    31|  </div>
-    32|</div>
-    33|
-    34|<style>
-
-/* MaximoSEO Design System v2.0 */
-:root {
-  --ms-primary: #8b5cf6;
-  --ms-primary-light: #a78bfa;
-  --ms-accent: #ec4899;
-  --ms-bg: #0a0a0f;
-  --ms-surface: rgba(30, 27, 45, 0.6);
-  --ms-surface-hover: rgba(45, 40, 65, 0.8);
-  --ms-border: rgba(139, 92, 246, 0.2);
-  --ms-border-hover: rgba(139, 92, 246, 0.5);
-  --ms-text: #f5f3ff;
-  --ms-text-muted: #a8a3c3;
-  --ms-gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-  --ms-shadow-glow: 0 0 40px rgba(139,92,246,0.15);
-  --ms-radius-md: 12px;
-  --ms-radius-lg: 16px;
-}
-
-body {
-  background: radial-gradient(ellipse at top, rgba(139,92,246,0.12) 0%, transparent 50%),
-              radial-gradient(ellipse at bottom right, rgba(236,72,153,0.08) 0%, transparent 50%),
-              var(--ms-bg);
-  color: var(--ms-text);
-  -webkit-font-smoothing: antialiased;
-}
-
-.ms-glass {
-  background: var(--ms-surface);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--ms-border);
-  border-radius: var(--ms-radius-md);
-}
-
-.ms-card {
-  background: var(--ms-surface);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--ms-border);
-  border-radius: var(--ms-radius-lg);
-  padding: 24px;
-  transition: all 0.3s ease;
-}
-
-.ms-card:hover {
-  background: var(--ms-surface-hover);
-  border-color: var(--ms-border-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--ms-shadow-glow);
-}
-
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-::-webkit-scrollbar-thumb { background: var(--ms-primary); border-radius: 4px; }
-
-    35|.pc-chat-widget {
-    36|  position: fixed;
-    37|  bottom: 20px;
-    38|  right: 20px;
-    39|  z-index: 9999;
-    40|  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    41|}
-    42|
-    43|.pc-chat-toggle {
-    44|  width: 56px;
-    45|  height: 56px;
-    46|  border-radius: 50%;
-    47|  background: linear-gradient(135deg, #7c5bf5, #9333ea);
-    48|  border: none;
-    49|  cursor: pointer;
-    50|  display: flex;
-    51|  align-items: center;
-    52|  justify-content: center;
-    53|  box-shadow: 0 4px 20px rgba(124,91,245,0.4);
-    54|  transition: all 0.3s;
-    55|  position: relative;
-    56|}
-    57|
-    58|.pc-chat-toggle:hover {
-    59|  transform: scale(1.1);
-    60|  box-shadow: 0 6px 24px rgba(124,91,245,0.5);
-    61|}
-    62|
-    63|.pc-icon { font-size: 24px; }
-    64|
-    65|.pc-badge {
-    66|  position: absolute;
-    67|  top: -4px;
-    68|  right: -4px;
-    69|  background: #ef4444;
-    70|  color: white;
-    71|  font-size: 11px;
-    72|  font-weight: 700;
-    73|  width: 20px;
-    74|  height: 20px;
-    75|  border-radius: 50%;
-    76|  display: flex;
-    77|  align-items: center;
-    78|  justify-content: center;
-    79|}
-    80|
-    81|.pc-chat-panel {
-    82|  position: absolute;
-    83|  bottom: 70px;
-    84|  right: 0;
-    85|  width: 380px;
-    86|  height: 520px;
-    87|  background: #1a1a2e;
-    88|  border: 1px solid rgba(255,255,255,0.1);
-    89|  border-radius: 16px;
-    90|  display: flex;
-    91|  flex-direction: column;
-    92|  overflow: hidden;
-    93|  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    94|  animation: pc-slide-up 0.3s ease;
-    95|}
-    96|
-    97|@keyframes pc-slide-up {
-    98|  from { opacity: 0; transform: translateY(20px); }
-    99|  to { opacity: 1; transform: translateY(0); }
-   100|}
-   101|
-   102|.pc-chat-header {
-   103|  padding: 16px;
-   104|  background: linear-gradient(135deg, rgba(124,91,245,0.2), rgba(147,51,234,0.2));
-   105|  border-bottom: 1px solid rgba(255,255,255,0.06);
-   106|  display: flex;
-   107|  align-items: center;
-   108|  gap: 8px;
-   109|}
-   110|
-   111|.pc-chat-title {
-   112|  display: flex;
-   113|  align-items: center;
-   114|  gap: 8px;
-   115|  font-weight: 700;
-   116|  font-size: 15px;
-   117|  color: #f0eff4;
-   118|  flex: 1;
-   119|}
-   120|
-   121|.pc-chat-company {
-   122|  font-size: 11px;
-   123|  background: rgba(124,91,245,0.2);
-   124|  color: #a78bfa;
-   125|  padding: 2px 8px;
-   126|  border-radius: 8px;
-   127|  font-weight: 600;
-   128|}
-   129|
-   130|.pc-chat-close-btn {
-   131|  background: none;
-   132|  border: none;
-   133|  color: #6b6780;
-   134|  cursor: pointer;
-   135|  font-size: 16px;
-   136|  padding: 4px;
-   137|}
-   138|
-   139|.pc-chat-messages {
-   140|  flex: 1;
-   141|  overflow-y: auto;
-   142|  padding: 16px;
-   143|  display: flex;
-   144|  flex-direction: column;
-   145|  gap: 12px;
-   146|}
-   147|
-   148|.pc-message {
-   149|  max-width: 85%;
-   150|  padding: 10px 14px;
-   151|  border-radius: 12px;
-   152|  font-size: 13px;
-   153|  line-height: 1.5;
-   154|  animation: pc-fade-in 0.2s ease;
-   155|}
-   156|
-   157|@keyframes pc-fade-in {
-   158|  from { opacity: 0; }
-   159|  to { opacity: 1; }
-   160|}
-   161|
-   162|.pc-message.pc-user {
-   163|  align-self: flex-end;
-   164|  background: linear-gradient(135deg, #7c5bf5, #9333ea);
-   165|  color: white;
-   166|  border-bottom-right-radius: 4px;
-   167|}
-   168|
-   169|.pc-message.pc-system {
-   170|  align-self: flex-start;
-   171|  background: rgba(255,255,255,0.05);
-   172|  color: #c4c0d8;
-   173|  border-bottom-left-radius: 4px;
-   174|}
-   175|
-   176|.pc-message.pc-status {
-   177|  align-self: center;
-   178|  background: rgba(52,211,153,0.1);
-   179|  color: #34d399;
-   180|  font-size: 12px;
-   181|  padding: 6px 12px;
-   182|  border-radius: 20px;
-   183|}
-   184|
-   185|.pc-message.pc-error {
-   186|  align-self: center;
-   187|  background: rgba(239,68,68,0.1);
-   188|  color: #ef4444;
-   189|  font-size: 12px;
-   190|  padding: 6px 12px;
-   191|  border-radius: 20px;
-   192|}
-   193|
-   194|.pc-chat-input-area {
-   195|  padding: 12px;
-   196|  border-top: 1px solid rgba(255,255,255,0.06);
-   197|  display: flex;
-   198|  gap: 8px;
-   199|  align-items: flex-end;
-   200|}
-   201|
-   202|.pc-chat-input {
-   203|  flex: 1;
-   204|  background: rgba(255,255,255,0.05);
-   205|  border: 1px solid rgba(255,255,255,0.1);
-   206|  border-radius: 10px;
-   207|  padding: 10px 12px;
-   208|  color: #f0eff4;
-   209|  font-size: 13px;
-   210|  font-family: inherit;
-   211|  resize: none;
-   212|  outline: none;
-   213|  transition: border-color 0.2s;
-   214|}
-   215|
-   216|.pc-chat-input:focus {
-   217|  border-color: rgba(124,91,245,0.5);
-   218|}
-   219|
-   220|.pc-chat-send-btn {
-   221|  width: 40px;
-   222|  height: 40px;
-   223|  border-radius: 10px;
-   224|  background: linear-gradient(135deg, #7c5bf5, #9333ea);
-   225|  border: none;
-   226|  cursor: pointer;
-   227|  display: flex;
-   228|  align-items: center;
-   229|  justify-content: center;
-   230|  font-size: 18px;
-   231|  transition: all 0.2s;
-   232|}
-   233|
-   234|.pc-chat-send-btn:hover {
-   235|  transform: scale(1.05);
-   236|}
-   237|
-   238|.pc-chat-send-btn:disabled {
-   239|  opacity: 0.5;
-   240|  cursor: not-allowed;
-   241|}
-   242|
-   243|/* Scrollbar */
-   244|.pc-chat-messages::-webkit-scrollbar { width: 4px; }
-   245|.pc-chat-messages::-webkit-scrollbar-track { background: transparent; }
-   246|.pc-chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-   247|
-   248|/* Responsive */
-   249|@media (max-width: 480px) {
-   250|  .pc-chat-panel {
-   251|    width: calc(100vw - 40px);
-   252|    height: calc(100vh - 120px);
-   253|    bottom: 70px;
-   254|    right: -10px;
-   255|  }
-   256|}
-   257|</style>
-   258|
-   259|<script>
-   260|(function() {
-   261|  const PC_CONFIG = {
-   262|    company: document.querySelector('[data-pc-company]')?.dataset.pcCompany || 'MaximoSEO',
-   263|    dashboardName: document.title || 'Dashboard',
-   264|    telegramBotToken: '', // Will be set per deployment
-   265|    telegramChatId: '',   // Will be set per deployment
-   266|    pollInterval: 30000,  // Poll every 30 seconds for updates
-   267|  };
-   268|
-   269|  const toggle = document.getElementById('pc-chat-toggle');
-   270|  const panel = document.getElementById('pc-chat-panel');
-   271|  const closeBtn = document.getElementById('pc-chat-close');
-   272|  const messages = document.getElementById('pc-chat-messages');
-   273|  const input = document.getElementById('pc-chat-input');
-   274|  const sendBtn = document.getElementById('pc-chat-send');
-   275|  const badge = document.getElementById('pc-badge');
-   276|  const companyNameEl = document.getElementById('pc-company-name');
-   277|  const companyMsgEl = document.getElementById('pc-company-msg');
-   278|
-   279|  // Set company name
-   280|  if (companyNameEl) companyNameEl.textContent = PC_CONFIG.company;
-   281|  if (companyMsgEl) companyMsgEl.textContent = PC_CONFIG.company;
-   282|
-   283|  // Task tracking
-   284|  let tasks = JSON.parse(localStorage.getItem('pc_tasks') || '[]');
-   285|  let unreadCount = 0;
-   286|
-   287|  // Toggle panel
-   288|  toggle.addEventListener('click', () => {
-   289|    const isOpen = panel.style.display !== 'none';
-   290|    panel.style.display = isOpen ? 'none' : 'flex';
-   291|    if (!isOpen) {
-   292|      unreadCount = 0;
-   293|      badge.style.display = 'none';
-   294|      input.focus();
-   295|    }
-   296|  });
-   297|
-   298|  closeBtn.addEventListener('click', () => {
-   299|    panel.style.display = 'none';
-   300|  });
-   301|
-   302|  // Send message
-   303|  function addMessage(text, type = 'system') {
-   304|    const div = document.createElement('div');
-   305|    div.className = `pc-message pc-${type}`;
-   306|    div.innerHTML = text;
-   307|    messages.appendChild(div);
-   308|    messages.scrollTop = messages.scrollHeight;
-   309|    return div;
-   310|  }
-   311|
-   312|  function saveTasks() {
-   313|    localStorage.setItem('pc_tasks', JSON.stringify(tasks));
-   314|  }
-   315|
-   316|  async function sendTask() {
-   317|    const text = input.value.trim();
-   318|    if (!text) return;
-   319|
-   320|    input.value = '';
-   321|    sendBtn.disabled = true;
-   322|    addMessage(text, 'user');
-   323|
-   324|    const taskId = `TASK-${Date.now()}`;
-   325|    const task = {
-   326|      id: taskId,
-   327|      text: text,
-   328|      company: PC_CONFIG.company,
-   329|      dashboard: PC_CONFIG.dashboardName,
-   330|      status: 'sent',
-   331|      createdAt: new Date().toISOString(),
-   332|      updatedAt: new Date().toISOString(),
-   333|    };
-   334|
-   335|    tasks.push(task);
-   336|    saveTasks();
-   337|
-   338|    addMessage(`⏳ Sending task <code>${taskId}</code> to ${PC_CONFIG.company}...`, 'status');
-   339|
-   340|    try {
-   341|      // Send to Telegram Bot
-   342|      const msg = `🆕 New task from ${PC_CONFIG.dashboardName}\n\n` +
-   343|                  `🏢 Company: ${PC_CONFIG.company}\n` +
-   344|                  `📋 Task: ${text}\n` +
-   345|                  `🆔 ID: ${taskId}`;
-   346|
-   347|      if (PC_CONFIG.telegramBotToken && PC_CONFIG.telegramChatId) {
-   348|        const res = await fetch(`https://api.telegram.org/bot${PC_CONFIG.telegramBotToken}/sendMessage`, {
-   349|          method: 'POST',
-   350|          headers: { 'Content-Type': 'application/json' },
-   351|          body: JSON.stringify({
-   352|            chat_id: PC_CONFIG.telegramChatId,
-   353|            text: msg,
-   354|            parse_mode: 'HTML',
-   355|          }),
-   356|        });
-   357|
-   358|        if (res.ok) {
-   359|          task.status = 'delivered';
-   360|          saveTasks();
-   361|          addMessage(`✅ Task sent to Paperclip!\n<code>${taskId}</code>\n\nThe <strong>${PC_CONFIG.company}</strong> team will update when done.`, 'system');
-   362|        } else {
-   363|          throw new Error('Telegram API error');
-   364|        }
-   365|      } else {
-   366|        // Fallback: store locally and show confirmation
-   367|        task.status = 'queued';
-   368|        saveTasks();
-   369|        addMessage(`📨 Task saved in queue!\n<code>${taskId}</code>\n\nWill be forwarded to Paperclip when connection is available.`, 'system');
-   370|      }
-   371|    } catch (err) {
-   372|      task.status = 'error';
-   373|      saveTasks();
-   374|      addMessage(`❌ Send error. Task saved locally and will be sent later.`, 'error');
-   375|    }
-   376|
-   377|    sendBtn.disabled = false;
-   378|    input.focus();
-   379|  }
-   380|
-   381|  sendBtn.addEventListener('click', sendTask);
-   382|  input.addEventListener('keydown', (e) => {
-   383|    if (e.key === 'Enter' && !e.shiftKey) {
-   384|      e.preventDefault();
-   385|      sendTask();
-   386|    }
-   387|  });
-   388|
-   389|  // Poll for task updates (check localStorage for updates from Paperclip)
-   390|  function checkUpdates() {
-   391|    const updatedTasks = JSON.parse(localStorage.getItem('pc_tasks') || '[]');
-   392|    updatedTasks.forEach(t => {
-   393|      const existing = tasks.find(x => x.id === t.id);
-   394|      if (existing && t.status !== existing.status) {
-   395|        existing.status = t.status;
-   396|        existing.result = t.result;
-   397|        if (t.status === 'completed') {
-   398|          addMessage(`✅ <strong>${t.id}</strong> Completed!\n${t.result || ''}`, 'status');
-   399|          if (panel.style.display === 'none') {
-   400|            unreadCount++;
-   401|            badge.textContent = unreadCount;
-   402|            badge.style.display = 'flex';
-   403|          }
-   404|        }
-   405|      }
-   406|    });
-   407|    tasks = updatedTasks;
-   408|  }
-   409|
-   410|  setInterval(checkUpdates, PC_CONFIG.pollInterval);
-   411|
-   412|  // Show pending tasks on load
-   413|  const pending = tasks.filter(t => t.status === 'sent' || t.status === 'queued');
-   414|  if (pending.length > 0) {
-   415|    addMessage(`📋 ${pending.length} task${pending.length > 1 ? 's' : ''} waiting for response.`, 'status');
-   416|  }
-   417|})();
-   418|</script>
-   419|</div>
-  <script>
-    // Configure Telegram Bot for Paperclip Chat
-    document.addEventListener('DOMContentLoaded', function() {
-      const scripts = document.querySelectorAll('#paperclip-chat script');
-      // Set Telegram config
-      window.PC_TELEGRAM_BOT_TOKEN = '8571244498:AAFx4QJmFjXbZrKqZSHxJyM_bHqGZl4n8kE';
-      window.PC_TELEGRAM_CHAT_ID = '6090160018';
-    });
-  </script>
 
 </body>
 </html>

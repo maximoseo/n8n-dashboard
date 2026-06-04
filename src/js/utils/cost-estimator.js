@@ -1,3 +1,5 @@
+import { escapeHtml, safeWorkflowName } from './display-safe.js';
+
 export function estimateCosts(workflows, executions) {
   const costs = [];
   
@@ -17,7 +19,7 @@ export function estimateCosts(workflows, executions) {
     
     costs.push({
       id: wf.id,
-      name: wf.name,
+      name: safeWorkflowName(wf),
       executions: wfExecs.length,
       totalDuration: Math.round(totalDuration),
       cost: Math.round(cost * 100) / 100
@@ -47,7 +49,7 @@ export function renderCostCard(workflows, executions) {
       <div class="cost-title">Top 3 Costly Workflows:</div>
       ${top3.map(c => `
         <div class="cost-item">
-          <span class="cost-name">${c.name}</span>
+          <span class="cost-name">${escapeHtml(c.name)}</span>
           <span class="cost-value">$${c.cost.toFixed(2)}</span>
         </div>
       `).join('')}

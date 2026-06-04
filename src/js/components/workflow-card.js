@@ -4,6 +4,7 @@ import { formatDate, calculateSuccessRate } from '../utils/helpers.js';
 import { renderHealthBadge } from './health-badge.js';
 import { renderActionButtons } from './action-buttons.js';
 import { getN8nWorkflowUrl, getGoogleSheetUrl, hasGoogleSheet } from '../utils/workflow-links.js';
+import { escapeHtml, safeTagName, safeWorkflowName } from '../utils/display-safe.js';
 
 /**
  * Render workflow cards to the grid
@@ -41,7 +42,8 @@ export function renderWorkflows(searchQuery = '', filter = 'all', customWorkflow
  */
 function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
   const successRate = calculateSuccessRate(stats.success, stats.total);
-  const tags = (wf.tags || []).slice(0, 2).map(t => `<span class="tag">${t.name}</span>`).join('');
+  const displayName = escapeHtml(safeWorkflowName(wf));
+  const tags = (wf.tags || []).slice(0, 2).map(t => `<span class="tag">${escapeHtml(safeTagName(t))}</span>`).join('');
   const updatedDate = formatDate(wf.updatedAt);
   const executions = executionsData.data || [];
   
@@ -56,7 +58,7 @@ function renderWorkflowCard(wf, stats = { total: 0, success: 0, failed: 0 }) {
     <div class="workflow-card">
       <div class="workflow-header">
         <div class="workflow-info">
-          <div class="workflow-name">${wf.name}</div>
+          <div class="workflow-name">${displayName}</div>
           <div class="workflow-id">🔗 ${wf.id}</div>
         </div>
         <div class="workflow-badges">

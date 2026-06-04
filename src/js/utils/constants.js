@@ -2,7 +2,7 @@
 export const API_BASE_URL = ''; // Placeholder for future API integration
 
 // Locale settings
-export const LOCALE = 'he-IL';
+export const LOCALE = 'en-GB';
 
 // Status labels
 export const STATUS_LABELS = {

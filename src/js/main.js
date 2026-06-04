@@ -23,6 +23,7 @@ import { isAuthenticated, showAuthGate } from './utils/auth.js';
 import { filterSystem } from './utils/advanced-filters.js';
 import { initFilterPanel } from './components/filter-panel.js';
 import { initSidebar } from './sidebar.js';
+import { initSeoProductTabs } from './seo-tabs.js';
 
 const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
 let autoRefreshTimer = null;
@@ -239,6 +240,7 @@ function initializeApp() {
   initNLPQuery();
   initLiveModeToggle();
   initFilterPanel();
+  initSeoProductTabs();
   
   // Listen for filter updates
   window.addEventListener('filtersUpdated', () => {

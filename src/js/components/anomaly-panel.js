@@ -1,4 +1,5 @@
 import { detectAnomalies } from '../utils/anomaly-detector.js';
+import { escapeHtml, safeWorkflowName } from '../utils/display-safe.js';
 
 export function renderAnomalyPanel(workflows, executions) {
   const anomalies = detectAnomalies(workflows, executions);
@@ -15,8 +16,8 @@ export function renderAnomalyPanel(workflows, executions) {
     <div class="anomaly-item anomaly-${a.severity}">
       <span class="anomaly-icon">${severityIcons[a.severity]}</span>
       <div class="anomaly-content">
-        <strong>${a.workflow.name}</strong>
-        <p>${a.message}</p>
+        <strong>${escapeHtml(safeWorkflowName(a.workflow))}</strong>
+        <p>${escapeHtml(a.message)}</p>
       </div>
     </div>
   `).join('');

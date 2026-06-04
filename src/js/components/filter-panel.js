@@ -1,4 +1,5 @@
 import { filterSystem } from '../utils/advanced-filters.js';
+import { escapeHtml, safeTagName } from '../utils/display-safe.js';
 
 /**
  * Initialize advanced filter panel
@@ -39,7 +40,7 @@ function populateTagFilter(tags) {
   if (!tagSelect) return;
 
   tagSelect.innerHTML = tags.map(tag => 
-    `<option value="${tag}">${tag}</option>`
+    `<option value="${escapeHtml(tag)}">${escapeHtml(safeTagName(tag))}</option>`
   ).join('');
 }
 
