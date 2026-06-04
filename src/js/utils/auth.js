@@ -1,10 +1,11 @@
 const AUTH_SESSION_KEY = 'n8n_dashboard_supabase_session';
 const AUTH_REMEMBER_KEY = 'n8n_dashboard_remember_login';
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || window.VITE_SUPABASE_URL || '').replace(/\/$/, '');
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || window.VITE_SUPABASE_ANON_KEY || '';
-const AUTH_USERNAME = import.meta.env.VITE_DASHBOARD_AUTH_USERNAME || window.VITE_DASHBOARD_AUTH_USERNAME || 'maximo';
-const AUTH_EMAIL = import.meta.env.VITE_DASHBOARD_AUTH_EMAIL || window.VITE_DASHBOARD_AUTH_EMAIL || 'n8n-dashboard@maximo-seo.ai';
+const RUNTIME_ENV = import.meta.env || window;
+const SUPABASE_URL = (RUNTIME_ENV.VITE_SUPABASE_URL || window.VITE_SUPABASE_URL || '').replace(/\/$/, '');
+const SUPABASE_ANON_KEY = RUNTIME_ENV.VITE_SUPABASE_ANON_KEY || window.VITE_SUPABASE_ANON_KEY || '';
+const AUTH_USERNAME = RUNTIME_ENV.VITE_DASHBOARD_AUTH_USERNAME || window.VITE_DASHBOARD_AUTH_USERNAME || 'maximo';
+const AUTH_EMAIL = RUNTIME_ENV.VITE_DASHBOARD_AUTH_EMAIL || window.VITE_DASHBOARD_AUTH_EMAIL || 'n8n-dashboard@maximo-seo.ai';
 
 function storageForSession(session = null) {
   if (session?.remember) return localStorage;
