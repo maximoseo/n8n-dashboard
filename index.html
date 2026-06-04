@@ -47,7 +47,7 @@
       <a href="#seo-tooling" class="sidebar-link product-link" data-section="seo-tooling">
         <span class="sidebar-icon">🔎</span>
         <span class="sidebar-label">SEO Tools</span>
-        <span class="sidebar-badge">2</span>
+        <span class="sidebar-badge">3</span>
       </a>
       <div class="sidebar-divider"></div>
       <a href="https://maximo-dashboard-company-paperclip.onrender.com/" target="_blank" rel="noopener noreferrer" class="sidebar-link sidebar-paperclip" data-section="paperclip">
@@ -341,8 +341,8 @@
       <div class="seo-products-hero">
         <div>
           <p class="seo-kicker">Unified SEO tooling inside the n8n command center</p>
-          <h2 id="seoProductsTitle">URLs Previewer + KW Research tabs</h2>
-          <p>Operational launchpads for the two live dashboards. The source products keep credentials and protected sessions server-side, while this dashboard gives the team a clear tab, status, intake queue and direct handoff links.</p>
+          <h2 id="seoProductsTitle">URLs Previewer + KW Research + Link Building tabs</h2>
+          <p>Operational launchpads for the live dashboards plus the Link Building command center. Source products keep credentials and protected sessions server-side, while this dashboard gives the team clear tabs, status, intake queues, scoring helpers and direct handoff links.</p>
         </div>
         <div class="seo-health-grid" id="seoHealthGrid" aria-label="Connected dashboard status"></div>
       </div>
@@ -350,6 +350,7 @@
       <div class="seo-tabbar" role="tablist" aria-label="SEO product tabs">
         <button class="seo-tab active" type="button" role="tab" aria-selected="true" data-product-tab="urls">URLs Previewer</button>
         <button class="seo-tab" type="button" role="tab" aria-selected="false" data-product-tab="kw">KW Research</button>
+        <button class="seo-tab" type="button" role="tab" aria-selected="false" data-product-tab="links">Link Building</button>
       </div>
 
       <article class="seo-product-panel active" id="urls-previewer" data-product-panel="urls" role="tabpanel">
@@ -414,6 +415,106 @@
           <div class="product-card"><h4>Research pipeline</h4><ul><li>Project dashboards and run history</li><li>SERP intent, competitor discovery and validation agents</li><li>AI synthesis, content mapping and accountability actions</li></ul></div>
           <div class="product-card"><h4>Analysis modules</h4><ul><li>Overlap and cannibalization views</li><li>Keyword tables, filters, saved views and CSV export</li><li>Content briefs and workbook generation</li></ul></div>
           <div class="product-card"><h4>Security model</h4><ul><li>Authenticated dashboard opens in a separate protected tab</li><li>Research APIs, LLM keys and Firecrawl credentials stay server-side</li><li>This tab stores only non-secret local intake briefs</li></ul></div>
+        </div>
+      </article>
+
+      <article class="seo-product-panel" id="link-building" data-product-panel="links" role="tabpanel">
+        <div class="product-panel-head">
+          <div>
+            <p class="seo-kicker">Link Building command center</p>
+            <h3>Inbound &amp; external backlink campaigns — outreach, scoring, anchor hygiene and risk review</h3>
+            <p>This workspace tracks <strong>external backlinks</strong> earned from third-party sites, not internal links. Plan editorial, digital PR, broken-link, unlinked-mention and resource campaigns, score each opportunity for quality and Google-policy risk, then hand off to the Paperclip <strong>LINK BUILDING</strong> company workspace.</p>
+          </div>
+          <div class="product-actions">
+            <a class="product-btn primary" href="http://127.0.0.1:3100/LIN/dashboard" target="_blank" rel="noopener noreferrer" title="Local Paperclip company · prefix LIN">Open Paperclip LINK BUILDING (local)</a>
+            <button class="product-btn" type="button" data-seo-action="export-link-campaigns">Export campaigns JSON</button>
+            <button class="product-btn" type="button" data-seo-action="copy-link-brief">Copy campaign brief</button>
+          </div>
+        </div>
+        <div class="product-grid">
+          <div class="product-card wide">
+            <h4>Add a managed site / campaign</h4>
+            <p>Capture the site, target page, anchor strategy and link profile so the scorer can flag policy risk before outreach starts. Nothing is sent to a server — campaigns stay in this browser.</p>
+            <div class="kw-form-grid">
+              <input id="lbSiteName" class="product-input" placeholder="Site / client name, e.g. Promigun" />
+              <input id="lbHomepageUrl" class="product-input" placeholder="Homepage URL" />
+              <input id="lbTargetUrl" class="product-input" placeholder="Target page URL (the page that should receive the link)" />
+              <input id="lbTopic" class="product-input" placeholder="Topic / niche, e.g. tactical security gear" />
+            </div>
+            <textarea id="lbKeywords" class="product-textarea" placeholder="Target keywords / anchor themes (comma or newline separated)&#10;tactical vests&#10;security equipment Israel"></textarea>
+            <div class="kw-form-grid lb-form-grid">
+              <select id="lbLinkType" class="product-select" aria-label="Link type">
+                <option value="editorial">Editorial placement</option>
+                <option value="guest-post">Guest post</option>
+                <option value="digital-pr">Digital PR</option>
+                <option value="resource-page">Resource page</option>
+                <option value="broken-link">Broken-link building</option>
+                <option value="unlinked-mention">Unlinked mention reclamation</option>
+                <option value="directory">Directory / citation</option>
+                <option value="partner">Partner / community</option>
+                <option value="niche-edit">Niche edit</option>
+                <option value="sponsored">Sponsored / paid</option>
+                <option value="ugc">UGC / forum</option>
+              </select>
+              <select id="lbLinkTier" class="product-select" aria-label="Link strength tier">
+                <option value="tier1">Tier 1 · authority</option>
+                <option value="tier2">Tier 2 · topical</option>
+                <option value="tier3">Tier 3 · foundational / local</option>
+                <option value="reclamation">Reclamation</option>
+              </select>
+              <select id="lbLinkAttr" class="product-select" aria-label="Link rel attribute">
+                <option value="follow">rel=follow (dofollow)</option>
+                <option value="nofollow">rel=nofollow</option>
+                <option value="sponsored">rel=sponsored</option>
+                <option value="ugc">rel=ugc</option>
+              </select>
+            </div>
+            <textarea id="lbNotes" class="product-textarea" placeholder="Notes / outreach angle (linkable asset, journalist beat, broken URL, mention source, etc.)"></textarea>
+            <div class="product-row">
+              <button class="product-btn primary" type="button" data-seo-action="add-link-campaign">Add campaign</button>
+              <button class="product-btn" type="button" data-seo-action="clear-link-campaigns">Clear queue</button>
+              <button class="product-btn" type="button" data-seo-action="generate-link-plan">Generate plan</button>
+            </div>
+            <div id="lbQueueResult" class="prepared-list" aria-live="polite"></div>
+          </div>
+          <div class="product-card wide">
+            <h4>Suggested campaigns &amp; linkable-asset playbooks</h4>
+            <div class="lb-playbook-grid">
+              <div class="lb-playbook"><strong>Competitor backlink gap</strong><span>Pull top competitor referring domains, filter by topical relevance and DR, prioritize editorial/resource targets first.</span></div>
+              <div class="lb-playbook"><strong>Broken-link building</strong><span>Scan resource pages and competitor outbound links for 404s, offer your asset as the replacement.</span></div>
+              <div class="lb-playbook"><strong>Unlinked brand mentions</strong><span>Reclaim mentions of the brand or unique product names that did not link back — fastest, lowest risk.</span></div>
+              <div class="lb-playbook"><strong>Digital PR &amp; linkable assets</strong><span>Original data, surveys, calculators, maps or interactive tools that journalists in the niche actually cite.</span></div>
+              <div class="lb-playbook"><strong>Resource pages</strong><span>Curated &quot;best of&quot; or local/industry hubs — pitch the target page as a genuine addition to the list.</span></div>
+              <div class="lb-playbook"><strong>Guest posts (editorial)</strong><span>Topically aligned publications with editorial standards. Avoid networks, footer links and over-optimized anchors.</span></div>
+              <div class="lb-playbook"><strong>Local citations &amp; directories</strong><span>Foundational NAP consistency for local SEO — Google Business Profile, niche directories, chambers, associations.</span></div>
+              <div class="lb-playbook"><strong>Partner / community links</strong><span>Suppliers, integrations, sponsorships, alumni and customer pages — natural editorial context.</span></div>
+            </div>
+          </div>
+          <div class="product-card">
+            <h4>Paperclip handoff</h4>
+            <ul>
+              <li>Company: <strong>LINK BUILDING</strong> (prefix <code>LIN</code>)</li>
+              <li>Local route: <code>http://127.0.0.1:3100/LIN/dashboard</code></li>
+              <li>Use Paperclip to log outreach contacts, follow-ups and earned placements per campaign added here.</li>
+            </ul>
+          </div>
+          <div class="product-card">
+            <h4>Scoring &amp; risk model</h4>
+            <ul>
+              <li>Quality score rewards topical fit, target-page presence, anchor themes and editorial / digital-PR / broken-link / unlinked-mention plays.</li>
+              <li>Risk flags fire when paid links miss <code>rel=sponsored</code>, when UGC/forum links miss <code>rel=ugc</code> or <code>nofollow</code>, on niche edits, and on missing topic/target/keywords.</li>
+              <li>Anchor guidance follows Google&apos;s link spam policy: avoid exact-match over-optimization, link schemes and undisclosed paid links.</li>
+            </ul>
+          </div>
+          <div class="product-card">
+            <h4>Google-compliant defaults</h4>
+            <ul>
+              <li>Paid / sponsored placements must use <code>rel=&quot;sponsored&quot;</code>.</li>
+              <li>User-generated or forum links should use <code>rel=&quot;ugc&quot;</code> or <code>rel=&quot;nofollow&quot;</code>.</li>
+              <li>Editorial, resource and reclamation links are typically <code>follow</code>.</li>
+              <li>Diversify anchor text: branded, naked URL, partial-match, generic; avoid stuffed exact-match.</li>
+            </ul>
+          </div>
         </div>
       </article>
     </section>
