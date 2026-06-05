@@ -1,8 +1,7 @@
 services:
   - type: web
-    name: n8n-dashboard
-    runtime: node
-    plan: free
+    name: n8n-dashboard-improved
+    env: node
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
