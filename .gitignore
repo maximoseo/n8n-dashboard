@@ -1,39 +1,35 @@
-# Environment and secrets
-.env
-*.env
-.env.local
-.env.*.local
+# Dependencies
+node_modules
+.pnp
+.pnp.js
 
-# Credentials
-creds.json
-credentials.json
+# Testing
+coverage
 
-# Data files (generated)
-workflows.json
-executions.json
+# Next.js
+.next/
+out/
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
+# Production
+dist
+build
 
-# Node
-node_modules/
+# Misc
+.DS_Store
+*.pem
+
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build outputs
-dist/
-build/
+# Local env files
+.env*.local
+.env
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# Vercel
+.vercel
 
-# OS
-.DS_Store
-Thumbs.db
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

@@ -1,2 +1,0 @@
-// Components module index
-export {};

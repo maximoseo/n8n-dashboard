@@ -1,2 +1,0 @@
-// Charts module index
-export {};
