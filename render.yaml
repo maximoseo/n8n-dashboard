@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: n8n-dashboard-improved
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    name: n8n-dashboard
+    runtime: static
+    buildCommand: npm ci && npm run build && npm run render:static
+    staticPublishPath: out
     envVars:
       - key: NODE_ENV
         value: production
