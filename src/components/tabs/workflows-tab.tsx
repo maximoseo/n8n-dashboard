@@ -122,7 +122,7 @@ export function WorkflowsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Workflow className="w-6 h-6 text-blue-500" />
@@ -136,8 +136,8 @@ export function WorkflowsTab() {
         </Button>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
+        <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             placeholder="Search workflows..."
@@ -146,7 +146,7 @@ export function WorkflowsTab() {
             className="pl-10 bg-slate-900 border-slate-800 text-white"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Badge variant="outline" className="border-slate-700 text-slate-400">
             Active: {workflows.filter((w) => w.status === 'active').length}
           </Badge>
@@ -163,14 +163,14 @@ export function WorkflowsTab() {
         {filteredWorkflows.map((workflow) => (
           <Card key={workflow.id} className="bg-slate-900 border-slate-800">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                <div className="flex min-w-0 items-start gap-3 sm:gap-4">
                   <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center">
                     {getStatusIcon(workflow.status)}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-white">{workflow.name}</h3>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-semibold text-white break-words [overflow-wrap:anywhere]">{workflow.name}</h3>
                       {getStatusBadge(workflow.status)}
                       <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs">
                         {workflow.category}
@@ -184,19 +184,19 @@ export function WorkflowsTab() {
                         }}
                       />
                     </div>
-                    <p className="text-sm text-slate-400 mt-0.5">{workflow.description}</p>
+                    <p className="text-sm text-slate-400 mt-0.5 break-words [overflow-wrap:anywhere]">{workflow.description}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-slate-400">
-                  <div className="text-right">
+                <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400 sm:gap-4">
+                  <div>
                     <p className="text-white font-medium">{workflow.runs.toLocaleString()}</p>
                     <p>total runs</p>
                   </div>
-                  <div className="text-right">
+                  <div>
                     <p className="text-white font-medium">{workflow.lastRun}</p>
                     <p>last run</p>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex flex-wrap gap-1">
                     <a
                       href={`https://websiseo.app.n8n.cloud/workflow/${workflow.id}`}
                       target="_blank"

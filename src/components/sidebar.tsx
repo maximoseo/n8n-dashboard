@@ -33,28 +33,32 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
   return (
     <aside
       className={cn(
-        'flex flex-col bg-slate-900 border-r border-slate-800 transition-all duration-300',
-        collapsed ? 'w-16' : 'w-64'
+        'flex flex-col bg-slate-900 border-r border-slate-800 transition-all duration-300 shrink-0',
+        'w-16 md:w-auto',
+        collapsed ? 'md:w-16' : 'md:w-64'
       )}
     >
       <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800">
         {!collapsed && (
-          <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
               <Workflow className="w-4 h-4 text-white" />
             </div>
             <span className="font-semibold text-white">n8n</span>
           </div>
         )}
-        {collapsed && (
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mx-auto">
+        {(collapsed || !collapsed) && (
+          <div className={cn(
+            'w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 items-center justify-center mx-auto',
+            collapsed ? 'flex' : 'flex md:hidden'
+          )}>
             <Workflow className="w-4 h-4 text-white" />
           </div>
         )}
         <button
           onClick={onToggle}
           className={cn(
-            'p-1 rounded-lg hover:bg-slate-800 text-slate-400',
+            'hidden md:block p-1 rounded-lg hover:bg-slate-800 text-slate-400',
             collapsed && 'absolute -right-3 bg-slate-800 border border-slate-700'
           )}
         >
@@ -81,9 +85,9 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
               <Icon className="w-5 h-5 flex-shrink-0" />
               {!collapsed && (
                 <>
-                  <span className="flex-1 text-left">{item.label}</span>
+                  <span className="hidden md:block flex-1 text-left">{item.label}</span>
                   {item.count !== null && (
-                    <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
+                    <span className="hidden md:inline text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">
                       {item.count}
                     </span>
                   )}
@@ -105,7 +109,7 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
           )}
         >
           <Paperclip className="w-5 h-5" />
-          {!collapsed && <span>Paperclip AI</span>}
+          {!collapsed && <span className="hidden md:inline">Paperclip AI</span>}
         </a>
       </div>
     </aside>

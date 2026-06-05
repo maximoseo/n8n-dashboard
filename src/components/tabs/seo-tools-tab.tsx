@@ -54,17 +54,17 @@ export function SeoToolsTab() {
             {integrations.map((integration) => {
               const Icon = integration.icon
               return (
-                <div key={integration.id} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
-                  <div className="flex items-center gap-3">
+                <div key={integration.id} className="flex flex-col gap-3 p-3 bg-slate-800 rounded-lg sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center">
                       <Icon className="w-5 h-5 text-slate-400" />
                     </div>
-                    <div>
-                      <p className="font-medium text-white">{integration.name}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium text-white break-words">{integration.name}</p>
                       <p className="text-xs text-slate-400">Last sync: {integration.lastSync}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {integration.status === 'connected' ? (
                       <Badge variant="success" className="flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" />
@@ -100,8 +100,8 @@ export function SeoToolsTab() {
                 <h4 className="text-sm font-medium text-slate-300 mb-2">{section.category}</h4>
                 <div className="space-y-1">
                   {section.items.map((item) => (
-                    <div key={item} className="flex items-center justify-between p-2 hover:bg-slate-800 rounded-lg cursor-pointer">
-                      <span className="text-sm text-slate-400">{item}</span>
+                    <div key={item} className="flex flex-col gap-2 p-2 hover:bg-slate-800 rounded-lg cursor-pointer sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-sm text-slate-400 break-words">{item}</span>
                       <Badge variant="outline" className="border-slate-700 text-slate-500 text-xs">
                         Configure
                       </Badge>
@@ -124,16 +124,16 @@ export function SeoToolsTab() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-slate-800 rounded-lg">
-              <Badge variant="outline" className="border-slate-700 text-slate-400 mb-2">rel=sponsored</Badge>
+            <div className="p-4 bg-slate-800 rounded-lg min-w-0">
+              <Badge variant="outline" className="border-slate-700 text-slate-400 mb-2 max-w-full whitespace-normal break-all">rel=sponsored</Badge>
               <p className="text-sm text-slate-400">Required for paid or sponsored placements</p>
             </div>
-            <div className="p-4 bg-slate-800 rounded-lg">
-              <Badge variant="outline" className="border-slate-700 text-slate-400 mb-2">rel=ugc</Badge>
+            <div className="p-4 bg-slate-800 rounded-lg min-w-0">
+              <Badge variant="outline" className="border-slate-700 text-slate-400 mb-2 max-w-full whitespace-normal break-all">rel=ugc</Badge>
               <p className="text-sm text-slate-400">Required for user-generated content links</p>
             </div>
-            <div className="p-4 bg-slate-800 rounded-lg">
-              <Badge variant="outline" className="border-slate-700 text-slate-400 mb-2">rel=nofollow</Badge>
+            <div className="p-4 bg-slate-800 rounded-lg min-w-0">
+              <Badge variant="outline" className="border-slate-700 text-slate-400 mb-2 max-w-full whitespace-normal break-all">rel=nofollow</Badge>
               <p className="text-sm text-slate-400">Use when link value should not be passed</p>
             </div>
           </div>
