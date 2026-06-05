@@ -19,70 +19,44 @@ import {
   Plus,
   Workflow,
   ExternalLink,
+  Loader2,
 } from 'lucide-react'
 
-const workflows = [
-  {
-    id: 1,
-    name: 'URL Screenshot Pipeline',
-    description: 'Captures responsive screenshots via Browserless with fallback providers',
-    status: 'active',
-    lastRun: '2 min ago',
-    runs: 1247,
-    category: 'URLs',
-  },
-  {
-    id: 2,
-    name: 'Parent ID Scanner',
-    description: 'WordPress site scanning with credential validation and writeback',
-    status: 'active',
-    lastRun: '15 min ago',
-    runs: 892,
-    category: 'WordPress',
-  },
-  {
-    id: 3,
-    name: 'SERP Keyword Research',
-    description: 'SERP analysis, competitor discovery and validation agents',
-    status: 'paused',
-    lastRun: '1 hour ago',
-    runs: 456,
-    category: 'Research',
-  },
-  {
-    id: 4,
-    name: 'Cannibalization Checker',
-    description: 'Overlap analysis and keyword conflict detection',
-    status: 'active',
-    lastRun: '30 min ago',
-    runs: 234,
-    category: 'Analysis',
-  },
-  {
-    id: 5,
-    name: 'Content Brief Generator',
-    description: 'AI synthesis and workbook generation for content teams',
-    status: 'active',
-    lastRun: '5 min ago',
-    runs: 678,
-    category: 'Content',
-  },
-  {
-    id: 6,
-    name: 'Link Building Scorer',
-    description: 'Quality scoring and Google policy risk assessment',
-    status: 'error',
-    lastRun: '3 hours ago',
-    runs: 123,
-    category: 'Links',
-  },
-]
+interface WorkflowItem {
+  id: string
+  name: string
+  description: string
+  status: 'active' | 'paused' | 'error'
+  lastRun: string
+  runs: number
+  category: string
+}
 
 export function WorkflowsTab() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [workflows, setWorkflows] = useState<WorkflowItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [sheetMappings, setSheetMappings] = useState<Record<string, SheetMappingData>>({})
   const [selectedWorkflow, setSelectedWorkflow] = useState<{id: string, name: string} | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Load workflows from API
+  useEffect(() => {
+    async function loadWorkflows() {
+      try {
+        const response = await fetch('/api/n8n/workflows')
+        if (response.ok) {
+          const data = await response.json()
+          setWorkflows(data.workflows || [])
+        }
+      } catch (error) {
+        console.error('Failed to load workflows:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadWorkflows()
+  }, [])
 
   // Load sheet mappings from Supabase
   useEffect(() => {
@@ -111,10 +85,9 @@ export function WorkflowsTab() {
     }))
   }
 
-  const filteredWorkflows = workflows.filter(
-    (w) =>
-      w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      w.category.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredWorkflows = workflows.filter((w) =>
+    w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    w.category.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const getStatusIcon = (status: string) => {
@@ -128,6 +101,14 @@ export function WorkflowsTab() {
       default:
         return <Clock className="w-4 h-4 text-slate-400" />
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      </div>
+    )
   }
 
   const getStatusBadge = (status: string) => {

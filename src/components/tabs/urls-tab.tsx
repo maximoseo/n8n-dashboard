@@ -18,6 +18,8 @@ import {
   Smartphone,
   Monitor,
   Plus,
+  Loader2,
+  FileText,
 } from 'lucide-react'
 
 const sites = [
@@ -26,15 +28,32 @@ const sites = [
   { id: 3, name: 'client-site.com', url: 'https://client-site.com', status: 'error', lastScan: '3 days ago' },
 ]
 
-const recentScreenshots = [
-  { id: 1, url: 'https://example.com/page1', device: 'desktop', status: 'completed', date: '10 min ago' },
-  { id: 2, url: 'https://example.com/page2', device: 'mobile', status: 'completed', date: '15 min ago' },
-  { id: 3, url: 'https://example.com/page3', device: 'desktop', status: 'processing', date: 'just now' },
-]
+interface ScreenshotResult {
+  url: string
+  device: 'desktop' | 'mobile' | 'tablet'
+  status: 'completed' | 'processing' | 'error'
+  image?: string
+  timestamp: string
+  error?: string
+}
+
+interface ScrapedData {
+  url: string
+  markdown?: string
+  html?: string
+  title?: string
+  timestamp: string
+}
 
 export function UrlsTab() {
   const [activeSubTab, setActiveSubTab] = useState('screenshots')
   const [urlInput, setUrlInput] = useState('')
+  const [scrapeUrlInput, setScrapeUrlInput] = useState('')
+  const [screenshots, setScreenshots] = useState<ScreenshotResult[]>([])
+  const [scrapedData, setScrapedData] = useState<ScrapedData | null>(null)
+  const [isCapturing, setIsCapturing] = useState(false)
+  const [isScraping, setIsScraping] = useState(false)
+  const [selectedDevice, setSelectedDevice] = useState<'desktop' | 'mobile' | 'tablet'>('desktop')
 
   return (
     <div className="space-y-6">
@@ -80,20 +99,80 @@ export function UrlsTab() {
                   placeholder="https://example.com/page1&#10;https://example.com/page2&#10;https://example.com/page3"
                   className="w-full h-32 bg-slate-800 border border-slate-700 rounded-lg p-3 text-white placeholder:text-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
-                <div className="flex items-center gap-3">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    <Camera className="w-4 h-4 mr-2" />
-                    Capture Screenshots
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Button 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={async () => {
+                      const urls = urlInput.split('\n').filter(u => u.trim())
+                      if (urls.length === 0) return
+                      
+                      setIsCapturing(true)
+                      const newScreenshots: ScreenshotResult[] = []
+                      
+                      for (const url of urls.slice(0, 3)) {
+                        try {
+                          const response = await fetch('/api/browserless/screenshot', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url: url.trim(), viewport: selectedDevice })
+                          })
+                          
+                          const data = await response.json()
+                          
+                          if (data.success) {
+                            newScreenshots.push({
+                              url: url.trim(),
+                              device: selectedDevice,
+                              status: 'completed',
+                              image: data.image,
+                              timestamp: new Date().toISOString()
+                            })
+                          } else {
+                            newScreenshots.push({
+                              url: url.trim(),
+                              device: selectedDevice,
+                              status: 'error',
+                              error: data.error,
+                              timestamp: new Date().toISOString()
+                            })
+                          }
+                        } catch (error) {
+                          newScreenshots.push({
+                            url: url.trim(),
+                            device: selectedDevice,
+                            status: 'error',
+                            error: 'Failed to capture',
+                            timestamp: new Date().toISOString()
+                          })
+                        }
+                      }
+                      
+                      setScreenshots(prev => [...newScreenshots, ...prev].slice(0, 10))
+                      setIsCapturing(false)
+                    }}
+                    disabled={isCapturing || !urlInput.trim()}
+                  >
+                    {isCapturing ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Capturing...</>
+                    ) : (
+                      <><Camera className="w-4 h-4 mr-2" /> Capture Screenshots</>
+                    )}
                   </Button>
                   <div className="flex gap-2">
-                    <Badge variant="outline" className="border-slate-700 text-slate-400">
-                      <Monitor className="w-3 h-3 mr-1" />
+                    <button 
+                      onClick={() => setSelectedDevice('desktop')}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm border transition-colors ${selectedDevice === 'desktop' ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-700 text-slate-400 hover:text-white'}`}
+                    >
+                      <Monitor className="w-3 h-3" />
                       Desktop
-                    </Badge>
-                    <Badge variant="outline" className="border-slate-700 text-slate-400">
-                      <Smartphone className="w-3 h-3 mr-1" />
+                    </button>
+                    <button 
+                      onClick={() => setSelectedDevice('mobile')}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm border transition-colors ${selectedDevice === 'mobile' ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-700 text-slate-400 hover:text-white'}`}
+                    >
+                      <Smartphone className="w-3 h-3" />
                       Mobile
-                    </Badge>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -101,44 +180,157 @@ export function UrlsTab() {
           </Card>
 
           <div className="grid gap-4">
-            <h3 className="text-lg font-semibold text-white">Recent Captures</h3>
-            {recentScreenshots.map((screenshot) => (
-              <Card key={screenshot.id} className="bg-slate-900 border-slate-800">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-12 bg-slate-800 rounded border border-slate-700 flex items-center justify-center">
-                        {screenshot.device === 'mobile' ? (
-                          <Smartphone className="w-6 h-6 text-slate-500" />
-                        ) : (
-                          <Monitor className="w-6 h-6 text-slate-500" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">{screenshot.url}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs">
-                            {screenshot.device}
-                          </Badge>
-                          <span className="text-sm text-slate-500">{screenshot.date}</span>
+            <h3 className="text-lg font-semibold text-white">Recent Captures ({screenshots.length})</h3>
+            {screenshots.length === 0 ? (
+              <p className="text-slate-500 text-center py-8">No screenshots captured yet. Enter URLs above to start.</p>
+            ) : (
+              screenshots.map((screenshot, index) => (
+                <Card key={index} className="bg-slate-900 border-slate-800">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-12 bg-slate-800 rounded border border-slate-700 flex items-center justify-center overflow-hidden">
+                          {screenshot.image ? (
+                            <img src={screenshot.image} alt="Screenshot" className="w-full h-full object-cover" />
+                          ) : screenshot.device === 'mobile' ? (
+                            <Smartphone className="w-6 h-6 text-slate-500" />
+                          ) : (
+                            <Monitor className="w-6 h-6 text-slate-500" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-white truncate">{screenshot.url}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs">
+                              {screenshot.device}
+                            </Badge>
+                            <span className="text-sm text-slate-500">{new Date(screenshot.timestamp).toLocaleTimeString()}</span>
+                          </div>
+                          {screenshot.error && (
+                            <p className="text-xs text-red-400 mt-1">{screenshot.error}</p>
+                          )}
                         </div>
                       </div>
+                      <div className="flex items-center gap-2">
+                        {screenshot.status === 'completed' ? (
+                          <Badge variant="success">Done</Badge>
+                        ) : screenshot.status === 'error' ? (
+                          <Badge variant="danger">Error</Badge>
+                        ) : (
+                          <Badge variant="warning"><Loader2 className="w-3 h-3 animate-spin mr-1" />...</Badge>
+                        )}
+                        {screenshot.image && (
+                          <Button variant="ghost" size="sm" className="text-slate-400" onClick={() => {
+                            const a = document.createElement('a')
+                            a.href = screenshot.image!
+                            a.download = `screenshot-${screenshot.device}-${Date.now()}.png`
+                            a.click()
+                          }}>
+                            <Download className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {screenshot.status === 'completed' ? (
-                        <Badge variant="success">Completed</Badge>
-                      ) : (
-                        <Badge variant="warning">Processing</Badge>
-                      )}
-                      <Button variant="ghost" size="sm" className="text-slate-400">
-                        <Download className="w-4 h-4" />
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          {/* Firecrawl Section */}
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <FileText className="w-5 h-5 text-green-500" />
+                Scrape Content (Firecrawl)
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Extract clean markdown and HTML from any URL
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    value={scrapeUrlInput}
+                    onChange={(e) => setScrapeUrlInput(e.target.value)}
+                    placeholder="https://example.com/article"
+                    className="flex-1 bg-slate-800 border-slate-700 text-white"
+                  />
+                  <Button 
+                    className="bg-green-600 hover:bg-green-700"
+                    onClick={async () => {
+                      if (!scrapeUrlInput.trim()) return
+                      
+                      setIsScraping(true)
+                      try {
+                        const response = await fetch('/api/firecrawl/scrape', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ url: scrapeUrlInput.trim() })
+                        })
+                        
+                        const data = await response.json()
+                        
+                        if (data.success) {
+                          setScrapedData({
+                            url: scrapeUrlInput.trim(),
+                            markdown: data.data?.markdown,
+                            html: data.data?.html,
+                            title: data.data?.metadata?.title,
+                            timestamp: new Date().toISOString()
+                          })
+                        } else {
+                          alert('Failed to scrape: ' + data.error)
+                        }
+                      } catch (error) {
+                        alert('Error scraping URL')
+                      } finally {
+                        setIsScraping(false)
+                      }
+                    }}
+                    disabled={isScraping || !scrapeUrlInput.trim()}
+                  >
+                    {isScraping ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Scraping...</>
+                    ) : (
+                      <><FileText className="w-4 h-4 mr-2" /> Scrape</>
+                    )}
+                  </Button>
+                </div>
+                
+                {scrapedData && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-white">{scrapedData.title || 'Scraped Content'}</h4>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-slate-700 text-slate-300"
+                        onClick={() => {
+                          if (scrapedData.markdown) {
+                            const blob = new Blob([scrapedData.markdown], { type: 'text/markdown' })
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url
+                            a.download = `scraped-${Date.now()}.md`
+                            a.click()
+                          }
+                        }}
+                      >
+                        <Download className="w-4 h-4 mr-2" /> Download MD
                       </Button>
                     </div>
+                    {scrapedData.markdown && (
+                      <div className="bg-slate-800 rounded-lg p-4 max-h-96 overflow-y-auto">
+                        <pre className="text-sm text-slate-300 whitespace-pre-wrap font-mono">{scrapedData.markdown.substring(0, 2000)}...</pre>
+                      </div>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
