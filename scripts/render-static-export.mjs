@@ -1,4 +1,4 @@
-import { cp, mkdir, rm } from 'fs/promises';
+import { cp, mkdir, rm, writeFile } from 'fs/promises';
 import path from 'path';
 
 const root = process.cwd();
@@ -33,5 +33,11 @@ await copyPage(
   path.join(outDir, 'auth', 'callback.html'),
 );
 await copyPage(path.join(nextDir, 'server', 'app', '_not-found.html'), path.join(outDir, '404.html'));
+
+await copyPage(
+  path.join(nextDir, 'server', 'app', 'api', 'n8n', 'workflows.body'),
+  path.join(outDir, 'api', 'n8n', 'workflows'),
+);
+await writeFile(path.join(outDir, 'api', 'sheet-mappings'), '[]\n');
 
 console.log(`Static Render export written to ${outDir}`);
