@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "render:static": "node scripts/render-static-export.mjs",
     "start": "next start"
   },
   "keywords": [],
