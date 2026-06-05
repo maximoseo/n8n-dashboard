@@ -56,7 +56,7 @@ export async function sendAlertNotification(
 <b>Type:</b> ${escapeHtml(issue.type.toUpperCase())}
 <b>Details:</b> ${escapeHtml(issue.details)}
 
-<a href="https://n8n-dashboard-v3.onrender.com">View Dashboard</a>
+<a href="https://n8n-dashboard-3229.onrender.com">View Dashboard</a>
 
 <em>Sent: ${new Date().toLocaleString()}</em>`
 
@@ -93,7 +93,7 @@ ${stats.errorWorkflows > 0
   ? `⚠️ <b>${stats.errorWorkflows} workflow(s) need attention!</b>` 
   : '✅ All systems operational'}
 
-<a href="https://n8n-dashboard-v3.onrender.com">Open Dashboard</a>
+<a href="https://n8n-dashboard-3229.onrender.com">Open Dashboard</a>
 
 <em>${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</em>`
 
@@ -250,14 +250,14 @@ You'll receive automatic notifications for:
       return {
         success: true,
         response: `📊 Use the web dashboard for full status:
-https://n8n-dashboard-v3.onrender.com`,
+https://n8n-dashboard-3229.onrender.com`,
       }
 
     case '/workflows':
       return {
         success: true,
         response: `🔄 View all workflows:
-https://n8n-dashboard-v3.onrender.com`,
+https://n8n-dashboard-3229.onrender.com`,
       }
 
     case '/alert':

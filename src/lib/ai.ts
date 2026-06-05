@@ -88,7 +88,7 @@ export async function generateWithOpenRouter(
       headers: {
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://n8n-dashboard-v3.onrender.com',
+        'HTTP-Referer': 'https://n8n-dashboard-3229.onrender.com',
         'X-Title': 'n8n Dashboard',
       },
       body: JSON.stringify({

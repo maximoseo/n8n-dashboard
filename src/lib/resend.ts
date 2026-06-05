@@ -99,7 +99,7 @@ export const emailTemplates = {
           ${issue.lastRun ? `<p><strong>Last Run:</strong> ${issue.lastRun}</p>` : ''}
         </div>
       `).join('')}
-      <a href="https://n8n-dashboard-v3.onrender.com" class="button">View Dashboard</a>
+      <a href="https://n8n-dashboard-3229.onrender.com" class="button">View Dashboard</a>
     </div>
     <div class="footer">
       <p>This is an automated alert from n8n Dashboard - MaximoSEO</p>
@@ -163,7 +163,7 @@ export const emailTemplates = {
         </div>
       </div>
       <p style="text-align: center; color: #94a3b8;">Total runs today: <strong style="color: white;">${stats.totalRuns.toLocaleString()}</strong></p>
-      <a href="https://n8n-dashboard-v3.onrender.com" class="button">View Dashboard</a>
+      <a href="https://n8n-dashboard-3229.onrender.com" class="button">View Dashboard</a>
     </div>
     <div class="footer">
       <p>n8n Dashboard - MaximoSEO</p>
