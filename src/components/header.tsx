@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, User, LogOut, Settings, Search } from 'lucide-react'
+import { Bell, User, LogOut, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -27,7 +27,13 @@ export function Header({ onLogout }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white relative">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-slate-400 hover:text-white relative"
+          aria-label="View notifications"
+          title="Notifications"
+        >
           <Bell className="w-5 h-5" />
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center text-white font-medium">
             3
@@ -51,6 +57,8 @@ export function Header({ onLogout }: HeaderProps) {
           size="sm"
           onClick={onLogout}
           className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+          aria-label="Log out"
+          title="Log out"
         >
           <LogOut className="w-5 h-5" />
         </Button>
