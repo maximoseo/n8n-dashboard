@@ -1,8 +1,12 @@
 'use client'
 
+'use client'
+
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { ActionNotice } from '@/components/action-notice'
 import {
   Settings,
   Key,
@@ -31,6 +35,8 @@ const settings = [
 ]
 
 export function SeoToolsTab() {
+  const [notice, setNotice] = useState<{title: string, message: string, type?: 'info' | 'success' | 'warning' | 'error'} | null>(null)
+
   return (
     <div className="space-y-6">
       <div>
@@ -40,6 +46,15 @@ export function SeoToolsTab() {
         </h1>
         <p className="text-slate-400 mt-1">Configure integrations, API keys, and tool preferences</p>
       </div>
+
+      {notice && (
+        <ActionNotice
+          type={notice.type}
+          title={notice.title}
+          message={notice.message}
+          onDismiss={() => setNotice(null)}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="bg-slate-900 border-slate-800">
@@ -76,7 +91,20 @@ export function SeoToolsTab() {
                         Error
                       </Badge>
                     )}
-                    <Button variant="ghost" size="sm" className="text-slate-400 h-8 w-8 p-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-400 h-8 w-8 p-0"
+                      aria-label={`Refresh ${integration.name}`}
+                      title={`Refresh ${integration.name}`}
+                      onClick={() => setNotice({
+                        type: integration.status === 'connected' ? 'success' : 'warning',
+                        title: `${integration.name} status checked`,
+                        message: integration.status === 'connected'
+                          ? 'This integration is present in the current static status snapshot. Live health checks require the server-backed version of the dashboard.'
+                          : 'Firecrawl is intentionally marked as requiring server-side execution so its API key is not exposed in the browser.',
+                      })}
+                    >
                       <RefreshCw className="w-4 h-4" />
                     </Button>
                   </div>
@@ -100,12 +128,21 @@ export function SeoToolsTab() {
                 <h4 className="text-sm font-medium text-slate-300 mb-2">{section.category}</h4>
                 <div className="space-y-1">
                   {section.items.map((item) => (
-                    <div key={item} className="flex flex-col gap-2 p-2 hover:bg-slate-800 rounded-lg cursor-pointer sm:flex-row sm:items-center sm:justify-between">
+                    <button
+                      key={item}
+                      type="button"
+                      className="flex w-full flex-col gap-2 rounded-lg p-2 text-left hover:bg-slate-800 sm:flex-row sm:items-center sm:justify-between"
+                      onClick={() => setNotice({
+                        type: 'warning',
+                        title: `${item} is managed outside this static dashboard`,
+                        message: 'Credential changes must be made in Render/Supabase/Paperclip server configuration. This browser UI will not expose or edit secrets directly.',
+                      })}
+                    >
                       <span className="text-sm text-slate-400 break-words">{item}</span>
                       <Badge variant="outline" className="border-slate-700 text-slate-500 text-xs">
                         Configure
                       </Badge>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>

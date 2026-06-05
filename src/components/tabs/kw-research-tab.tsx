@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { ActionNotice } from '@/components/action-notice'
 import {
   Search,
   ExternalLink,
@@ -35,10 +36,68 @@ const recentRuns = [
 
 export function KwResearchTab() {
   const [briefText, setBriefText] = useState('')
+  const [notice, setNotice] = useState<{title: string, message: string, type?: 'info' | 'success' | 'warning' | 'error'} | null>(null)
+  const [runs, setRuns] = useState(recentRuns)
+
+  const queueResearch = () => {
+    if (!briefText.trim()) {
+      setNotice({
+        type: 'warning',
+        title: 'Brief is empty',
+        message: 'Add the target industry, location, services, and competitors before queueing research.',
+      })
+      return
+    }
+
+    setRuns(prev => [{
+      id: Date.now(),
+      project: 'New research brief',
+      type: 'Queued locally',
+      keywords: Math.max(1, briefText.split(/\s+/).filter(Boolean).length),
+      status: 'processing',
+      date: 'just now',
+    }, ...prev])
+    setNotice({
+      type: 'success',
+      title: 'Research brief queued locally',
+      message: 'The brief is staged in this dashboard session. The production KW pipeline still runs in the full KW Research dashboard.',
+    })
+  }
+
+  const downloadBrief = () => {
+    const content = briefText.trim() || 'No keyword brief text entered yet.'
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `kw-research-brief-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const exportWorkbook = () => {
+    const csv = [
+      'project,keywords,status,progress,last_run',
+      ...projects.map((project) => [
+        project.name,
+        project.keywords,
+        project.status,
+        `${project.progress}%`,
+        project.lastRun,
+      ].join(',')),
+    ].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `kw-research-projects-${Date.now()}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Search className="w-6 h-6 text-blue-500" />
@@ -47,16 +106,37 @@ export function KwResearchTab() {
           <p className="text-slate-400 mt-1">Project research, run history, overlap analysis, and content briefs</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="border-slate-700 text-slate-300">
+          <a
+            href="https://kw-research.maximo-seo.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-700 bg-transparent px-4 py-2 font-medium text-slate-300 transition-colors hover:bg-slate-800"
+          >
             <ExternalLink className="w-4 h-4 mr-2" />
             Open Full Dashboard
-          </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          </a>
+          <Button
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={() => setNotice({
+              type: 'info',
+              title: 'Create projects in KW Research',
+              message: 'Use the full KW Research dashboard for persistent project creation. This embedded tab can stage briefs and export project data.',
+            })}
+          >
             <Plus className="w-4 h-4 mr-2" />
             New Project
           </Button>
         </div>
       </div>
+
+      {notice && (
+        <ActionNotice
+          type={notice.type}
+          title={notice.title}
+          message={notice.message}
+          onDismiss={() => setNotice(null)}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -89,7 +169,7 @@ export function KwResearchTab() {
                       Competitor Discovery
                     </Badge>
                   </div>
-                  <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Button className="bg-blue-600 hover:bg-blue-700" onClick={queueResearch}>
                     Queue Research
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -101,7 +181,16 @@ export function KwResearchTab() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">Active Projects</h3>
-              <Button variant="ghost" size="sm" className="text-slate-400">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-slate-400"
+                onClick={() => setNotice({
+                  type: 'info',
+                  title: 'Filter is not needed for sample data',
+                  message: 'There are four staged projects in this embedded view. Use the full dashboard for persistent filters.',
+                })}
+              >
                 <Filter className="w-4 h-4 mr-2" />
                 Filter
               </Button>
@@ -135,7 +224,17 @@ export function KwResearchTab() {
                           />
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" className="text-slate-400">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-400"
+                        onClick={() => setNotice({
+                          type: 'info',
+                          title: project.name,
+                          message: `Project status: ${project.status}, progress: ${project.progress}%, keywords: ${project.keywords}. Open the full dashboard for persistent project details.`,
+                        })}
+                        aria-label={`View ${project.name}`}
+                      >
                         <ArrowRight className="w-4 h-4" />
                       </Button>
                     </div>
@@ -152,7 +251,7 @@ export function KwResearchTab() {
               <CardTitle className="text-white text-base">Recent Runs</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {recentRuns.map((run) => (
+              {runs.map((run) => (
                 <div key={run.id} className="p-3 bg-slate-800 rounded-lg">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium text-white text-sm">{run.project}</span>
@@ -182,11 +281,11 @@ export function KwResearchTab() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-between border-slate-700 text-slate-300">
+              <Button variant="outline" className="w-full justify-between border-slate-700 text-slate-300" onClick={downloadBrief}>
                 <span>Generate Brief</span>
                 <FileText className="w-4 h-4" />
               </Button>
-              <Button variant="outline" className="w-full justify-between border-slate-700 text-slate-300">
+              <Button variant="outline" className="w-full justify-between border-slate-700 text-slate-300" onClick={exportWorkbook}>
                 <span>Export Workbook</span>
                 <Download className="w-4 h-4" />
               </Button>
@@ -202,7 +301,16 @@ export function KwResearchTab() {
                   <p className="text-xs text-slate-400 mt-1">
                     3 keyword conflicts detected between &quot;Dental Implants Miami&quot; pages
                   </p>
-                  <Button variant="ghost" size="sm" className="text-blue-400 p-0 h-auto mt-1 text-xs hover:text-blue-300 hover:bg-blue-500/10">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-blue-400 p-0 h-auto mt-1 text-xs hover:text-blue-300 hover:bg-blue-500/10"
+                    onClick={() => setNotice({
+                      type: 'warning',
+                      title: 'Cannibalization analysis',
+                      message: 'Three staged conflicts were detected in the sample dataset. Open the full KW dashboard to run the live overlap analysis against production data.',
+                    })}
+                  >
                     View Analysis
                   </Button>
                 </div>

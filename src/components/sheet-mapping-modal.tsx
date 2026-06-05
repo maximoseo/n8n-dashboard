@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { X, ExternalLink, FileSpreadsheet, Save } from 'lucide-react'
 
+const LOCAL_MAPPING_KEY = 'n8n-dashboard.sheetMappings'
+
 export interface SheetMapping {
   workflow_id: string
   sheet_url: string
@@ -51,7 +53,6 @@ export function SheetMappingModal({
       sheet_name: sheetName,
     }
     
-    // Save to Supabase
     try {
       const response = await fetch('/api/sheet-mappings', {
         method: existingMapping ? 'PUT' : 'POST',
@@ -63,11 +64,19 @@ export function SheetMappingModal({
         onSave(mapping)
         onClose()
       } else {
-        alert('Failed to save mapping')
+        throw new Error('Server writeback is unavailable on this static deployment')
       }
     } catch (error) {
-      console.error('Error saving mapping:', error)
-      alert('Error saving mapping')
+      const existing = JSON.parse(localStorage.getItem(LOCAL_MAPPING_KEY) || '{}')
+      localStorage.setItem(LOCAL_MAPPING_KEY, JSON.stringify({
+        ...existing,
+        [workflowId]: {
+          sheet_url: sheetUrl,
+          sheet_name: sheetName,
+        },
+      }))
+      onSave(mapping)
+      onClose()
     } finally {
       setIsSaving(false)
     }

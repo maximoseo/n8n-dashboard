@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ActionNotice } from '@/components/action-notice'
 import {
   Globe,
   Camera,
@@ -21,6 +22,8 @@ import {
   Loader2,
   FileText,
 } from 'lucide-react'
+
+const PAPERCLIP_URL = 'https://maximo-dashboard-company-paperclip.onrender.com/'
 
 const sites = [
   { id: 1, name: 'maximo-seo.ai', url: 'https://maximo-seo.ai', status: 'connected', lastScan: '2 hours ago' },
@@ -54,10 +57,57 @@ export function UrlsTab() {
   const [isCapturing, setIsCapturing] = useState(false)
   const [isScraping, setIsScraping] = useState(false)
   const [selectedDevice, setSelectedDevice] = useState<'desktop' | 'mobile' | 'tablet'>('desktop')
+  const [notice, setNotice] = useState<{title: string, message: string, type?: 'info' | 'success' | 'warning' | 'error'} | null>(null)
+
+  const captureScreenshots = () => {
+    const urls = urlInput.split('\n').map((u) => u.trim()).filter(Boolean)
+    if (urls.length === 0) return
+
+    setIsCapturing(true)
+    const newScreenshots = urls.slice(0, 10).map((url) => ({
+      url,
+      device: selectedDevice,
+      status: 'error' as const,
+      error: 'Server-side Browserless capture is not available on the static Render deployment. Open the full Paperclip tool to run the real screenshot workflow.',
+      timestamp: new Date().toISOString(),
+    }))
+
+    setScreenshots(prev => [...newScreenshots, ...prev].slice(0, 20))
+    setNotice({
+      type: 'warning',
+      title: 'Screenshot workflow needs the server tool',
+      message: 'The URLs were accepted, but live Browserless capture cannot run safely from this static browser bundle. Use Open Full Tool to execute the server-side workflow.',
+    })
+    setIsCapturing(false)
+  }
+
+  const prepareScrape = () => {
+    if (!scrapeUrlInput.trim()) return
+
+    setIsScraping(true)
+    setScrapedData({
+      url: scrapeUrlInput.trim(),
+      title: 'Firecrawl scrape request prepared',
+      markdown: [
+        `URL: ${scrapeUrlInput.trim()}`,
+        `Prepared at: ${new Date().toISOString()}`,
+        '',
+        'Live Firecrawl scraping requires a server-side endpoint so the API key stays private.',
+        'Open the full Paperclip tool to run the real scrape workflow.',
+      ].join('\n'),
+      timestamp: new Date().toISOString(),
+    })
+    setNotice({
+      type: 'warning',
+      title: 'Firecrawl needs server execution',
+      message: 'The static dashboard can prepare and export the request, but real scraping must run through the server-side Paperclip workflow.',
+    })
+    setIsScraping(false)
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Globe className="w-6 h-6 text-blue-500" />
@@ -65,11 +115,25 @@ export function UrlsTab() {
           </h1>
           <p className="text-slate-400 mt-1">Responsive screenshots, WordPress sites, and Parent ID scans</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <a
+          href={PAPERCLIP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+        >
           <ExternalLink className="w-4 h-4 mr-2" />
           Open Full Tool
-        </Button>
+        </a>
       </div>
+
+      {notice && (
+        <ActionNotice
+          type={notice.type}
+          title={notice.title}
+          message={notice.message}
+          onDismiss={() => setNotice(null)}
+        />
+      )}
 
       <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
         <TabsList className="bg-slate-900 border border-slate-800">
@@ -102,54 +166,7 @@ export function UrlsTab() {
                 <div className="flex items-center gap-3 flex-wrap">
                   <Button 
                     className="bg-blue-600 hover:bg-blue-700"
-                    onClick={async () => {
-                      const urls = urlInput.split('\n').filter(u => u.trim())
-                      if (urls.length === 0) return
-                      
-                      setIsCapturing(true)
-                      const newScreenshots: ScreenshotResult[] = []
-                      
-                      for (const url of urls.slice(0, 3)) {
-                        try {
-                          const response = await fetch('/api/browserless/screenshot', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ url: url.trim(), viewport: selectedDevice })
-                          })
-                          
-                          const data = await response.json()
-                          
-                          if (data.success) {
-                            newScreenshots.push({
-                              url: url.trim(),
-                              device: selectedDevice,
-                              status: 'completed',
-                              image: data.image,
-                              timestamp: new Date().toISOString()
-                            })
-                          } else {
-                            newScreenshots.push({
-                              url: url.trim(),
-                              device: selectedDevice,
-                              status: 'error',
-                              error: data.error,
-                              timestamp: new Date().toISOString()
-                            })
-                          }
-                        } catch (error) {
-                          newScreenshots.push({
-                            url: url.trim(),
-                            device: selectedDevice,
-                            status: 'error',
-                            error: 'Failed to capture',
-                            timestamp: new Date().toISOString()
-                          })
-                        }
-                      }
-                      
-                      setScreenshots(prev => [...newScreenshots, ...prev].slice(0, 10))
-                      setIsCapturing(false)
-                    }}
+                    onClick={captureScreenshots}
                     disabled={isCapturing || !urlInput.trim()}
                   >
                     {isCapturing ? (
@@ -259,36 +276,7 @@ export function UrlsTab() {
                   />
                   <Button 
                     className="bg-green-600 hover:bg-green-700"
-                    onClick={async () => {
-                      if (!scrapeUrlInput.trim()) return
-                      
-                      setIsScraping(true)
-                      try {
-                        const response = await fetch('/api/firecrawl/scrape', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ url: scrapeUrlInput.trim() })
-                        })
-                        
-                        const data = await response.json()
-                        
-                        if (data.success) {
-                          setScrapedData({
-                            url: scrapeUrlInput.trim(),
-                            markdown: data.data?.markdown,
-                            html: data.data?.html,
-                            title: data.data?.metadata?.title,
-                            timestamp: new Date().toISOString()
-                          })
-                        } else {
-                          alert('Failed to scrape: ' + data.error)
-                        }
-                      } catch (error) {
-                        alert('Error scraping URL')
-                      } finally {
-                        setIsScraping(false)
-                      }
-                    }}
+                    onClick={prepareScrape}
                     disabled={isScraping || !scrapeUrlInput.trim()}
                   >
                     {isScraping ? (
@@ -341,7 +329,15 @@ export function UrlsTab() {
               <Scan className="w-5 h-5 text-blue-500" />
               Saved WordPress Sites
             </h3>
-            <Button variant="outline" className="border-slate-700 text-slate-300">
+            <Button
+              variant="outline"
+              className="border-slate-700 text-slate-300"
+              onClick={() => setNotice({
+                type: 'warning',
+                title: 'Add Site requires writeback',
+                message: 'This static deployment can display saved sites, but adding a persistent WordPress site needs a server endpoint or Supabase write permission.',
+              })}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Site
             </Button>
@@ -401,10 +397,25 @@ export function UrlsTab() {
                 <p className="text-white font-medium">n8n-Workflow-Data / URL-Scans</p>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" className="border-slate-700 text-slate-300">
+                <Button
+                  variant="outline"
+                  className="border-slate-700 text-slate-300"
+                  onClick={() => setNotice({
+                    type: 'info',
+                    title: 'Mapping preview is current',
+                    message: 'The connected spreadsheet mapping is displayed above. Live row preview needs the server-side Sheets integration.',
+                  })}
+                >
                   Preview Mapping
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => setNotice({
+                    type: 'warning',
+                    title: 'Sheets writeback is gated',
+                    message: 'Writing to Google Sheets cannot run safely from this static browser bundle. Use the full Paperclip/n8n workflow for the real writeback.',
+                  })}
+                >
                   Confirm & Write
                 </Button>
               </div>

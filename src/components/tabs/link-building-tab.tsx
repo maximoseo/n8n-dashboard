@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { ActionNotice } from '@/components/action-notice'
 import {
   Link2,
   Plus,
@@ -57,12 +58,44 @@ const playbooks = [
   { id: 4, name: 'Resource Page Outreach', description: 'Get listed on curated link pages' },
 ]
 
+type Campaign = typeof campaigns[number]
+
 export function LinkBuildingTab() {
   const [newCampaign, setNewCampaign] = useState({ site: '', targetPage: '', anchor: '' })
+  const [campaignList, setCampaignList] = useState<Campaign[]>(campaigns)
+  const [notice, setNotice] = useState<{title: string, message: string, type?: 'info' | 'success' | 'warning' | 'error'} | null>(null)
+
+  const scoreOpportunity = () => {
+    if (!newCampaign.site.trim() || !newCampaign.targetPage.trim()) {
+      setNotice({
+        type: 'warning',
+        title: 'Campaign details missing',
+        message: 'Add at least a target site and target page before scoring the opportunity.',
+      })
+      return
+    }
+
+    const score = Math.max(35, Math.min(95, 55 + newCampaign.site.length + newCampaign.targetPage.length % 25))
+    setCampaignList(prev => [{
+      id: Date.now(),
+      site: newCampaign.site.trim(),
+      targetPage: newCampaign.targetPage.trim(),
+      anchorStrategy: newCampaign.anchor.trim() || 'editorial mention',
+      qualityScore: score,
+      riskLevel: score >= 75 ? 'low' : 'medium',
+      status: 'outreach',
+    }, ...prev])
+    setNewCampaign({ site: '', targetPage: '', anchor: '' })
+    setNotice({
+      type: 'success',
+      title: 'Opportunity scored locally',
+      message: 'The campaign was added to this session. Persistent outreach and sending still run through Paperclip.',
+    })
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
             <Link2 className="w-6 h-6 text-blue-500" />
@@ -71,16 +104,37 @@ export function LinkBuildingTab() {
           <p className="text-slate-400 mt-1">Inbound & external backlink campaigns — outreach, scoring, and risk review</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="border-slate-700 text-slate-300">
+          <a
+            href="https://maximo-dashboard-company-paperclip.onrender.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-700 bg-transparent px-4 py-2 font-medium text-slate-300 transition-colors hover:bg-slate-800"
+          >
             <ExternalLink className="w-4 h-4 mr-2" />
             Open Paperclip
-          </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          </a>
+          <Button
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={() => setNotice({
+              type: 'info',
+              title: 'Use the form below',
+              message: 'Fill site, target page, and anchor strategy, then click Score Opportunity to add a campaign.',
+            })}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Campaign
           </Button>
         </div>
       </div>
+
+      {notice && (
+        <ActionNotice
+          type={notice.type}
+          title={notice.title}
+          message={notice.message}
+          onDismiss={() => setNotice(null)}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -95,7 +149,7 @@ export function LinkBuildingTab() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {campaigns.map((campaign) => (
+              {campaignList.map((campaign) => (
                 <div key={campaign.id} className="p-4 bg-slate-800 rounded-lg">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
@@ -135,10 +189,30 @@ export function LinkBuildingTab() {
                         <Badge variant="warning">Negotiating</Badge>
                       )}
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" className="text-slate-400 h-8 w-8 p-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-slate-400 h-8 w-8 p-0"
+                          aria-label={`Draft outreach email for ${campaign.site}`}
+                          title="Draft outreach email"
+                          onClick={() => {
+                            window.location.href = `mailto:?subject=Link opportunity for ${encodeURIComponent(campaign.site)}&body=${encodeURIComponent(`Target page: ${campaign.targetPage}\nAnchor strategy: ${campaign.anchorStrategy}`)}`
+                          }}
+                        >
                           <Mail className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-slate-400 h-8 w-8 p-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-slate-400 h-8 w-8 p-0"
+                          aria-label={`Send ${campaign.site} through Paperclip`}
+                          title="Send through Paperclip"
+                          onClick={() => setNotice({
+                            type: 'warning',
+                            title: 'Outreach sending is server-side',
+                            message: 'The email draft can open locally, but real outreach sending should run through Paperclip so credentials, throttling, and logs stay controlled.',
+                          })}
+                        >
                           <Send className="w-4 h-4" />
                         </Button>
                       </div>
@@ -186,7 +260,7 @@ export function LinkBuildingTab() {
                   />
                 </div>
               </div>
-              <Button className="mt-4 bg-blue-600 hover:bg-blue-700">
+              <Button className="mt-4 bg-blue-600 hover:bg-blue-700" onClick={scoreOpportunity}>
                 <Plus className="w-4 h-4 mr-2" />
                 Score Opportunity
               </Button>

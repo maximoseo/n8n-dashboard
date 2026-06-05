@@ -66,7 +66,7 @@ export function CompetitorsTab() {
           <CardTitle className="text-white text-lg">Add Competitor</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               value={newDomain}
               onChange={(e) => setNewDomain(e.target.value)}
@@ -93,21 +93,21 @@ export function CompetitorsTab() {
         {competitors.map((competitor) => (
           <Card key={competitor.id} className="bg-slate-900 border-slate-800">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex min-w-0 items-center gap-4">
                   <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center">
                     <Globe className="w-5 h-5 text-slate-400" />
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-white">{competitor.domain}</h3>
-                    <div className="flex items-center gap-3 mt-1">
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-white break-words">{competitor.domain}</h3>
+                    <div className="flex flex-wrap items-center gap-3 mt-1">
                       <span className="text-sm text-slate-400">{competitor.keywords.toLocaleString()} keywords</span>
                       <span className="text-sm text-slate-400">{competitor.backlinks.toLocaleString()} backlinks</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                  <div>
                     <p className="text-white font-medium">{competitor.traffic.toLocaleString()}</p>
                     <p className="text-sm text-slate-500">monthly visits</p>
                   </div>

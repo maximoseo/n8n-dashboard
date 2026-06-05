@@ -97,21 +97,21 @@ export function AnalyticsTab() {
               <span className="text-white">n8n API</span>
               <Badge variant="success" className="flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" />
-                Operational
+                Snapshot Live
               </Badge>
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
               <span className="text-white">Browserless Screenshots</span>
-              <Badge variant="success" className="flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" />
-                Operational
+              <Badge variant="warning" className="flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                Server Gated
               </Badge>
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
               <span className="text-white">KW Research API</span>
-              <Badge variant="success" className="flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" />
-                Operational
+              <Badge variant="warning" className="flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                External Dashboard
               </Badge>
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">

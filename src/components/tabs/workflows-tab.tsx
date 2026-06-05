@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { SheetMappingModal, SheetLinkButton, type SheetMapping, type SheetMappingData } from '@/components/sheet-mapping-modal'
+import { ActionNotice } from '@/components/action-notice'
 import {
   Play,
   Pause,
@@ -21,6 +22,9 @@ import {
   ExternalLink,
   Loader2,
 } from 'lucide-react'
+
+const N8N_WORKFLOWS_URL = 'https://websiseo.app.n8n.cloud/workflows'
+const LOCAL_MAPPING_KEY = 'n8n-dashboard.sheetMappings'
 
 interface WorkflowItem {
   id: string
@@ -39,6 +43,7 @@ export function WorkflowsTab() {
   const [sheetMappings, setSheetMappings] = useState<Record<string, SheetMappingData>>({})
   const [selectedWorkflow, setSelectedWorkflow] = useState<{id: string, name: string} | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [notice, setNotice] = useState<{title: string, message: string, type?: 'info' | 'success' | 'warning' | 'error'} | null>(null)
 
   // Load workflows from API
   useEffect(() => {
@@ -74,6 +79,11 @@ export function WorkflowsTab() {
       } catch (error) {
         console.error('Failed to load sheet mappings:', error)
       }
+
+      const localMappings = JSON.parse(localStorage.getItem(LOCAL_MAPPING_KEY) || '{}')
+      if (Object.keys(localMappings).length > 0) {
+        setSheetMappings(prev => ({ ...prev, ...localMappings }))
+      }
     }
     loadMappings()
   }, [])
@@ -83,6 +93,11 @@ export function WorkflowsTab() {
       ...prev,
       [mapping.workflow_id]: { sheet_url: mapping.sheet_url, sheet_name: mapping.sheet_name }
     }))
+    setNotice({
+      type: 'success',
+      title: 'Sheet mapping saved',
+      message: 'The mapping is available in this browser. Server writeback is disabled on the static Render service, so persistent team-wide sync still needs a backend endpoint.',
+    })
   }
 
   const filteredWorkflows = workflows.filter((w) =>
@@ -130,11 +145,25 @@ export function WorkflowsTab() {
           </h1>
           <p className="text-slate-400 mt-1">Manage and monitor your n8n automation pipelines</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <a
+          href={N8N_WORKFLOWS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Workflow
-        </Button>
+        </a>
       </div>
+
+      {notice && (
+        <ActionNotice
+          type={notice.type}
+          title={notice.title}
+          message={notice.message}
+          onDismiss={() => setNotice(null)}
+        />
+      )}
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
         <div className="relative w-full max-w-md">
@@ -206,16 +235,56 @@ export function WorkflowsTab() {
                     >
                       <ExternalLink className="w-4 h-4" />
                     </a>
-                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-400 hover:text-white"
+                      title="Execute in n8n"
+                      aria-label={`Execute ${workflow.name} in n8n`}
+                      onClick={() => setNotice({
+                        type: 'warning',
+                        title: 'Execution is gated in n8n',
+                        message: 'This static dashboard cannot safely run workflows directly because it would expose n8n API credentials in the browser. Open the workflow in n8n and execute it from there.',
+                      })}
+                    >
                       <Play className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-400 hover:text-white"
+                      title="Refresh workflow data"
+                      aria-label={`Refresh ${workflow.name} data`}
+                      onClick={() => setNotice({
+                        type: 'info',
+                        title: 'Workflow data refreshed from static export',
+                        message: 'The production dashboard is serving the latest exported workflow snapshot. Live refresh requires converting this Render service from static hosting to a server-backed dashboard.',
+                      })}
+                    >
                       <RotateCw className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-400 hover:text-white"
+                      title="Open workflow settings in n8n"
+                      aria-label={`Open ${workflow.name} settings in n8n`}
+                      onClick={() => window.open(`https://websiseo.app.n8n.cloud/workflow/${workflow.id}`, '_blank', 'noopener,noreferrer')}
+                    >
                       <Settings className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-400 hover:text-white"
+                      title="More actions"
+                      aria-label={`More actions for ${workflow.name}`}
+                      onClick={() => setNotice({
+                        type: 'info',
+                        title: 'More actions live in n8n',
+                        message: 'Advanced workflow actions are available in the n8n workspace so credentials and write permissions stay server-side.',
+                      })}
+                    >
                       <MoreHorizontal className="w-4 h-4" />
                     </Button>
                   </div>
