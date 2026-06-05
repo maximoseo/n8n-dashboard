@@ -57,6 +57,8 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
         )}
         <button
           onClick={onToggle}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           className={cn(
             'hidden md:block p-1 rounded-lg hover:bg-slate-800 text-slate-400',
             collapsed && 'absolute -right-3 bg-slate-800 border border-slate-700'
@@ -74,6 +76,8 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
+              aria-label={item.label}
+              title={item.label}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
@@ -103,6 +107,8 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
           href="https://maximo-dashboard-company-paperclip.onrender.com/"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Paperclip AI"
+          title="Paperclip AI"
           className={cn(
             'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors',
             collapsed && 'justify-center px-2'
