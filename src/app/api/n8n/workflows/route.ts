@@ -38,15 +38,16 @@ export async function GET(request: NextRequest) {
       workflows.map(async (workflow: any) => {
         const executions = await getWorkflowExecutions(workflow.id)
         const lastExecution = executions[0]
+        const tags = normalizeTags(workflow.tags)
         
         return {
           id: workflow.id,
           name: workflow.name,
-          description: workflow.tags?.join(', ') || 'No description',
+          description: tags.length ? tags.join(', ') : 'No description',
           status: workflow.active ? 'active' : 'paused',
           lastRun: lastExecution ? formatTimeAgo(new Date(lastExecution.startedAt)) : 'Never',
           runs: executions.length,
-          category: workflow.tags?.[0] || 'General',
+          category: tags[0] || 'General',
           executions: executions.slice(0, 5)
         }
       })
@@ -86,6 +87,21 @@ async function getWorkflowExecutions(workflowId: string) {
   } catch {
     return []
   }
+}
+
+function normalizeTags(tags: unknown): string[] {
+  if (!Array.isArray(tags)) return []
+
+  return tags
+    .map((tag) => {
+      if (typeof tag === 'string') return tag
+      if (tag && typeof tag === 'object' && 'name' in tag) {
+        const name = (tag as { name?: unknown }).name
+        return typeof name === 'string' ? name : ''
+      }
+      return ''
+    })
+    .filter(Boolean)
 }
 
 function formatTimeAgo(date: Date): string {
