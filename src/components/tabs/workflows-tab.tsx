@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import { SheetMappingModal, SheetLinkButton, type SheetMapping, type SheetMappingData } from '@/components/sheet-mapping-modal'
 import {
   Play,
   Pause,
@@ -79,6 +80,36 @@ const workflows = [
 
 export function WorkflowsTab() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [sheetMappings, setSheetMappings] = useState<Record<string, SheetMappingData>>({})
+  const [selectedWorkflow, setSelectedWorkflow] = useState<{id: string, name: string} | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Load sheet mappings from Supabase
+  useEffect(() => {
+    async function loadMappings() {
+      try {
+        const response = await fetch('/api/sheet-mappings')
+        if (response.ok) {
+          const data = await response.json()
+          const mappings: Record<string, SheetMappingData> = {}
+          data.forEach((m: any) => {
+            mappings[m.workflow_id] = { sheet_url: m.sheet_url, sheet_name: m.sheet_name }
+          })
+          setSheetMappings(mappings)
+        }
+      } catch (error) {
+        console.error('Failed to load sheet mappings:', error)
+      }
+    }
+    loadMappings()
+  }, [])
+
+  const handleSaveMapping = (mapping: SheetMapping) => {
+    setSheetMappings(prev => ({
+      ...prev,
+      [mapping.workflow_id]: { sheet_url: mapping.sheet_url, sheet_name: mapping.sheet_name }
+    }))
+  }
 
   const filteredWorkflows = workflows.filter(
     (w) =>
@@ -163,6 +194,14 @@ export function WorkflowsTab() {
                       <Badge variant="outline" className="border-slate-700 text-slate-400 text-xs">
                         {workflow.category}
                       </Badge>
+                      <SheetLinkButton
+                        workflowId={workflow.id.toString()}
+                        mapping={sheetMappings[workflow.id]}
+                        onClick={() => {
+                          setSelectedWorkflow({ id: workflow.id.toString(), name: workflow.name })
+                          setIsModalOpen(true)
+                        }}
+                      />
                     </div>
                     <p className="text-sm text-slate-400 mt-0.5">{workflow.description}</p>
                   </div>
@@ -205,6 +244,21 @@ export function WorkflowsTab() {
           </Card>
         ))}
       </div>
+
+      <SheetMappingModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setSelectedWorkflow(null)
+        }}
+        workflowId={selectedWorkflow?.id || ''}
+        workflowName={selectedWorkflow?.name || ''}
+        existingMapping={selectedWorkflow && sheetMappings[selectedWorkflow.id] ? {
+          workflow_id: selectedWorkflow.id,
+          ...sheetMappings[selectedWorkflow.id]
+        } : undefined}
+        onSave={handleSaveMapping}
+      />
     </div>
   )
 }
