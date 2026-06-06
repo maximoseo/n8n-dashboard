@@ -189,7 +189,6 @@ export function buildWorkflowClonePayload(
 
   return {
     name: buildWorkflowName(input),
-    active: false,
     nodes: injectNofollowMetadata(nodes, {
       siteUrl,
       domain,
