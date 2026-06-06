@@ -29,6 +29,7 @@ interface IntegrationStatus {
   name: string
   status: 'connected' | 'not_connected'
   detail: string
+  checkedAt?: string
   icon: typeof Webhook
 }
 
@@ -39,35 +40,39 @@ export function SeoToolsTab() {
 
   useEffect(() => {
     async function loadStatuses() {
-      const statuses: IntegrationStatus[] = []
-
       try {
         const { data: { session } } = await supabase.auth.getSession()
-        const workflowResponse = await fetch('/api/n8n/workflows', {
+        const response = await fetch('/api/integrations/status', {
           headers: session?.access_token
             ? { Authorization: `Bearer ${session.access_token}` }
             : {},
         })
-        const workflowData = await workflowResponse.json().catch(() => null)
-        statuses.push({
-          name: 'n8n API',
-          status: workflowResponse.ok && workflowData?.source === 'n8n' ? 'connected' : 'not_connected',
-          detail: workflowResponse.ok ? `${workflowData?.count || 0} workflows` : workflowData?.error || 'Unavailable',
-          icon: Webhook,
-        })
-      } catch {
-        statuses.push({ name: 'n8n API', status: 'not_connected', detail: 'Unavailable', icon: Webhook })
+        const data = await response.json().catch(() => null)
+        if (!response.ok) throw new Error(data?.error || 'Integration status unavailable')
+
+        const iconByName: Record<string, IntegrationStatus['icon']> = {
+          'n8n API': Webhook,
+          Browserless: ExternalLink,
+          Firecrawl: Database,
+          'Google Sheets': FileJson,
+          'OpenAI API': Key,
+        }
+        setIntegrations((data?.integrations || []).map((integration: Omit<IntegrationStatus, 'icon'>) => ({
+          ...integration,
+          icon: iconByName[integration.name] || Key,
+        })))
+      } catch (error) {
+        setIntegrations([
+          {
+            name: 'Integration status',
+            status: 'not_connected',
+            detail: error instanceof Error ? error.message : 'Unavailable',
+            icon: AlertCircle,
+          },
+        ])
+      } finally {
+        setIsLoading(false)
       }
-
-      statuses.push(
-        { name: 'Browserless', status: 'connected', detail: 'Live endpoint verified in QA', icon: ExternalLink },
-        { name: 'Firecrawl', status: 'connected', detail: 'Live endpoint verified in QA', icon: Database },
-        { name: 'Google Sheets', status: 'connected', detail: 'Verified through n8n execution nodes', icon: FileJson },
-        { name: 'OpenAI API', status: 'connected', detail: 'Server-side env configured', icon: Key },
-      )
-
-      setIntegrations(statuses)
-      setIsLoading(false)
     }
 
     loadStatuses()
@@ -115,6 +120,11 @@ export function SeoToolsTab() {
                     <div className="min-w-0">
                       <p className="font-medium text-white break-words">{integration.name}</p>
                       <p className="text-xs text-slate-400">{integration.detail}</p>
+                      {integration.checkedAt && (
+                        <p className="mt-1 text-[11px] text-slate-500">
+                          Checked {new Date(integration.checkedAt).toLocaleTimeString()}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
