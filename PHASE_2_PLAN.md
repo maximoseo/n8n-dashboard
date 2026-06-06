@@ -214,7 +214,7 @@ export async function takeScreenshot(url: string, options: {
 ```typescript
 // src/lib/dataforseo.ts
 const credentials = Buffer.from(
-  'service@maximo-seo.com:e306113f29659f20'
+  `${process.env.DATAFORSEO_LOGIN}:${process.env.DATAFORSEO_PASSWORD}`
 ).toString('base64');
 
 export async function getKeywordData(keyword: string) {
@@ -542,23 +542,23 @@ export async function GET() {
 ### New Environment Variables
 ```bash
 # AI APIs
-ANTHROPIC_API_KEY=sk-ant-api03-FT_nVi9G...
-OPENAI_API_KEY=sk-proj-wJMANNMf9TO...
-OPENROUTER_API_KEY=sk-or-v1-955de065...
+ANTHROPIC_API_KEY=your-anthropic-api-key
+OPENAI_API_KEY=your-openai-api-key
+OPENROUTER_API_KEY=your-openrouter-api-key
 
 # Notifications
-RESEND_API_KEY=re_RmM9vqzg_QB2waa9...
-TELEGRAM_BOT_TOKEN=8690183864:AAGWsu...
+RESEND_API_KEY=your-resend-api-key
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token
 
 # SEO APIs
-DATAFORSEO_LOGIN=service@maximo-seo.com
-DATAFORSEO_PASSWORD=e306113f29659f20
-SERPAPI_KEY=c03957060929a0b50...
-AHREFS_API_KEY=aFdVABHy0aiB9fzN8aQ...
+DATAFORSEO_LOGIN=your-dataforseo-login
+DATAFORSEO_PASSWORD=your-dataforseo-password
+SERPAPI_KEY=your-serpapi-key
+AHREFS_API_KEY=your-ahrefs-api-key
 
 # Tools
-FIRECRAWL_API_KEY=fc-fe167396ad9f4f1...
-BROWSERLESS_API_KEY=2Ua28OlYbodr5tv90...
+FIRECRAWL_API_KEY=your-firecrawl-api-key
+BROWSERLESS_API_KEY=your-browserless-api-key
 
 # Caching
 REDIS_URL=redis://localhost:6379

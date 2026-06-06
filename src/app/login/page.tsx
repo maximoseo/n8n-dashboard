@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
-import { Workflow, Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { Workflow, Eye, EyeOff, ArrowRight, LayoutDashboard } from 'lucide-react'
 
 const isGithubOAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_GITHUB_OAUTH === 'true'
 
@@ -58,7 +58,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4">
+      <div className="mx-auto flex w-full max-w-6xl justify-end">
+        <a
+          href="https://dashboards-panel.maximo-seo.ai/"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-cyan-300/60 bg-cyan-500/15 px-3 text-sm font-semibold text-cyan-100 shadow-lg shadow-cyan-500/15 transition-colors hover:bg-cyan-400/20 hover:text-white"
+          aria-label="Back to all dashboards"
+          title="Back to all dashboards"
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          <span className="hidden sm:inline">All Dashboards</span>
+          <span className="sm:hidden">Dashboards</span>
+        </a>
+      </div>
+
+      <div className="flex min-h-[calc(100vh-4.75rem)] items-center justify-center">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 mb-4 shadow-lg shadow-blue-500/25">
@@ -224,6 +238,7 @@ export default function LoginPage() {
         <p className="text-center text-slate-500 text-sm mt-6">
           Secured by Supabase Auth
         </p>
+      </div>
       </div>
     </div>
   )

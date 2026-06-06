@@ -27,6 +27,16 @@ export function Header({ onLogout }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        <a
+          href="https://dashboards-panel.maximo-seo.ai/"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-cyan-300/60 bg-cyan-500/15 px-3 text-sm font-semibold text-cyan-100 shadow-lg shadow-cyan-500/15 transition-colors hover:bg-cyan-400/20 hover:text-white"
+          aria-label="Back to all dashboards"
+          title="Back to all dashboards"
+        >
+          <span className="hidden sm:inline">All Dashboards</span>
+          <span className="sm:hidden">All</span>
+        </a>
+
         <Button
           variant="ghost"
           size="sm"
