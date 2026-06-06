@@ -10,8 +10,10 @@ import { LinkBuildingTab } from '@/components/tabs/link-building-tab'
 import { AnalyticsTab } from '@/components/tabs/analytics-tab'
 import { SeoToolsTab } from '@/components/tabs/seo-tools-tab'
 import { NofollowCloneTab } from '@/components/tabs/nofollow-clone-tab'
+import { AgentTasksTab } from '@/components/tabs/agent-tasks-tab'
 import { Sidebar } from '@/components/sidebar'
 import { Header } from '@/components/header'
+import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { useAuth } from '@/hooks/useAuth'
 
 export function Dashboard() {
@@ -37,7 +39,7 @@ export function Dashboard() {
       <div className="flex-1 flex flex-col min-w-0">
         <Header onLogout={handleLogout} />
 
-        <main className="flex-1 overflow-auto p-4 sm:p-6 min-w-0">
+        <main className="flex-1 overflow-auto p-4 pb-28 sm:p-6 sm:pb-28 md:pb-6 min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsContent value="workflows" className="m-0">
               <WorkflowsTab />
@@ -54,6 +56,9 @@ export function Dashboard() {
             <TabsContent value="nofollow" className="m-0">
               <NofollowCloneTab />
             </TabsContent>
+            <TabsContent value="agents" className="m-0">
+              <AgentTasksTab />
+            </TabsContent>
             <TabsContent value="analytics" className="m-0">
               <AnalyticsTab />
             </TabsContent>
@@ -63,6 +68,7 @@ export function Dashboard() {
           </Tabs>
         </main>
       </div>
+      <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )
 }

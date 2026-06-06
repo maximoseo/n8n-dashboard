@@ -17,6 +17,7 @@ import {
   CheckCircle,
   AlertCircle,
   RefreshCw,
+  Bot,
 } from 'lucide-react'
 
 const settings = [
@@ -56,6 +57,7 @@ export function SeoToolsTab() {
           Firecrawl: Database,
           'Google Sheets': FileJson,
           'OpenAI API': Key,
+          'Agent Task Bridge': Bot,
         }
         setIntegrations((data?.integrations || []).map((integration: Omit<IntegrationStatus, 'icon'>) => ({
           ...integration,

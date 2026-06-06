@@ -7,6 +7,7 @@ const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY || ''
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY || ''
 const N8N_NOFOLLOW_SETUP_WEBHOOK_URL = process.env.N8N_NOFOLLOW_SETUP_WEBHOOK_URL || ''
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
+const AGENT_TASKS_WEBHOOK_URL = process.env.AGENT_TASKS_WEBHOOK_URL || ''
 
 export const dynamic = 'force-dynamic'
 
@@ -22,16 +23,17 @@ export async function GET(request: NextRequest) {
   if (auth.response) return auth.response
 
   const checkedAt = new Date().toISOString()
-  const [n8n, browserless, firecrawl, googleSheets, openai] = await Promise.all([
+  const [n8n, browserless, firecrawl, googleSheets, openai, agentTasks] = await Promise.all([
     checkN8n(checkedAt),
     checkBrowserless(checkedAt),
     checkFirecrawl(checkedAt),
     checkGoogleSheetsSetup(checkedAt),
     checkConfigured('OpenAI API', OPENAI_API_KEY, 'Server-side key configured', checkedAt),
+    checkConfigured('Agent Task Bridge', AGENT_TASKS_WEBHOOK_URL, 'Server-side webhook configured for coding-agent task intake', checkedAt),
   ])
 
   return NextResponse.json({
-    integrations: [n8n, browserless, firecrawl, googleSheets, openai],
+    integrations: [n8n, browserless, firecrawl, googleSheets, openai, agentTasks],
     checkedAt,
   })
 }

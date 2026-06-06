@@ -9,6 +9,7 @@ import {
   Copy,
   BarChart3,
   Settings,
+  Bot,
   ChevronLeft,
   ChevronRight,
   Paperclip,
@@ -27,6 +28,7 @@ const navItems = [
   { id: 'kwresearch', label: 'KW Research', icon: Search, count: null },
   { id: 'linkbuilding', label: 'Link Building', icon: Link2, count: null },
   { id: 'nofollow', label: 'Nofollow Clone', icon: Copy, count: null },
+  { id: 'agents', label: 'Agent Tasks', icon: Bot, count: null },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, count: null },
   { id: 'seotools', label: 'SEO Tools', icon: Settings, count: null },
 ]
@@ -35,8 +37,8 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
   return (
     <aside
       className={cn(
-        'flex flex-col bg-slate-900 border-r border-slate-800 transition-all duration-300 shrink-0',
-        'w-16 md:w-auto',
+        'hidden flex-col bg-slate-900 border-r border-slate-800 transition-all duration-300 shrink-0 md:flex',
+        'md:w-auto',
         collapsed ? 'md:w-16' : 'md:w-64'
       )}
     >
