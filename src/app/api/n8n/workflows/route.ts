@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 const N8N_API_KEY = process.env.N8N_API_KEY || ''
 const N8N_BASE_URL = process.env.N8N_BASE_URL || 'https://websiseo.app.n8n.cloud'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     if (!N8N_API_KEY) {
@@ -13,29 +15,10 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    const response = await fetch(`${N8N_BASE_URL}/api/v1/workflows`, {
-      headers: {
-        'X-N8N-API-KEY': N8N_API_KEY,
-        'Accept': 'application/json',
-      },
-    })
-
-    if (!response.ok) {
-      console.error('n8n API error:', await response.text())
-      // Fallback to mock data
-      return NextResponse.json({ 
-        workflows: getMockWorkflows(),
-        source: 'mock',
-        error: 'Failed to fetch from n8n API'
-      })
-    }
-
-    const data = await response.json()
-    const workflows = data.data || []
+    const workflows = await getAllWorkflows()
 
     // Enrich with execution data
-    const enrichedWorkflows = await Promise.all(
-      workflows.map(async (workflow: any) => {
+    const enrichedWorkflows = await mapWithConcurrency(workflows, 8, async (workflow: any) => {
         const executions = await getWorkflowExecutions(workflow.id)
         const lastExecution = executions[0]
         const tags = normalizeTags(workflow.tags)
@@ -50,7 +33,7 @@ export async function GET(request: NextRequest) {
           category: tags[0] || 'General',
           executions: executions.slice(0, 5)
         }
-      })
+      }
     )
 
     return NextResponse.json({ 
@@ -66,6 +49,46 @@ export async function GET(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
   }
+}
+
+async function getAllWorkflows() {
+  const response = await fetch(`${N8N_BASE_URL}/api/v1/workflows?limit=250`, {
+    headers: {
+      'X-N8N-API-KEY': N8N_API_KEY,
+      'Accept': 'application/json',
+    },
+  })
+
+  if (!response.ok) {
+    console.error('n8n API error:', await response.text())
+    throw new Error('Failed to fetch from n8n API')
+  }
+
+  const data = await response.json()
+  return data.data || []
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>
+) {
+  const results = new Array<R>(items.length)
+  let nextIndex = 0
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex
+      nextIndex += 1
+      results[currentIndex] = await mapper(items[currentIndex])
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => worker())
+  )
+
+  return results
 }
 
 async function getWorkflowExecutions(workflowId: string) {

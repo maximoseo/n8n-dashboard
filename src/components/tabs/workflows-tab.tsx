@@ -63,7 +63,7 @@ export function WorkflowsTab() {
     loadWorkflows()
   }, [])
 
-  // Load sheet mappings from Supabase
+  // Load browser-local sheet mappings. Team-wide persistence needs a server endpoint.
   useEffect(() => {
     function loadMappings() {
       const localMappings = JSON.parse(localStorage.getItem(LOCAL_MAPPING_KEY) || '{}')
@@ -242,9 +242,9 @@ export function WorkflowsTab() {
                       title="Refresh workflow data"
                       aria-label={`Refresh ${workflow.name} data`}
                       onClick={() => setNotice({
-                        type: 'info',
-                        title: 'Workflow data refreshed from static export',
-                        message: 'The production dashboard is serving the latest exported workflow snapshot. Live refresh requires converting this Render service from static hosting to a server-backed dashboard.',
+                        type: 'success',
+                        title: 'Workflow data is live',
+                        message: 'The production dashboard is reading workflow status and recent run data from the n8n API on Render.',
                       })}
                     >
                       <RotateCw className="w-4 h-4" />

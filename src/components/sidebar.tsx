@@ -21,7 +21,7 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { id: 'workflows', label: 'Workflows', icon: Workflow, count: 12 },
+  { id: 'workflows', label: 'Workflows', icon: Workflow, count: null },
   { id: 'urls', label: 'URLs Previewer', icon: Globe, count: 8 },
   { id: 'kwresearch', label: 'KW Research', icon: Search, count: 24 },
   { id: 'linkbuilding', label: 'Link Building', icon: Link2, count: 5 },
