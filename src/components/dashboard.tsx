@@ -9,6 +9,7 @@ import { KwResearchTab } from '@/components/tabs/kw-research-tab'
 import { LinkBuildingTab } from '@/components/tabs/link-building-tab'
 import { AnalyticsTab } from '@/components/tabs/analytics-tab'
 import { SeoToolsTab } from '@/components/tabs/seo-tools-tab'
+import { NofollowCloneTab } from '@/components/tabs/nofollow-clone-tab'
 import { Sidebar } from '@/components/sidebar'
 import { Header } from '@/components/header'
 import { useAuth } from '@/hooks/useAuth'
@@ -49,6 +50,9 @@ export function Dashboard() {
             </TabsContent>
             <TabsContent value="linkbuilding" className="m-0">
               <LinkBuildingTab />
+            </TabsContent>
+            <TabsContent value="nofollow" className="m-0">
+              <NofollowCloneTab />
             </TabsContent>
             <TabsContent value="analytics" className="m-0">
               <AnalyticsTab />

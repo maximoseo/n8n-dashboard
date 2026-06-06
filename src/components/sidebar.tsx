@@ -6,6 +6,7 @@ import {
   Globe,
   Search,
   Link2,
+  Copy,
   BarChart3,
   Settings,
   ChevronLeft,
@@ -25,6 +26,7 @@ const navItems = [
   { id: 'urls', label: 'URLs Previewer', icon: Globe, count: null },
   { id: 'kwresearch', label: 'KW Research', icon: Search, count: null },
   { id: 'linkbuilding', label: 'Link Building', icon: Link2, count: null },
+  { id: 'nofollow', label: 'Nofollow Clone', icon: Copy, count: null },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, count: null },
   { id: 'seotools', label: 'SEO Tools', icon: Settings, count: null },
 ]

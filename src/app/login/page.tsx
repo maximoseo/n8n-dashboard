@@ -204,6 +204,9 @@ export default function LoginPage() {
                   <Badge variant="outline" className="text-xs border-slate-700 text-slate-500">
                     Link Building
                   </Badge>
+                  <Badge variant="outline" className="text-xs border-slate-700 text-slate-500">
+                    Nofollow Clone
+                  </Badge>
                 </div>
                 
                 <button
