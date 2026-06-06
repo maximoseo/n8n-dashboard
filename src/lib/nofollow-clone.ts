@@ -185,7 +185,6 @@ export function buildWorkflowClonePayload(
     sheet,
   )
   const connections = replaceWorkflowValues(sourceWorkflow.connections || {}, replacements)
-  const settings = replaceWorkflowValues(sourceWorkflow.settings || {}, replacements)
 
   return {
     name: buildWorkflowName(input),
@@ -198,7 +197,7 @@ export function buildWorkflowClonePayload(
       prompts,
     }),
     connections,
-    settings,
+    settings: {},
     staticData: null,
   }
 }
