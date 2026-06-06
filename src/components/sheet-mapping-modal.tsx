@@ -54,19 +54,6 @@ export function SheetMappingModal({
     }
     
     try {
-      const response = await fetch('/api/sheet-mappings', {
-        method: existingMapping ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(mapping),
-      })
-      
-      if (response.ok) {
-        onSave(mapping)
-        onClose()
-      } else {
-        throw new Error('Server writeback is unavailable on this static deployment')
-      }
-    } catch (error) {
       const existing = JSON.parse(localStorage.getItem(LOCAL_MAPPING_KEY) || '{}')
       localStorage.setItem(LOCAL_MAPPING_KEY, JSON.stringify({
         ...existing,

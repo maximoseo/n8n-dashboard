@@ -65,21 +65,7 @@ export function WorkflowsTab() {
 
   // Load sheet mappings from Supabase
   useEffect(() => {
-    async function loadMappings() {
-      try {
-        const response = await fetch('/api/sheet-mappings')
-        if (response.ok) {
-          const data = await response.json()
-          const mappings: Record<string, SheetMappingData> = {}
-          data.forEach((m: any) => {
-            mappings[m.workflow_id] = { sheet_url: m.sheet_url, sheet_name: m.sheet_name }
-          })
-          setSheetMappings(mappings)
-        }
-      } catch (error) {
-        console.error('Failed to load sheet mappings:', error)
-      }
-
+    function loadMappings() {
       const localMappings = JSON.parse(localStorage.getItem(LOCAL_MAPPING_KEY) || '{}')
       if (Object.keys(localMappings).length > 0) {
         setSheetMappings(prev => ({ ...prev, ...localMappings }))
