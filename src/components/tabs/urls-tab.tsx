@@ -27,9 +27,6 @@ import {
 const PAPERCLIP_URL = 'https://maximo-dashboard-company-paperclip.onrender.com/'
 
 const sites = [
-  { id: 1, name: 'maximo-seo.ai', url: 'https://maximo-seo.ai', status: 'connected', lastScan: '2 hours ago' },
-  { id: 2, name: 'blog.example.com', url: 'https://blog.example.com', status: 'connected', lastScan: '1 day ago' },
-  { id: 3, name: 'client-site.com', url: 'https://client-site.com', status: 'error', lastScan: '3 days ago' },
 ]
 
 interface ScreenshotResult {
@@ -390,7 +387,13 @@ export function UrlsTab() {
               Add Site
             </Button>
           </div>
-          {sites.map((site) => (
+          {sites.length === 0 ? (
+            <Card className="bg-slate-900 border-slate-800">
+              <CardContent className="p-6 text-sm text-slate-400">
+                No live WordPress sites are connected in this embedded dashboard. Open the full tool for production site records.
+              </CardContent>
+            </Card>
+          ) : sites.map((site) => (
             <Card key={site.id} className="bg-slate-900 border-slate-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">

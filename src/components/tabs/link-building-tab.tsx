@@ -22,33 +22,6 @@ import {
 } from 'lucide-react'
 
 const campaigns = [
-  {
-    id: 1,
-    site: 'industry-blog.com',
-    targetPage: '/services/dental-implants',
-    anchorStrategy: 'branded + partial match',
-    qualityScore: 85,
-    riskLevel: 'low',
-    status: 'outreach',
-  },
-  {
-    id: 2,
-    site: 'local-directory.org',
-    targetPage: '/locations/miami',
-    anchorStrategy: 'naked URL',
-    qualityScore: 62,
-    riskLevel: 'medium',
-    status: 'negotiating',
-  },
-  {
-    id: 3,
-    site: 'news-site.com',
-    targetPage: '/about',
-    anchorStrategy: 'editorial mention',
-    qualityScore: 92,
-    riskLevel: 'low',
-    status: 'approved',
-  },
 ]
 
 const playbooks = [
@@ -88,8 +61,8 @@ export function LinkBuildingTab() {
     setNewCampaign({ site: '', targetPage: '', anchor: '' })
     setNotice({
       type: 'success',
-      title: 'Opportunity scored locally',
-      message: 'The campaign was added to this session. Persistent outreach and sending still run through Paperclip.',
+      title: 'Opportunity staged locally',
+      message: 'The campaign was added to this browser session. Persistent outreach and sending still run through Paperclip.',
     })
   }
 
@@ -149,7 +122,11 @@ export function LinkBuildingTab() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {campaignList.map((campaign) => (
+              {campaignList.length === 0 ? (
+                <div className="p-4 bg-slate-800 rounded-lg text-sm text-slate-400">
+                  No live link-building campaigns are connected in this embedded dashboard. Open Paperclip for production outreach data.
+                </div>
+              ) : campaignList.map((campaign) => (
                 <div key={campaign.id} className="p-4 bg-slate-800 rounded-lg">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">

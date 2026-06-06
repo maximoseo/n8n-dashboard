@@ -22,11 +22,11 @@ interface SidebarProps {
 
 const navItems = [
   { id: 'workflows', label: 'Workflows', icon: Workflow, count: null },
-  { id: 'urls', label: 'URLs Previewer', icon: Globe, count: 8 },
-  { id: 'kwresearch', label: 'KW Research', icon: Search, count: 24 },
-  { id: 'linkbuilding', label: 'Link Building', icon: Link2, count: 5 },
+  { id: 'urls', label: 'URLs Previewer', icon: Globe, count: null },
+  { id: 'kwresearch', label: 'KW Research', icon: Search, count: null },
+  { id: 'linkbuilding', label: 'Link Building', icon: Link2, count: null },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, count: null },
-  { id: 'seotools', label: 'SEO Tools', icon: Settings, count: 3 },
+  { id: 'seotools', label: 'SEO Tools', icon: Settings, count: null },
 ]
 
 export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: SidebarProps) {

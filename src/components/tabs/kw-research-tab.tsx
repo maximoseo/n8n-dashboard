@@ -22,16 +22,9 @@ import {
 } from 'lucide-react'
 
 const projects = [
-  { id: 1, name: 'Dental SEO Q3', keywords: 156, status: 'active', progress: 78, lastRun: '2 hours ago' },
-  { id: 2, name: 'Chiropractic Local', keywords: 89, status: 'completed', progress: 100, lastRun: '1 day ago' },
-  { id: 3, name: 'Real Estate NYC', keywords: 234, status: 'active', progress: 45, lastRun: '30 min ago' },
-  { id: 4, name: 'E-commerce Audit', keywords: 567, status: 'error', progress: 23, lastRun: '3 hours ago' },
 ]
 
 const recentRuns = [
-  { id: 1, project: 'Dental SEO Q3', type: 'SERP Analysis', keywords: 45, status: 'completed', date: '10 min ago' },
-  { id: 2, project: 'Real Estate NYC', type: 'Competitor Discovery', keywords: 23, status: 'completed', date: '25 min ago' },
-  { id: 3, project: 'Chiropractic Local', type: 'Validation', keywords: 89, status: 'processing', date: 'just now' },
 ]
 
 export function KwResearchTab() {
@@ -60,7 +53,7 @@ export function KwResearchTab() {
     setNotice({
       type: 'success',
       title: 'Research brief queued locally',
-      message: 'The brief is staged in this dashboard session. The production KW pipeline still runs in the full KW Research dashboard.',
+      message: 'The brief is staged locally only. Use the full KW Research dashboard to run the production pipeline.',
     })
   }
 
@@ -119,8 +112,8 @@ export function KwResearchTab() {
             className="bg-blue-600 hover:bg-blue-700"
             onClick={() => setNotice({
               type: 'info',
-              title: 'Create projects in KW Research',
-              message: 'Use the full KW Research dashboard for persistent project creation. This embedded tab can stage briefs and export project data.',
+                  title: 'Create projects in KW Research',
+                  message: 'Use the full KW Research dashboard for persistent project creation. This embedded tab does not show synthetic projects.',
             })}
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -187,15 +180,21 @@ export function KwResearchTab() {
                 className="text-slate-400"
                 onClick={() => setNotice({
                   type: 'info',
-                  title: 'Filter is not needed for sample data',
-                  message: 'There are four staged projects in this embedded view. Use the full dashboard for persistent filters.',
+                  title: 'No embedded projects to filter',
+                  message: 'Live KW projects are not connected to this embedded tab yet. Open the full dashboard for persistent filters.',
                 })}
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Filter
               </Button>
             </div>
-            {projects.map((project) => (
+            {projects.length === 0 ? (
+              <Card className="bg-slate-900 border-slate-800">
+                <CardContent className="p-6 text-sm text-slate-400">
+                  No live KW projects are connected in this embedded dashboard. Open the full KW Research dashboard for production project data.
+                </CardContent>
+              </Card>
+            ) : projects.map((project) => (
               <Card key={project.id} className="bg-slate-900 border-slate-800">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -251,7 +250,11 @@ export function KwResearchTab() {
               <CardTitle className="text-white text-base">Recent Runs</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {runs.map((run) => (
+              {runs.length === 0 ? (
+                <div className="p-3 bg-slate-800 rounded-lg text-sm text-slate-400">
+                  No live KW run history is connected here yet.
+                </div>
+              ) : runs.map((run) => (
                 <div key={run.id} className="p-3 bg-slate-800 rounded-lg">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium text-white text-sm">{run.project}</span>
@@ -299,7 +302,7 @@ export function KwResearchTab() {
                 <div>
                   <p className="font-medium text-white text-sm">Cannibalization Alert</p>
                   <p className="text-xs text-slate-400 mt-1">
-                    3 keyword conflicts detected between &quot;Dental Implants Miami&quot; pages
+                    Live cannibalization data is available in the full KW dashboard.
                   </p>
                   <Button
                     variant="ghost"
@@ -308,7 +311,7 @@ export function KwResearchTab() {
                     onClick={() => setNotice({
                       type: 'warning',
                       title: 'Cannibalization analysis',
-                      message: 'Three staged conflicts were detected in the sample dataset. Open the full KW dashboard to run the live overlap analysis against production data.',
+                      message: 'Open the full KW dashboard to run live overlap analysis against production data.',
                     })}
                   >
                     View Analysis
