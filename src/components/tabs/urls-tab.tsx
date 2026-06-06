@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ActionNotice } from '@/components/action-notice'
+import { supabase } from '@/lib/supabase'
 import {
   Globe,
   Camera,
@@ -59,50 +60,95 @@ export function UrlsTab() {
   const [selectedDevice, setSelectedDevice] = useState<'desktop' | 'mobile' | 'tablet'>('desktop')
   const [notice, setNotice] = useState<{title: string, message: string, type?: 'info' | 'success' | 'warning' | 'error'} | null>(null)
 
-  const captureScreenshots = () => {
+  const captureScreenshots = async () => {
     const urls = urlInput.split('\n').map((u) => u.trim()).filter(Boolean)
     if (urls.length === 0) return
 
     setIsCapturing(true)
-    const newScreenshots = urls.slice(0, 10).map((url) => ({
-      url,
-      device: selectedDevice,
-      status: 'error' as const,
-      error: 'Server-side Browserless capture is not available on the static Render deployment. Open the full Paperclip tool to run the real screenshot workflow.',
-      timestamp: new Date().toISOString(),
-    }))
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const results = await Promise.all(
+        urls.slice(0, 10).map(async (url) => {
+          try {
+            const response = await fetch('/api/browserless/screenshot', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+              },
+              body: JSON.stringify({ url, viewport: selectedDevice, fullPage: true }),
+            })
+            const data = await response.json().catch(() => null)
+            if (!response.ok) throw new Error(data?.error || 'Screenshot failed')
 
-    setScreenshots(prev => [...newScreenshots, ...prev].slice(0, 20))
-    setNotice({
-      type: 'warning',
-      title: 'Screenshot workflow needs the server tool',
-      message: 'The URLs were accepted, but live Browserless capture cannot run safely from this static browser bundle. Use Open Full Tool to execute the server-side workflow.',
-    })
-    setIsCapturing(false)
+            return {
+              url: data.url || url,
+              device: selectedDevice,
+              status: 'completed' as const,
+              image: data.image,
+              timestamp: data.timestamp || new Date().toISOString(),
+            }
+          } catch (error) {
+            return {
+              url,
+              device: selectedDevice,
+              status: 'error' as const,
+              error: error instanceof Error ? error.message : 'Screenshot failed',
+              timestamp: new Date().toISOString(),
+            }
+          }
+        })
+      )
+
+      setScreenshots(prev => [...results, ...prev].slice(0, 20))
+      setNotice({
+        type: results.some((result) => result.status === 'completed') ? 'success' : 'error',
+        title: 'Screenshot run finished',
+        message: `${results.filter((result) => result.status === 'completed').length}/${results.length} screenshots completed from the live Browserless API.`,
+      })
+    } finally {
+      setIsCapturing(false)
+    }
   }
 
-  const prepareScrape = () => {
+  const prepareScrape = async () => {
     if (!scrapeUrlInput.trim()) return
 
     setIsScraping(true)
-    setScrapedData({
-      url: scrapeUrlInput.trim(),
-      title: 'Firecrawl scrape request prepared',
-      markdown: [
-        `URL: ${scrapeUrlInput.trim()}`,
-        `Prepared at: ${new Date().toISOString()}`,
-        '',
-        'Live Firecrawl scraping requires a server-side endpoint so the API key stays private.',
-        'Open the full Paperclip tool to run the real scrape workflow.',
-      ].join('\n'),
-      timestamp: new Date().toISOString(),
-    })
-    setNotice({
-      type: 'warning',
-      title: 'Firecrawl needs server execution',
-      message: 'The static dashboard can prepare and export the request, but real scraping must run through the server-side Paperclip workflow.',
-    })
-    setIsScraping(false)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const response = await fetch('/api/firecrawl/scrape', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
+        body: JSON.stringify({ url: scrapeUrlInput.trim(), formats: ['markdown', 'html'] }),
+      })
+      const data = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(data?.error || 'Firecrawl scrape failed')
+
+      setScrapedData({
+        url: data.url || scrapeUrlInput.trim(),
+        title: data.data?.metadata?.title || 'Scraped Content',
+        markdown: data.data?.markdown,
+        html: data.data?.html,
+        timestamp: data.timestamp || new Date().toISOString(),
+      })
+      setNotice({
+        type: 'success',
+        title: 'Firecrawl scrape completed',
+        message: 'The page content was extracted from the live Firecrawl API.',
+      })
+    } catch (error) {
+      setNotice({
+        type: 'error',
+        title: 'Firecrawl scrape failed',
+        message: error instanceof Error ? error.message : 'The live scrape request failed.',
+      })
+    } finally {
+      setIsScraping(false)
+    }
   }
 
   return (
@@ -152,7 +198,7 @@ export function UrlsTab() {
                 Batch Screenshot Intake
               </CardTitle>
               <CardDescription className="text-slate-400">
-                Paste URLs to prepare the screenshot/QA batch
+                Paste URLs to capture screenshots with the live Browserless API
               </CardDescription>
             </CardHeader>
             <CardContent>
