@@ -380,7 +380,7 @@ export function UrlsTab() {
               onClick={() => setNotice({
                 type: 'warning',
                 title: 'Add Site requires writeback',
-                message: 'This static deployment can display saved sites, but adding a persistent WordPress site needs a server endpoint or Supabase write permission.',
+                message: 'This embedded tab can display saved sites, but persistent WordPress site creation still needs a dedicated server endpoint or Supabase write permission.',
               })}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -464,7 +464,7 @@ export function UrlsTab() {
                   onClick={() => setNotice({
                     type: 'warning',
                     title: 'Sheets writeback is gated',
-                    message: 'Writing to Google Sheets cannot run safely from this static browser bundle. Use the full Paperclip/n8n workflow for the real writeback.',
+                    message: 'Writing to Google Sheets stays gated behind server-side credentials. Use the full Paperclip/n8n workflow for production writeback.',
                   })}
                 >
                   Confirm & Write

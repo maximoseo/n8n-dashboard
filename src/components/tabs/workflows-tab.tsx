@@ -100,7 +100,7 @@ export function WorkflowsTab() {
     setNotice({
       type: 'success',
       title: 'Sheet mapping saved',
-      message: 'The mapping is available in this browser. Server writeback is disabled on the static Render service, so persistent team-wide sync still needs a backend endpoint.',
+      message: 'The mapping is available in this browser. Persistent team-wide sync still needs a dedicated server endpoint.',
     })
   }
 
@@ -248,7 +248,7 @@ export function WorkflowsTab() {
                       onClick={() => setNotice({
                         type: 'warning',
                         title: 'Execution is gated in n8n',
-                        message: 'This static dashboard cannot safely run workflows directly because it would expose n8n API credentials in the browser. Open the workflow in n8n and execute it from there.',
+                        message: 'Workflow execution remains gated in n8n so credentials, permissions, and logs stay controlled. Open the workflow in n8n and execute it from there.',
                       })}
                     >
                       <Play className="w-4 h-4" />
