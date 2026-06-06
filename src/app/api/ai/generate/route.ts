@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuthenticatedUser } from '@/lib/server-auth'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || ''
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAuthenticatedUser(request)
+    if (auth.response) return auth.response
+
     const { prompt, type = 'content', provider = 'auto' } = await request.json()
 
     if (!prompt) {

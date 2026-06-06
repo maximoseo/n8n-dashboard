@@ -1,7 +1,5 @@
-// Firecrawl API Integration
-// API Key: fc-fe167396ad9f4f1fb85078ba3a5a705e
-
-const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY || 'fc-fe167396ad9f4f1fb85078ba3a5a705e'
+// Firecrawl API integration. Keep provider credentials in runtime env only.
+const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY || ''
 const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev/v1'
 
 export interface ScrapeResult {

@@ -1,7 +1,5 @@
-// Browserless API Integration
-// API Key: 2Ua28OlYbodr5tv902687876ff772951e2af866e9f7e84ace
-
-const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY || '2Ua28OlYbodr5tv902687876ff772951e2af866e9f7e84ace'
+// Browserless API integration. Keep provider credentials in runtime env only.
+const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY || ''
 const BROWSERLESS_BASE_URL = 'https://chrome.browserless.io'
 
 export interface ScreenshotOptions {

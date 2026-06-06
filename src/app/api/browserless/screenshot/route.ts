@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuthenticatedUser } from '@/lib/server-auth'
 
 const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY || ''
 const BROWSERLESS_BASE_URL = 'https://chrome.browserless.io'
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAuthenticatedUser(request)
+    if (auth.response) return auth.response
+
     const { url, viewport = 'desktop', fullPage = false, type = 'png' } = await request.json()
 
     if (!url) {

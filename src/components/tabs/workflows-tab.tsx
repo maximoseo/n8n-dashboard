@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { SheetMappingModal, SheetLinkButton, type SheetMapping, type SheetMappingData } from '@/components/sheet-mapping-modal'
 import { ActionNotice } from '@/components/action-notice'
+import { supabase } from '@/lib/supabase'
 import {
   Play,
   Pause,
@@ -49,13 +50,30 @@ export function WorkflowsTab() {
   useEffect(() => {
     async function loadWorkflows() {
       try {
-        const response = await fetch('/api/n8n/workflows')
+        const { data: { session } } = await supabase.auth.getSession()
+        const response = await fetch('/api/n8n/workflows', {
+          headers: session?.access_token
+            ? { Authorization: `Bearer ${session.access_token}` }
+            : {},
+        })
         if (response.ok) {
           const data = await response.json()
           setWorkflows(data.workflows || [])
+        } else {
+          const data = await response.json().catch(() => null)
+          setNotice({
+            type: 'error',
+            title: 'Workflow data unavailable',
+            message: data?.error || 'Sign in again or try refreshing the dashboard.',
+          })
         }
       } catch (error) {
         console.error('Failed to load workflows:', error)
+        setNotice({
+          type: 'error',
+          title: 'Workflow data unavailable',
+          message: 'The dashboard could not reach the workflow API. Try refreshing the page.',
+        })
       } finally {
         setIsLoading(false)
       }

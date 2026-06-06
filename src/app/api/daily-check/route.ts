@@ -32,9 +32,9 @@ interface Execution {
 // Verify cron secret to prevent unauthorized access
 function verifyCronSecret(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization')
-  const cronSecret = process.env.CRON_SECRET || 'maximo-seo-cron-secret'
+  const cronSecret = process.env.CRON_SECRET
   
-  if (!authHeader) return false
+  if (!authHeader || !cronSecret) return false
   return authHeader === `Bearer ${cronSecret}` || authHeader === cronSecret
 }
 

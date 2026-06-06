@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuthenticatedUser } from '@/lib/server-auth'
 
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY || ''
 const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev/v1'
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAuthenticatedUser(request)
+    if (auth.response) return auth.response
+
     const { url, formats = ['markdown'] } = await request.json()
 
     if (!url) {

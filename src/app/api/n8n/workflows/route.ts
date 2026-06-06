@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuthenticatedUser } from '@/lib/server-auth'
 
 const N8N_API_KEY = process.env.N8N_API_KEY || ''
 const N8N_BASE_URL = process.env.N8N_BASE_URL || 'https://websiseo.app.n8n.cloud'
@@ -7,12 +8,14 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuthenticatedUser(request)
+    if (auth.response) return auth.response
+
     if (!N8N_API_KEY) {
-      // Return mock data if no API key
       return NextResponse.json({ 
-        workflows: getMockWorkflows(),
-        source: 'mock'
-      })
+        error: 'n8n API key is not configured',
+        source: 'unavailable',
+      }, { status: 503 })
     }
 
     const workflows = await getAllWorkflows()
@@ -44,10 +47,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching workflows:', error)
     return NextResponse.json({ 
-      workflows: getMockWorkflows(),
-      source: 'mock',
+      workflows: [],
+      source: 'unavailable',
       error: error instanceof Error ? error.message : 'Unknown error'
-    })
+    }, { status: 502 })
   }
 }
 
@@ -138,63 +141,4 @@ function formatTimeAgo(date: Date): string {
   if (diffMins < 60) return `${diffMins} min ago`
   if (diffHours < 24) return `${diffHours} hour ago`
   return `${diffDays} day ago`
-}
-
-function getMockWorkflows() {
-  return [
-    {
-      id: '1',
-      name: 'URL Screenshot Pipeline',
-      description: 'Captures responsive screenshots via Browserless',
-      status: 'active',
-      lastRun: '2 min ago',
-      runs: 1247,
-      category: 'URLs',
-    },
-    {
-      id: '2',
-      name: 'Parent ID Scanner',
-      description: 'WordPress site scanning with validation',
-      status: 'active',
-      lastRun: '15 min ago',
-      runs: 892,
-      category: 'WordPress',
-    },
-    {
-      id: '3',
-      name: 'SERP Keyword Research',
-      description: 'SERP analysis and competitor discovery',
-      status: 'paused',
-      lastRun: '1 hour ago',
-      runs: 456,
-      category: 'Research',
-    },
-    {
-      id: '4',
-      name: 'Cannibalization Checker',
-      description: 'Overlap analysis and keyword conflict detection',
-      status: 'active',
-      lastRun: '30 min ago',
-      runs: 234,
-      category: 'Analysis',
-    },
-    {
-      id: '5',
-      name: 'Content Brief Generator',
-      description: 'AI synthesis for content teams',
-      status: 'active',
-      lastRun: '5 min ago',
-      runs: 678,
-      category: 'Content',
-    },
-    {
-      id: '6',
-      name: 'Link Building Scorer',
-      description: 'Quality scoring and risk assessment',
-      status: 'error',
-      lastRun: '3 hours ago',
-      runs: 123,
-      category: 'Links',
-    },
-  ]
 }

@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendEmail, emailTemplates } from '@/lib/resend'
 
 // n8n API configuration
-const N8N_API_KEY = process.env.N8N_API_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OGE3MmVjNi01YjAyLTQ1N2EtYWJiYy04OTU3MDI5NGRlZjkiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiZjA0OWY2MTQtNzYyYi00YzQyLTljNjctMGM0MWI1MDJiOGEwIiwiaWF0IjoxNzc4NDg0NjM5fQ.iiukVI9A_Y3GI0IZC9lskuq2duFKc5YHmj_rqs2qR5U'
-const N8N_BASE_URL = 'https://websiseo.app.n8n.cloud'
+const N8N_API_KEY = process.env.N8N_API_KEY || ''
+const N8N_BASE_URL = process.env.N8N_BASE_URL || 'https://websiseo.app.n8n.cloud'
 
 interface Workflow {
   id: string
@@ -32,9 +32,9 @@ interface Execution {
 // Verify cron secret to prevent unauthorized access
 function verifyCronSecret(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization')
-  const cronSecret = process.env.CRON_SECRET || 'maximo-seo-cron-secret'
+  const cronSecret = process.env.CRON_SECRET
   
-  if (!authHeader) return false
+  if (!authHeader || !cronSecret) return false
   return authHeader === `Bearer ${cronSecret}` || authHeader === cronSecret
 }
 

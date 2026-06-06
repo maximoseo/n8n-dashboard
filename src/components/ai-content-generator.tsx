@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { supabase } from '@/lib/supabase'
 import { Sparkles, Loader2, Copy, Download, Check } from 'lucide-react'
 
 interface GeneratedContent {
@@ -88,9 +89,13 @@ Format in markdown.`
 
     setIsGenerating(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({ prompt, type: activeTab })
       })
 
