@@ -179,10 +179,14 @@ export function buildWorkflowClonePayload(
     [sourceDomain || '']: domain,
   }
 
-  const nodes = retargetGoogleSheetsNodes(
-    replaceWorkflowValues(sourceWorkflow.nodes || [], replacements),
-    input,
-    sheet,
+  const webhookPathPrefix = buildWebhookPathPrefix(input)
+  const nodes = retargetWebhookNodes(
+    retargetGoogleSheetsNodes(
+      replaceWorkflowValues(sourceWorkflow.nodes || [], replacements),
+      input,
+      sheet,
+    ),
+    webhookPathPrefix,
   )
   const connections = replaceWorkflowValues(sourceWorkflow.connections || {}, replacements)
 
@@ -194,12 +198,33 @@ export function buildWorkflowClonePayload(
       keyword: input.keyword.trim(),
       spreadsheetId: sheet.spreadsheetId,
       spreadsheetUrl: sheet.spreadsheetUrl,
+      webhookPathPrefix,
       prompts,
     }),
     connections,
     settings: {},
     staticData: null,
   }
+}
+
+function buildWebhookPathPrefix(input: NofollowCloneRequest) {
+  const domain = getDomain(input.siteUrl).replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-')
+  const suffix = Date.now().toString(36)
+  return `nofollow-${domain}-${suffix}`.toLowerCase().slice(0, 120)
+}
+
+function retargetWebhookNodes(nodes: any[], webhookPathPrefix: string) {
+  let index = 0
+
+  return nodes.map((node) => {
+    if (node?.type !== 'n8n-nodes-base.webhook') return node
+
+    index += 1
+    const parameters = { ...(node.parameters || {}) }
+    parameters.path = index === 1 ? webhookPathPrefix : `${webhookPathPrefix}-${index}`
+
+    return { ...node, parameters }
+  })
 }
 
 function retargetGoogleSheetsNodes(
