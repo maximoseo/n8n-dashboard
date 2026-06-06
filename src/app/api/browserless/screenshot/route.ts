@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuthenticatedUser } from '@/lib/server-auth'
+import { validatePublicHttpUrl } from '@/lib/url-validation'
 
 const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY || ''
 const BROWSERLESS_BASE_URL = 'https://chrome.browserless.io'
@@ -11,8 +12,9 @@ export async function POST(request: NextRequest) {
 
     const { url, viewport = 'desktop', fullPage = false, type = 'png' } = await request.json()
 
-    if (!url) {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 })
+    const validatedUrl = validatePublicHttpUrl(url)
+    if (!validatedUrl.ok) {
+      return NextResponse.json({ error: validatedUrl.error }, { status: 400 })
     }
 
     if (!BROWSERLESS_API_KEY) {
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        url,
+        url: validatedUrl.url,
         options: {
           viewport: viewportSizes[viewport as keyof typeof viewportSizes] || viewportSizes.desktop,
           fullPage,
@@ -52,7 +54,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       image: base64,
-      url,
+      url: validatedUrl.url,
       viewport,
       timestamp: new Date().toISOString()
     })

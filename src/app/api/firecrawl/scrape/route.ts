@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuthenticatedUser } from '@/lib/server-auth'
+import { validatePublicHttpUrl } from '@/lib/url-validation'
 
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY || ''
 const FIRECRAWL_BASE_URL = 'https://api.firecrawl.dev/v1'
@@ -11,8 +12,9 @@ export async function POST(request: NextRequest) {
 
     const { url, formats = ['markdown'] } = await request.json()
 
-    if (!url) {
-      return NextResponse.json({ error: 'URL is required' }, { status: 400 })
+    const validatedUrl = validatePublicHttpUrl(url)
+    if (!validatedUrl.ok) {
+      return NextResponse.json({ error: validatedUrl.error }, { status: 400 })
     }
 
     if (!FIRECRAWL_API_KEY) {
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        url,
+        url: validatedUrl.url,
         formats,
       }),
     })
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: data.data,
-      url,
+      url: validatedUrl.url,
       timestamp: new Date().toISOString()
     })
   } catch (error) {

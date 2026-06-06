@@ -176,15 +176,17 @@ export function UrlsTab() {
                     )}
                   </Button>
                   <div className="flex gap-2">
-                    <button 
-                      onClick={() => setSelectedDevice('desktop')}
+	                    <button 
+	                      type="button"
+	                      onClick={() => setSelectedDevice('desktop')}
                       className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm border transition-colors ${selectedDevice === 'desktop' ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-700 text-slate-400 hover:text-white'}`}
                     >
                       <Monitor className="w-3 h-3" />
                       Desktop
                     </button>
-                    <button 
-                      onClick={() => setSelectedDevice('mobile')}
+	                    <button 
+	                      type="button"
+	                      onClick={() => setSelectedDevice('mobile')}
                       className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm border transition-colors ${selectedDevice === 'mobile' ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-700 text-slate-400 hover:text-white'}`}
                     >
                       <Smartphone className="w-3 h-3" />
@@ -234,7 +236,7 @@ export function UrlsTab() {
                         ) : screenshot.status === 'error' ? (
                           <Badge variant="danger">Error</Badge>
                         ) : (
-                          <Badge variant="warning"><Loader2 className="w-3 h-3 animate-spin mr-1" />...</Badge>
+	                          <Badge variant="warning"><Loader2 className="w-3 h-3 animate-spin mr-1" />…</Badge>
                         )}
                         {screenshot.image && (
                           <Button variant="ghost" size="sm" className="text-slate-400" onClick={() => {

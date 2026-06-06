@@ -74,14 +74,14 @@ export function SheetMappingModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="sheet-mapping-title">
       <Card className="w-full max-w-md bg-slate-900 border-slate-800">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle id="sheet-mapping-title" className="text-white flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-green-500" />
             Link Google Sheet
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-400 hover:text-white">
+          <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-400 hover:text-white" aria-label="Close sheet mapping">
             <X className="w-4 h-4" />
           </Button>
         </CardHeader>
@@ -98,6 +98,8 @@ export function SheetMappingModal({
             </Label>
             <Input
               id="sheetName"
+              name="sheetName"
+              autoComplete="off"
               placeholder="e.g., SEO Keywords Q3"
               value={sheetName}
               onChange={(e) => setSheetName(e.target.value)}
@@ -111,6 +113,10 @@ export function SheetMappingModal({
             </Label>
             <Input
               id="sheetUrl"
+              name="sheetUrl"
+              type="url"
+              inputMode="url"
+              autoComplete="off"
               placeholder="https://docs.google.com/spreadsheets/d/..."
               value={sheetUrl}
               onChange={(e) => setSheetUrl(e.target.value)}
@@ -192,6 +198,7 @@ export function SheetLinkButton({ workflowId, mapping, onClick }: SheetLinkButto
 
   return (
     <button
+      type="button"
       onClick={onClick}
       className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border border-dashed border-slate-600 text-slate-500 hover:border-slate-500 hover:text-slate-400 transition-colors"
       title="Link Google Sheet"
