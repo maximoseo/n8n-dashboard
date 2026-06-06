@@ -179,7 +179,11 @@ export function buildWorkflowClonePayload(
     [sourceDomain || '']: domain,
   }
 
-  const nodes = replaceWorkflowValues(sourceWorkflow.nodes || [], replacements)
+  const nodes = retargetGoogleSheetsNodes(
+    replaceWorkflowValues(sourceWorkflow.nodes || [], replacements),
+    input,
+    sheet,
+  )
   const connections = replaceWorkflowValues(sourceWorkflow.connections || {}, replacements)
   const settings = replaceWorkflowValues(sourceWorkflow.settings || {}, replacements)
 
@@ -198,6 +202,60 @@ export function buildWorkflowClonePayload(
     settings,
     staticData: null,
   }
+}
+
+function retargetGoogleSheetsNodes(
+  nodes: any[],
+  input: NofollowCloneRequest,
+  sheet: { spreadsheetId: string; spreadsheetUrl: string },
+) {
+  const sheetTitle = buildSheetTitle(input)
+  const seededSheetTitles = buildSheetSeed(input).map((seed) => seed.title)
+
+  return nodes.map((node) => {
+    if (node?.type !== 'n8n-nodes-base.googleSheets') return node
+
+    const parameters = { ...(node.parameters || {}) }
+    parameters.documentId = {
+      __rl: true,
+      value: sheet.spreadsheetId,
+      mode: 'id',
+      cachedResultName: sheetTitle,
+      cachedResultUrl: sheet.spreadsheetUrl,
+    }
+
+    const currentSheetName = normalizeSheetName(parameters.sheetName)
+    if (!currentSheetName || !seededSheetTitles.includes(currentSheetName)) {
+      parameters.sheetName = {
+        __rl: true,
+        value: pickSeedSheetForNode(node),
+        mode: 'name',
+      }
+    }
+
+    return { ...node, parameters }
+  })
+}
+
+function normalizeSheetName(sheetName: unknown) {
+  if (!sheetName) return ''
+  if (typeof sheetName === 'string') return sheetName
+  if (typeof sheetName === 'object') {
+    const value = sheetName as Record<string, unknown>
+    return String(value.cachedResultName || value.value || '')
+  }
+  return String(sheetName)
+}
+
+function pickSeedSheetForNode(node: any) {
+  const name = String(node?.name || '').toLowerCase()
+  const operation = String(node?.parameters?.operation || '').toLowerCase()
+
+  if (/prompt/.test(name)) return 'Prompts'
+  if (/opportun|link|url|domain|grab|lookup|read|cluster/.test(name)) return 'Opportunities'
+  if (/run|status|complete|mark|update|log/.test(name) || operation === 'update') return 'Runs'
+  if (/keyword|query|serp/.test(name)) return 'Keywords'
+  return 'Setup'
 }
 
 function injectNofollowMetadata(nodes: any[], metadata: Record<string, unknown>) {

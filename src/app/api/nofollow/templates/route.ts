@@ -3,6 +3,7 @@ import { requireAuthenticatedUser } from '@/lib/server-auth'
 
 const N8N_API_KEY = process.env.N8N_API_KEY || ''
 const N8N_BASE_URL = process.env.N8N_BASE_URL || 'https://websiseo.app.n8n.cloud'
+const TEMPLATE_NAME_PATTERN = /nofollow|pbn|backlink|link building|outreach|citation|guest post/i
 
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
   const data = await response.json()
   const workflows = Array.isArray(data.data) ? data.data : []
   const templates = workflows
-    .filter((workflow) => /nofollow/i.test(workflow?.name || ''))
+    .filter((workflow) => TEMPLATE_NAME_PATTERN.test(workflow?.name || ''))
     .map((workflow) => ({
       id: workflow.id,
       name: workflow.name,
