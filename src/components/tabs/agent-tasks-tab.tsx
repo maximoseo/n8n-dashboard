@@ -185,17 +185,6 @@ export function AgentTasksTab() {
               />
             </div>
 
-            <Button
-              className="min-h-11 w-full bg-blue-600 text-white hover:bg-blue-700 disabled:text-white/70 sm:w-auto"
-              onClick={submitTask}
-              disabled={isSubmitting || !title.trim() || brief.trim().length < 20 || selectedAgents.length === 0}
-            >
-              {isSubmitting ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
-              ) : (
-                <><Send className="mr-2 h-4 w-4" /> Submit to Agents</>
-              )}
-            </Button>
           </CardContent>
         </Card>
 
@@ -257,6 +246,27 @@ export function AgentTasksTab() {
             </Card>
           )}
         </div>
+      </div>
+
+      <div className="flex flex-col gap-3 rounded-lg border border-slate-800 bg-slate-900 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-slate-400">
+          <span className="font-medium text-white">{selectedAgents.length}</span>
+          {' '}
+          {selectedAgents.length === 1 ? 'agent selected' : 'agents selected'}
+          <span className="mx-2 text-slate-600">/</span>
+          Brief must be at least 20 characters
+        </div>
+        <Button
+          className="min-h-11 w-full bg-blue-600 text-white hover:bg-blue-700 disabled:text-white/70 sm:w-auto"
+          onClick={submitTask}
+          disabled={isSubmitting || !title.trim() || brief.trim().length < 20 || selectedAgents.length === 0}
+        >
+          {isSubmitting ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
+          ) : (
+            <><Send className="mr-2 h-4 w-4" /> Submit to Agents</>
+          )}
+        </Button>
       </div>
     </div>
   )
