@@ -186,7 +186,7 @@ export function AgentTasksTab() {
             </div>
 
             <Button
-              className="min-h-11 w-full bg-blue-600 hover:bg-blue-700 sm:w-auto"
+              className="min-h-11 w-full bg-blue-600 text-white hover:bg-blue-700 disabled:text-white/70 sm:w-auto"
               onClick={submitTask}
               disabled={isSubmitting || !title.trim() || brief.trim().length < 20 || selectedAgents.length === 0}
             >
