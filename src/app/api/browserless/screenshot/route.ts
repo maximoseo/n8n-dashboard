@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         url: validatedUrl.url,
+        viewport: viewportSizes[viewport as keyof typeof viewportSizes] || viewportSizes.desktop,
         options: {
-          viewport: viewportSizes[viewport as keyof typeof viewportSizes] || viewportSizes.desktop,
           fullPage,
           type,
         },
