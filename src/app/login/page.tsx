@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,20 +8,35 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
-import { Workflow, Eye, EyeOff, ArrowRight, LayoutDashboard } from 'lucide-react'
+import { Workflow, Eye, EyeOff, ArrowRight, LayoutDashboard, KeyRound } from 'lucide-react'
 
 const isGithubOAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_GITHUB_OAUTH === 'true'
+const genericResetMessage = 'If an account exists for that email, a reset link has been sent.'
 
 export default function LoginPage() {
   const router = useRouter()
   const { signIn, signInWithOAuth, signUp } = useAuth()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
+  const [resetEmail, setResetEmail] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isResetLoading, setIsResetLoading] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
+  const [isResetMode, setIsResetMode] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('message') === 'password-reset') {
+      setMessage('Your password has been reset. Please sign in.')
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,6 +60,48 @@ export default function LoginPage() {
       }
     }
     setIsLoading(false)
+  }
+
+  const handlePasswordReset = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setError('')
+    setMessage('')
+    setIsResetLoading(true)
+
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null) as { error?: string } | null
+        setError(data?.error || 'Enter a valid email address.')
+        return
+      }
+
+      setMessage(genericResetMessage)
+    } catch {
+      setError('Password reset is temporarily unavailable. Try again later.')
+    } finally {
+      setIsResetLoading(false)
+    }
+  }
+
+  const switchToResetMode = () => {
+    setError('')
+    setMessage('')
+    setIsSignUp(false)
+    setResetEmail(identifier.includes('@') ? identifier : '')
+    setIsResetMode(true)
+  }
+
+  const switchToSignInMode = () => {
+    setError('')
+    setMessage('')
+    setIsResetMode(false)
+    setIsSignUp(false)
   }
 
   const handleOAuth = async (provider: 'google' | 'github') => {
@@ -85,15 +142,68 @@ export default function LoginPage() {
         <Card className="border-slate-800 bg-slate-900/50 backdrop-blur">
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl text-white">
-              {isSignUp ? 'Create account' : 'Welcome back'}
+              {isResetMode ? 'Reset password' : isSignUp ? 'Create account' : 'Welcome back'}
             </CardTitle>
             <CardDescription className="text-slate-400">
-              {isSignUp 
-                ? 'Sign up to access your SEO workflows and tools' 
-                : 'Sign in to access your SEO workflows and tools'}
+              {isResetMode
+                ? 'Enter your email and we will send a secure reset link'
+                : isSignUp
+                  ? 'Sign up to access your SEO workflows and tools'
+                  : 'Sign in to access your SEO workflows and tools'}
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {isResetMode ? (
+              <form onSubmit={handlePasswordReset} className="space-y-4">
+                {error && (
+                  <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                    {error}
+                  </div>
+                )}
+                {message && (
+                  <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+                    {message}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="resetEmail" className="text-slate-300">Email</Label>
+                  <Input
+                    id="resetEmail"
+                    name="resetEmail"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="name@company.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isResetLoading}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-11"
+                >
+                  {isResetLoading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
+                  ) : (
+                    <>
+                      <KeyRound className="w-4 h-4 mr-2" />
+                      Send reset link
+                    </>
+                  )}
+                </Button>
+
+                <button
+                  type="button"
+                  onClick={switchToSignInMode}
+                  className="min-h-11 text-sm text-blue-400 hover:text-blue-300 w-full text-center"
+                >
+                  Back to sign in
+                </button>
+              </form>
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
@@ -144,6 +254,16 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
+
+              {!isSignUp && (
+                <button
+                  type="button"
+                  onClick={switchToResetMode}
+                  className="min-h-11 text-sm text-blue-400 hover:text-blue-300 w-full text-right"
+                >
+                  Forgot password?
+                </button>
+              )}
 
               <Button
                 type="submit"
@@ -232,6 +352,7 @@ export default function LoginPage() {
                 </button>
               </div>
             </form>
+            )}
           </CardContent>
         </Card>
 

@@ -2,24 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import type { User } from '@supabase/supabase-js'
-
-const fixedDashboardUsername = process.env.NEXT_PUBLIC_DASHBOARD_AUTH_USERNAME?.trim().toLowerCase()
-const fixedDashboardEmail = process.env.NEXT_PUBLIC_DASHBOARD_AUTH_EMAIL?.trim()
-
-function resolveLoginEmail(identifier: string) {
-  const trimmedIdentifier = identifier.trim()
-
-  if (
-    fixedDashboardUsername &&
-    fixedDashboardEmail &&
-    trimmedIdentifier.toLowerCase() === fixedDashboardUsername
-  ) {
-    return fixedDashboardEmail
-  }
-
-  return trimmedIdentifier
-}
+import type { Session, User } from '@supabase/supabase-js'
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
@@ -42,10 +25,26 @@ export function useAuth() {
   }, [])
 
   const signIn = async (identifier: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: resolveLoginEmail(identifier),
-      password,
+    const response = await fetch('/api/auth/sign-in', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, password }),
     })
+
+    const payload = await response.json().catch(() => null) as { session?: Session; error?: string } | null
+
+    if (!response.ok || !payload?.session) {
+      return {
+        data: null,
+        error: { message: payload?.error || 'Invalid login credentials.' },
+      }
+    }
+
+    const { data, error } = await supabase.auth.setSession({
+      access_token: payload.session.access_token,
+      refresh_token: payload.session.refresh_token,
+    })
+
     return { data, error }
   }
 
