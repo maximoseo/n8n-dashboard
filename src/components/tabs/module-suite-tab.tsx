@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  AlertTriangle,
   ArrowUpRight,
   Bot,
   CheckCircle,
@@ -20,7 +19,7 @@ import { Badge } from '@/components/ui/badge'
 interface ModuleItem {
   name: string
   url: string
-  status: 'Live' | 'Auth flow' | 'DNS review' | 'Embed blocked'
+  status: 'Live' | 'Auth flow' | 'Live origin' | 'Embed blocked'
   group: 'n8n Ops' | 'HTML Studio' | 'Content Research'
   description: string
   treatment: string
@@ -39,11 +38,11 @@ const modules: ModuleItem[] = [
   },
   {
     name: 'n8n Monitoring Dashboard',
-    url: 'https://n8n-monitoring-dashboard.maximo-seo.ai/',
-    status: 'DNS review',
+    url: 'https://hermes-n8n-dashboard.onrender.com/',
+    status: 'Live origin',
     group: 'n8n Ops',
     description: 'Monitoring lane for workflow health, failed runs, latency checks, and escalation status.',
-    treatment: 'Native status lane; custom subdomain needs DNS verification before final card retirement.',
+    treatment: 'Native status lane with a verified Render origin launch for rollback.',
     icon: MonitorCog,
   },
   {
@@ -57,16 +56,16 @@ const modules: ModuleItem[] = [
   },
   {
     name: 'HTML Redesign Studio',
-    url: 'https://html-redesign-studio-dashboard.maximo-seo.ai/',
-    status: 'DNS review',
+    url: 'https://hermes-html-redesign-studio.onrender.com/',
+    status: 'Live origin',
     group: 'HTML Studio',
     description: 'Studio lane for redesign briefs, HTML transformation requests, visual QA, and client-ready outputs.',
-    treatment: 'Native studio launcher; custom subdomain needs DNS verification before final retirement.',
+    treatment: 'Native studio launcher with a verified Render origin launch for rollback.',
     icon: Code2,
   },
   {
     name: 'HTML Improvement',
-    url: 'https://html-improvment.maximo-seo.ai/login?redirect=%2F',
+    url: 'https://webs-html-improvements-files.onrender.com/login?redirect=%2F',
     status: 'Auth flow',
     group: 'HTML Studio',
     description: 'Improvement workflow for existing HTML pages, polish passes, QA fixes, and implementation notes.',
@@ -75,7 +74,7 @@ const modules: ModuleItem[] = [
   },
   {
     name: 'HTML Redesign Dashboard',
-    url: 'https://html-redesign-dashboard.maximo-seo.ai/login?redirect=%2F',
+    url: 'https://html-redesign-vps.onrender.com/login?redirect=%2F',
     status: 'Auth flow',
     group: 'HTML Studio',
     description: 'Production redesign dashboard for request tracking, generated variants, approvals, and rollout notes.',
@@ -84,11 +83,11 @@ const modules: ModuleItem[] = [
   },
   {
     name: 'Paperclip Content Research',
-    url: 'https://paperclip-content-research-company.maximo-seo.ai/',
-    status: 'DNS review',
+    url: 'https://paperclip-content-research-company.onrender.com/',
+    status: 'Live origin',
     group: 'Content Research',
     description: 'Research lane for Paperclip content briefs, source discovery, topic clusters, and evidence collection.',
-    treatment: 'Native research lane; custom subdomain needs DNS verification before final retirement.',
+    treatment: 'Native research lane with a verified Render origin launch for rollback.',
     icon: FileSearch,
   },
 ]
@@ -98,21 +97,21 @@ const groups: ModuleItem['group'][] = ['n8n Ops', 'HTML Studio', 'Content Resear
 const statusStyles: Record<ModuleItem['status'], string> = {
   Live: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
   'Auth flow': 'border-blue-500/30 bg-blue-500/10 text-blue-300',
-  'DNS review': 'border-amber-500/30 bg-amber-500/10 text-amber-300',
+  'Live origin': 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
   'Embed blocked': 'border-rose-500/30 bg-rose-500/10 text-rose-300',
 }
 
 const statusIcons: Record<ModuleItem['status'], typeof CheckCircle> = {
   Live: CheckCircle,
   'Auth flow': Lock,
-  'DNS review': AlertTriangle,
+  'Live origin': CheckCircle,
   'Embed blocked': ShieldAlert,
 }
 
 export function ModuleSuiteTab() {
   const liveCount = modules.filter((module) => module.status === 'Live').length
   const protectedCount = modules.filter((module) => module.status === 'Auth flow' || module.status === 'Embed blocked').length
-  const dnsReviewCount = modules.filter((module) => module.status === 'DNS review').length
+  const liveOriginCount = modules.filter((module) => module.status === 'Live origin').length
 
   return (
     <div className="space-y-6">
@@ -150,8 +149,8 @@ export function ModuleSuiteTab() {
         </Card>
         <Card className="border-slate-800 bg-slate-900">
           <CardHeader className="pb-3">
-            <CardDescription className="text-slate-400">DNS verification needed</CardDescription>
-            <CardTitle className="text-3xl text-white">{dnsReviewCount}</CardTitle>
+            <CardDescription className="text-slate-400">Verified Render origins</CardDescription>
+            <CardTitle className="text-3xl text-white">{liveOriginCount}</CardTitle>
           </CardHeader>
         </Card>
       </div>
