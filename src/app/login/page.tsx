@@ -15,7 +15,7 @@ const isGithubOAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_GITHUB_OAUTH === 'tr
 export default function LoginPage() {
   const router = useRouter()
   const { signIn, signInWithOAuth, signUp } = useAuth()
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -30,14 +30,14 @@ export default function LoginPage() {
     setMessage('')
 
     if (isSignUp) {
-      const { error } = await signUp(email, password)
+      const { error } = await signUp(identifier, password)
       if (error) {
         setError(error.message)
       } else {
         setMessage('Check your email to confirm your account!')
       }
     } else {
-      const { error } = await signIn(email, password)
+      const { error } = await signIn(identifier, password)
       if (error) {
         setError(error.message)
       } else {
@@ -107,16 +107,16 @@ export default function LoginPage() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300">Email</Label>
+                <Label htmlFor="identifier" className="text-slate-300">Username or email</Label>
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
+                  id="identifier"
+                  name="identifier"
+                  type="text"
+                  autoComplete="username"
                   spellCheck={false}
-                  placeholder="name@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Username or name@company.com"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20"
                 />
               </div>

@@ -76,7 +76,7 @@ Modern dashboard with Supabase Auth, dark theme, and 6 SEO modules.
 Required in Render Dashboard:
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://wtpczvyupmavzrxisvcm.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[SUPABASE_ANON_KEY]
 ```
 
 Optional for extra features:

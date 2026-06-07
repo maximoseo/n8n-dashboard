@@ -4,6 +4,23 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { User } from '@supabase/supabase-js'
 
+const fixedDashboardUsername = process.env.NEXT_PUBLIC_DASHBOARD_AUTH_USERNAME?.trim().toLowerCase()
+const fixedDashboardEmail = process.env.NEXT_PUBLIC_DASHBOARD_AUTH_EMAIL?.trim()
+
+function resolveLoginEmail(identifier: string) {
+  const trimmedIdentifier = identifier.trim()
+
+  if (
+    fixedDashboardUsername &&
+    fixedDashboardEmail &&
+    trimmedIdentifier.toLowerCase() === fixedDashboardUsername
+  ) {
+    return fixedDashboardEmail
+  }
+
+  return trimmedIdentifier
+}
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -24,9 +41,9 @@ export function useAuth() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (identifier: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: resolveLoginEmail(identifier),
       password,
     })
     return { data, error }
