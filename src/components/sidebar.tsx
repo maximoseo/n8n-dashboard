@@ -10,6 +10,7 @@ import {
   BarChart3,
   Settings,
   Bot,
+  LayoutGrid,
   ChevronLeft,
   ChevronRight,
   Paperclip,
@@ -29,6 +30,7 @@ const navItems = [
   { id: 'linkbuilding', label: 'Link Building', icon: Link2, count: null },
   { id: 'nofollow', label: 'Nofollow Clone', icon: Copy, count: null },
   { id: 'agents', label: 'Agent Tasks', icon: Bot, count: null },
+  { id: 'modules', label: 'Module Suite', icon: LayoutGrid, count: 7 },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, count: null },
   { id: 'seotools', label: 'SEO Tools', icon: Settings, count: null },
 ]

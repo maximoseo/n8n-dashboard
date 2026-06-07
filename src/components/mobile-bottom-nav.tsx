@@ -1,6 +1,6 @@
 'use client'
 
-import { BarChart3, Bot, Copy, Globe, Link2, Search, Settings, Workflow } from 'lucide-react'
+import { BarChart3, Bot, Copy, Globe, LayoutGrid, Link2, Search, Settings, Workflow } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface MobileBottomNavProps {
@@ -15,6 +15,7 @@ const items = [
   { id: 'linkbuilding', label: 'Links', icon: Link2 },
   { id: 'nofollow', label: 'Clone', icon: Copy },
   { id: 'agents', label: 'Agents', icon: Bot },
+  { id: 'modules', label: 'Suite', icon: LayoutGrid },
   { id: 'analytics', label: 'Stats', icon: BarChart3 },
   { id: 'seotools', label: 'Tools', icon: Settings },
 ]

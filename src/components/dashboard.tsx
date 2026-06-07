@@ -11,6 +11,7 @@ import { AnalyticsTab } from '@/components/tabs/analytics-tab'
 import { SeoToolsTab } from '@/components/tabs/seo-tools-tab'
 import { NofollowCloneTab } from '@/components/tabs/nofollow-clone-tab'
 import { AgentTasksTab } from '@/components/tabs/agent-tasks-tab'
+import { ModuleSuiteTab } from '@/components/tabs/module-suite-tab'
 import { Sidebar } from '@/components/sidebar'
 import { Header } from '@/components/header'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
@@ -58,6 +59,9 @@ export function Dashboard() {
             </TabsContent>
             <TabsContent value="agents" className="m-0">
               <AgentTasksTab />
+            </TabsContent>
+            <TabsContent value="modules" className="m-0">
+              <ModuleSuiteTab />
             </TabsContent>
             <TabsContent value="analytics" className="m-0">
               <AnalyticsTab />
