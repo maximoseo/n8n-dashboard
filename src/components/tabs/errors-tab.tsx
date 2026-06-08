@@ -6,15 +6,34 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ActionNotice } from '@/components/action-notice'
 import { supabase } from '@/lib/supabase'
+import { authedFetch } from '@/lib/client-fetch'
 import { clusterErrors, type ErrExec, type ErrorCluster } from '@/lib/aggregate'
-import { AlertOctagon, Bell, ExternalLink, Loader2, ShieldAlert } from 'lucide-react'
+import { AlertOctagon, Bell, ExternalLink, Loader2, ShieldAlert, Sparkles } from 'lucide-react'
 
 export function ErrorsTab() {
   const [clusters, setClusters] = useState<ErrorCluster[]>([])
   const [recent, setRecent] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [checking, setChecking] = useState(false)
+  const [analyzing, setAnalyzing] = useState<string | null>(null)
+  const [analysis, setAnalysis] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState<{ title: string; message: string; type?: 'info' | 'success' | 'warning' | 'error' } | null>(null)
+
+  const analyzeCluster = async (c: ErrorCluster) => {
+    setAnalyzing(c.fingerprint)
+    try {
+      const res = await authedFetch('/api/ai/failure-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workflowName: c.title, occurrences: c.occurrenceCount, affectedWorkflows: c.affectedWorkflows.length, lastSeen: c.lastSeen }),
+      })
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.ok) setAnalysis((prev) => ({ ...prev, [c.fingerprint]: data.analysis }))
+      else setNotice({ type: 'info', title: 'AI analysis unavailable', message: data?.error || 'Configure an AI provider key.' })
+    } finally {
+      setAnalyzing(null)
+    }
+  }
 
   const load = async () => {
     setLoading(true)
@@ -92,7 +111,13 @@ export function ErrorsTab() {
                       {c.occurrenceCount} failure(s) · {c.affectedWorkflows.length} workflow(s) · last {c.lastSeen ? new Date(c.lastSeen).toLocaleString() : '—'}
                     </p>
                   </div>
+                  <Button variant="outline" size="sm" className="border-slate-700 text-slate-200 shrink-0" onClick={() => analyzeCluster(c)} disabled={analyzing === c.fingerprint}>
+                    {analyzing === c.fingerprint ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />} AI analysis
+                  </Button>
                 </div>
+                {analysis[c.fingerprint] && (
+                  <pre className="mt-3 whitespace-pre-wrap rounded-lg bg-slate-950 border border-slate-800 p-3 text-xs text-slate-300 max-h-72 overflow-auto">{analysis[c.fingerprint]}</pre>
+                )}
               </CardContent>
             </Card>
           ))}

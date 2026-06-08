@@ -16,6 +16,7 @@ import {
   Paperclip,
   Gauge,
   AlertOctagon,
+  LayoutTemplate,
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -29,6 +30,7 @@ const navItems = [
   { id: 'overview', label: 'Overview', icon: Gauge, count: null },
   { id: 'workflows', label: 'Workflows', icon: Workflow, count: null },
   { id: 'errors', label: 'Error Center', icon: AlertOctagon, count: null },
+  { id: 'templates', label: 'Templates', icon: LayoutTemplate, count: null },
   { id: 'urls', label: 'URLs Previewer', icon: Globe, count: null },
   { id: 'kwresearch', label: 'KW Research', icon: Search, count: null },
   { id: 'linkbuilding', label: 'Link Building', icon: Link2, count: null },
