@@ -37,7 +37,7 @@ export interface Scores {
   band: HealthBand
 }
 
-export type HealthBand = 'Excellent' | 'Healthy' | 'Needs improvement' | 'Risky' | 'Critical'
+export type HealthBand = 'Excellent' | 'Healthy' | 'Needs improvement' | 'Risky' | 'Critical' | 'Paused'
 
 const DAY = 86_400_000
 
@@ -121,5 +121,8 @@ export function computeScores(input: ScoreInput): Scores {
         0.05 * staleness)
   )
 
-  return { health, risk, band: healthBand(health) }
+  // Intentionally-paused/inactive workflows are reported as 'Paused' (neutral),
+  // not Critical — they're not failing, just not running. Keeps the "at risk"
+  // KPI focused on active workflows that actually need attention.
+  return { health, risk, band: input.active ? healthBand(health) : 'Paused' }
 }

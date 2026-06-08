@@ -100,7 +100,7 @@ export function OverviewTab() {
                 <div key={w.id} className="flex items-center justify-between gap-3 text-sm">
                   <span className="text-slate-200 truncate">{w.name}</span>
                   <div className="flex items-center gap-2 shrink-0">
-                    {w.healthBand && <Badge variant={w.healthBand === 'Critical' || w.healthBand === 'Risky' ? 'danger' : 'success'}>{w.healthBand}</Badge>}
+                    {w.healthBand && <Badge variant={w.healthBand === 'Critical' || w.healthBand === 'Risky' ? 'danger' : w.healthBand === 'Paused' ? 'secondary' : 'success'}>{w.healthBand}</Badge>}
                     <span className="text-slate-500">risk {w.riskScore}</span>
                   </div>
                 </div>

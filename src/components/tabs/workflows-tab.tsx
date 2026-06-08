@@ -231,7 +231,11 @@ export function WorkflowsTab() {
 
   const getHealthBadge = (band?: string | null, score?: number | null) => {
     if (!band) return null
-    const variant = band === 'Excellent' || band === 'Healthy' ? 'success' : band === 'Needs improvement' ? 'warning' : 'danger'
+    const variant =
+      band === 'Excellent' || band === 'Healthy' ? 'success'
+        : band === 'Needs improvement' ? 'warning'
+        : band === 'Paused' ? 'secondary'
+        : 'danger'
     return <Badge variant={variant}>Health {typeof score === 'number' ? score : '—'} · {band}</Badge>
   }
 
