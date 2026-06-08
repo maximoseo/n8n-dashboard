@@ -49,6 +49,11 @@ test('staleness and runtime helpers behave', () => {
   assert.ok(runtimeRisk(600_000) > runtimeRisk(5_000))
 })
 
+test('inactive workflows are banded Paused, not Critical', () => {
+  const s = computeScores(base({ active: false, triggerCount: 0, totalExecutions: 0, successRate24h: null, successRate7d: null, lastExecutionStatus: null, lastExecutionAtMs: null }))
+  assert.equal(s.band, 'Paused')
+})
+
 test('healthBand thresholds', () => {
   assert.equal(healthBand(95), 'Excellent')
   assert.equal(healthBand(80), 'Healthy')
