@@ -7,6 +7,7 @@ import { OverviewTab } from '@/components/tabs/overview-tab'
 import { ErrorsTab } from '@/components/tabs/errors-tab'
 import { TemplatesTab } from '@/components/tabs/templates-tab'
 import { SeoPacksTab } from '@/components/tabs/seo-packs-tab'
+import { RoiTab } from '@/components/tabs/roi-tab'
 import { WorkflowsTab } from '@/components/tabs/workflows-tab'
 import { UrlsTab } from '@/components/tabs/urls-tab'
 import { KwResearchTab } from '@/components/tabs/kw-research-tab'
@@ -60,6 +61,9 @@ export function Dashboard() {
             </TabsContent>
             <TabsContent value="seopacks" className="m-0">
               <SeoPacksTab />
+            </TabsContent>
+            <TabsContent value="roi" className="m-0">
+              <RoiTab />
             </TabsContent>
             <TabsContent value="urls" className="m-0">
               <UrlsTab />
