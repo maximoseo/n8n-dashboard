@@ -90,6 +90,35 @@ export class N8nClient {
     }
   }
 
+  /** Full workflow JSON (used for export / docs / clone). Read-only. */
+  async getWorkflow(id: string): Promise<Record<string, unknown>> {
+    return this.getJson<Record<string, unknown>>(`/api/v1/workflows/${encodeURIComponent(id)}`)
+  }
+
+  /**
+   * Activate or deactivate a workflow. HIGH-RISK production mutation — callers
+   * MUST gate this behind explicit confirmation + reason + audit. Not retried.
+   */
+  async setActive(id: string, active: boolean): Promise<Record<string, unknown>> {
+    const path = `/api/v1/workflows/${encodeURIComponent(id)}/${active ? 'activate' : 'deactivate'}`
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs)
+    try {
+      const res = await fetch(`${this.base}${path}`, {
+        method: 'POST',
+        headers: { 'X-N8N-API-KEY': this.apiKey, Accept: 'application/json' },
+        signal: controller.signal,
+      })
+      if (!res.ok) {
+        const body = await res.text().catch(() => '')
+        throw new Error(`n8n ${active ? 'activate' : 'deactivate'} failed ${res.status}: ${body.slice(0, 200)}`)
+      }
+      return (await res.json()) as Record<string, unknown>
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
   /** Lightweight reachability probe used by the sync status card. */
   async ping(): Promise<boolean> {
     try {

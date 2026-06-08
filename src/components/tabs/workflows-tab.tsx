@@ -7,7 +7,9 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { SheetMappingModal, SheetLinkButton, type SheetMapping, type SheetMappingData } from '@/components/sheet-mapping-modal'
 import { ActionNotice } from '@/components/action-notice'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { supabase } from '@/lib/supabase'
+import { authedFetch, downloadResponse, downloadText } from '@/lib/client-fetch'
 import {
   Play,
   Pause,
@@ -23,6 +25,9 @@ import {
   RefreshCw,
   ShieldAlert,
   Activity,
+  Download,
+  FileText,
+  Power,
 } from 'lucide-react'
 
 const N8N_WORKFLOWS_URL = 'https://websiseo.app.n8n.cloud/workflows'
@@ -73,6 +78,52 @@ export function WorkflowsTab() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<{ id: string; name: string } | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [notice, setNotice] = useState<{ title: string; message: string; type?: 'info' | 'success' | 'warning' | 'error' } | null>(null)
+  const [confirmTarget, setConfirmTarget] = useState<{ id: string; name: string; nextActive: boolean } | null>(null)
+  const [confirmBusy, setConfirmBusy] = useState(false)
+
+  const handleExport = async (id: string) => {
+    try {
+      const res = await authedFetch(`/api/n8n/workflow/${id}/export`)
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'export failed')
+      await downloadResponse(res, `workflow-${id}.json`)
+    } catch (e) {
+      setNotice({ type: 'error', title: 'Export failed', message: e instanceof Error ? e.message : 'Could not export workflow.' })
+    }
+  }
+
+  const handleDocs = async (id: string, name: string) => {
+    try {
+      const res = await authedFetch(`/api/n8n/workflow/${id}/docs`)
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.markdown) throw new Error(data?.error || 'docs failed')
+      downloadText(data.markdown, `${name.replace(/[^a-z0-9]+/gi, '-').slice(0, 40) || id}.md`, 'text/markdown')
+      setNotice({ type: 'success', title: 'Docs generated', message: 'Workflow documentation downloaded as Markdown.' })
+    } catch (e) {
+      setNotice({ type: 'error', title: 'Docs failed', message: e instanceof Error ? e.message : 'Could not generate docs.' })
+    }
+  }
+
+  const confirmToggle = async (reason: string) => {
+    if (!confirmTarget) return
+    setConfirmBusy(true)
+    try {
+      const res = await authedFetch(`/api/n8n/workflow/${confirmTarget.id}/mutate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: confirmTarget.nextActive ? 'activate' : 'deactivate', reason, confirm: true }),
+      })
+      const data = await res.json().catch(() => null)
+      if (res.ok && data?.ok) {
+        setNotice({ type: 'success', title: `Workflow ${confirmTarget.nextActive ? 'activated' : 'deactivated'}`, message: `${confirmTarget.name} is now ${data.active ? 'active' : 'paused'}.` })
+        setConfirmTarget(null)
+        await loadData()
+      } else {
+        setNotice({ type: 'error', title: 'Action blocked', message: data?.error || 'The mutation was not applied.' })
+      }
+    } finally {
+      setConfirmBusy(false)
+    }
+  }
 
   const loadData = useCallback(async () => {
     setIsLoading(true)
@@ -376,6 +427,36 @@ export function WorkflowsTab() {
                       >
                         <RotateCw className="w-4 h-4" />
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-400 hover:text-white"
+                        title="Export workflow JSON"
+                        aria-label={`Export ${workflow.name}`}
+                        onClick={() => handleExport(workflow.id)}
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-400 hover:text-white"
+                        title="Generate documentation"
+                        aria-label={`Generate docs for ${workflow.name}`}
+                        onClick={() => handleDocs(workflow.id, workflow.name)}
+                      >
+                        <FileText className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={workflow.status === 'paused' ? 'text-slate-400 hover:text-green-400' : 'text-slate-400 hover:text-red-400'}
+                        title={workflow.status === 'paused' ? 'Activate workflow (gated)' : 'Deactivate workflow (gated)'}
+                        aria-label={`${workflow.status === 'paused' ? 'Activate' : 'Deactivate'} ${workflow.name}`}
+                        onClick={() => setConfirmTarget({ id: workflow.id, name: workflow.name, nextActive: workflow.status === 'paused' })}
+                      >
+                        <Power className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -399,6 +480,17 @@ export function WorkflowsTab() {
         workflowName={selectedWorkflow?.name || ''}
         existingMapping={selectedWorkflow && sheetMappings[selectedWorkflow.id] ? { workflow_id: selectedWorkflow.id, ...sheetMappings[selectedWorkflow.id] } : undefined}
         onSave={handleSaveMapping}
+      />
+
+      <ConfirmDialog
+        open={!!confirmTarget}
+        title={confirmTarget?.nextActive ? 'Activate workflow?' : 'Deactivate workflow?'}
+        message={`This changes the LIVE state of "${confirmTarget?.name}" in production n8n. A reason is required and the action is audited.`}
+        confirmLabel={confirmTarget?.nextActive ? 'Activate' : 'Deactivate'}
+        requireReason
+        busy={confirmBusy}
+        onCancel={() => setConfirmTarget(null)}
+        onConfirm={confirmToggle}
       />
     </div>
   )
