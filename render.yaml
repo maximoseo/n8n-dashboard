@@ -21,4 +21,30 @@ services:
         sync: false
       - key: AUTH_RATE_LIMIT_REDIS_TOKEN
         sync: false
+      # --- n8n read-only sync (added by command-center slice) ---
+      - key: N8N_BASE_URL
+        value: https://websiseo.app.n8n.cloud
+      - key: N8N_API_KEY
+        sync: false
+      # Server-only: lets the sync job persist cached metrics to Supabase.
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # Shared secret for machine-triggered sync (cron/CI -> POST /api/n8n/sync).
+      - key: SYNC_SECRET
+        sync: false
+      # --- Optional feature integrations (command-center slices) ---
+      - key: ANTHROPIC_API_KEY        # AI Builder / failure analysis
+        sync: false
+      - key: OPENAI_API_KEY           # AI fallback
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN       # critical alerts
+        sync: false
+      - key: TELEGRAM_ALERT_CHAT_ID
+        sync: false
+      - key: RESEND_API_KEY           # email alerts/reports
+        sync: false
+      - key: ALERT_EMAIL
+        sync: false
+      - key: N8N_SITE_PACK_WEBHOOK_URL # SEO pack orchestration
+        sync: false
     autoDeploy: true

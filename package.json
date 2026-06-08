@@ -6,7 +6,9 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "render:static": "node scripts/render-static-export.mjs",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --test \"src/lib/__tests__/**/*.test.ts\"",
+    "sync:n8n": "node scripts/sync-n8n.mjs"
   },
   "keywords": [],
   "author": "",

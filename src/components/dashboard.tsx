@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
+import { OverviewTab } from '@/components/tabs/overview-tab'
+import { ErrorsTab } from '@/components/tabs/errors-tab'
+import { TemplatesTab } from '@/components/tabs/templates-tab'
+import { SeoPacksTab } from '@/components/tabs/seo-packs-tab'
+import { RoiTab } from '@/components/tabs/roi-tab'
 import { WorkflowsTab } from '@/components/tabs/workflows-tab'
 import { UrlsTab } from '@/components/tabs/urls-tab'
 import { KwResearchTab } from '@/components/tabs/kw-research-tab'
@@ -18,7 +23,7 @@ import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { useAuth } from '@/hooks/useAuth'
 
 export function Dashboard() {
-  const [activeTab, setActiveTab] = useState('workflows')
+  const [activeTab, setActiveTab] = useState('overview')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const router = useRouter()
   const { signOut } = useAuth()
@@ -42,8 +47,23 @@ export function Dashboard() {
 
         <main className="flex-1 overflow-auto p-4 pb-28 sm:p-6 sm:pb-28 md:pb-6 min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsContent value="overview" className="m-0">
+              <OverviewTab />
+            </TabsContent>
             <TabsContent value="workflows" className="m-0">
               <WorkflowsTab />
+            </TabsContent>
+            <TabsContent value="errors" className="m-0">
+              <ErrorsTab />
+            </TabsContent>
+            <TabsContent value="templates" className="m-0">
+              <TemplatesTab />
+            </TabsContent>
+            <TabsContent value="seopacks" className="m-0">
+              <SeoPacksTab />
+            </TabsContent>
+            <TabsContent value="roi" className="m-0">
+              <RoiTab />
             </TabsContent>
             <TabsContent value="urls" className="m-0">
               <UrlsTab />
