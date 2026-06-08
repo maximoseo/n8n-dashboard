@@ -259,7 +259,7 @@ export function WorkflowsTab() {
           </h1>
           <p className="text-slate-400 mt-1">Monitor, score, and debug your n8n automation pipelines</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button
             variant="outline"
             size="sm"
@@ -275,7 +275,7 @@ export function WorkflowsTab() {
             href={N8N_WORKFLOWS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Workflow
@@ -324,7 +324,8 @@ export function WorkflowsTab() {
             <button
               key={f}
               onClick={() => setStatusFilter(f)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${statusFilter === f ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+              className={`min-h-11 rounded-full px-4 py-2 text-xs font-medium transition-colors ${statusFilter === f ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
+              aria-pressed={statusFilter === f}
             >
               {f === 'all' ? `All (${workflows.length})` : f === 'critical' ? 'At risk' : `${f} (${workflows.filter((w) => w.status === f).length})`}
             </button>
@@ -401,13 +402,14 @@ export function WorkflowsTab() {
                       <p className="text-white font-medium">{workflow.lastRun}</p>
                       <p>last run</p>
                     </div>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1.5">
                       <a
                         href={openUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center rounded-md h-9 w-9 text-slate-400 hover:bg-slate-800 hover:text-blue-400 transition-colors"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-800 hover:text-blue-400"
                         title="Open in n8n"
+                        aria-label={`Open ${workflow.name} in n8n`}
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>

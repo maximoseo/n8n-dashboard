@@ -76,7 +76,7 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           className={cn(
-            'hidden md:block p-1 rounded-lg hover:bg-slate-800 text-slate-400',
+            'hidden min-h-11 min-w-11 items-center justify-center rounded-lg hover:bg-slate-800 text-slate-400 md:flex',
             collapsed && 'absolute -right-3 bg-slate-800 border border-slate-700'
           )}
         >
@@ -95,7 +95,7 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
               aria-label={item.label}
               title={item.label}
               className={cn(
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                'w-full flex min-h-11 items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
                   ? 'bg-blue-600/10 text-blue-400 border border-blue-600/20'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200',

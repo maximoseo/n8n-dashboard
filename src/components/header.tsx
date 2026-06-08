@@ -15,13 +15,17 @@ export function Header({ onLogout }: HeaderProps) {
   const userEmail = user?.email || 'user@maximo-seo.ai'
 
   return (
-    <header className="h-16 bg-slate-900/80 backdrop-blur border-b border-slate-800 flex items-center justify-between px-3 sm:px-6 sticky top-0 z-50">
-      <div className="flex items-center gap-4 flex-1">
-        <div className="relative hidden md:block w-full max-w-96">
+    <header className="sticky top-0 z-50 flex min-h-16 flex-wrap items-center justify-between gap-2 border-b border-slate-800 bg-slate-900/90 px-3 py-2 backdrop-blur sm:px-6">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="hidden min-w-0 sm:block">
+          <p className="truncate text-xs font-semibold uppercase tracking-[0.22em] text-blue-300">Automation Command Center</p>
+          <p className="truncate text-xs text-slate-500">n8n health, workflows, SEO modules and reports</p>
+        </div>
+        <div className="relative hidden w-full max-w-96 lg:block">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             placeholder="Search workflows, URLs, keywords..."
-            className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 h-9"
+            className="pl-10 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500"
           />
         </div>
       </div>
@@ -50,14 +54,14 @@ export function Header({ onLogout }: HeaderProps) {
           </span>
         </Button>
 
-        <div className="h-6 w-px bg-slate-800 mx-1" />
+        <div className="mx-1 hidden h-6 w-px bg-slate-800 sm:block" />
 
         <div className="flex items-center gap-3">
           <div className="text-right hidden lg:block">
             <p className="text-sm font-medium text-white">{userEmail || 'user@maximo-seo.ai'}</p>
             <p className="text-xs text-slate-500">Admin</p>
           </div>
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700">
             <User className="w-5 h-5 text-white" />
           </div>
         </div>

@@ -27,8 +27,8 @@ const items = [
 
 export function MobileBottomNav({ activeTab, onTabChange }: MobileBottomNavProps) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800 bg-slate-950/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 backdrop-blur md:hidden">
-      <div className="flex gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800 bg-slate-950/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-2xl shadow-black/40 backdrop-blur md:hidden" aria-label="Primary mobile navigation">
+      <div className="flex snap-x gap-1 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.id
@@ -38,10 +38,11 @@ export function MobileBottomNav({ activeTab, onTabChange }: MobileBottomNavProps
               type="button"
               onClick={() => onTabChange(item.id)}
               className={cn(
-                'flex min-h-12 min-w-16 flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium transition-colors',
+                'flex min-h-14 min-w-[4.75rem] snap-start flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium transition-colors',
                 isActive ? 'bg-blue-600/15 text-blue-300' : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
               )}
               aria-label={item.label}
+              aria-current={isActive ? 'page' : undefined}
             >
               <Icon className="h-4 w-4" />
               <span>{item.label}</span>
