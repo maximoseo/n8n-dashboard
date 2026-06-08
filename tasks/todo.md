@@ -30,7 +30,18 @@ Make the dashboard show REAL n8n workflow + execution data (read-only) with heal
 - Live read pipeline proven against websiseo (250 workflows).
 - DB-write sync verifies once migration applied + service-role key set: `npm run sync:n8n` then check `select count(*) from n8nmon_workflows`.
 
-## Review (fill at merge)
-- Summary: read-only n8n sync + portfolio + security baseline.
-- Files changed: see PR.
-- Follow-ups: apply migration, set service-role key, rotate n8n key, then later PRs (mutations/AI/SEO packs/ROI).
+## Slices shipped on this branch (PR #5)
+- [x] Slice 1 — read-only sync + portfolio + health scoring + security baseline
+- [x] Slice 2 — Overview KPIs + Error Center + alerts (Telegram/email)
+- [x] Slice 3 — safe operator actions (export, docs, tasks, gated activate/deactivate)
+- [x] Slice 4 — Template Library + AI Builder + AI failure analysis
+- [x] Slice 5 — SEO Automation Packs (catalog + run model + trigger)
+- [x] Slice 6 — Business Results/ROI + exportable reports
+- [x] Slice 7 — hardening: env/render docs, runbooks, README, final verification
+
+## Review
+- Migrations 0001–0004 APPLIED to wtpczvyupmavzrxisvcm (all namespaced n8nmon_*, RLS on).
+- Verification: `npm run build` green; 32 unit tests pass; live read pipeline (250 workflows)
+  + live getWorkflow/docs (74-node workflow) proven against websiseo.
+- Follow-ups (owner): set `SUPABASE_SERVICE_ROLE_KEY` + optional feature keys in Render to
+  light up synced/AI/alert/pack data; ROTATE the n8n key shared in chat; review + merge PR #5.

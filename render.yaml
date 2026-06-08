@@ -32,4 +32,19 @@ services:
       # Shared secret for machine-triggered sync (cron/CI -> POST /api/n8n/sync).
       - key: SYNC_SECRET
         sync: false
+      # --- Optional feature integrations (command-center slices) ---
+      - key: ANTHROPIC_API_KEY        # AI Builder / failure analysis
+        sync: false
+      - key: OPENAI_API_KEY           # AI fallback
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN       # critical alerts
+        sync: false
+      - key: TELEGRAM_ALERT_CHAT_ID
+        sync: false
+      - key: RESEND_API_KEY           # email alerts/reports
+        sync: false
+      - key: ALERT_EMAIL
+        sync: false
+      - key: N8N_SITE_PACK_WEBHOOK_URL # SEO pack orchestration
+        sync: false
     autoDeploy: true

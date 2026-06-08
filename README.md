@@ -64,12 +64,17 @@ Modern dashboard with Supabase Auth, dark theme, and 6 SEO modules.
 ## Dashboard Features
 
 - ✅ Supabase Auth (Email + Google + GitHub OAuth)
-- ✅ Workflows tab (6 workflows with status)
-- ✅ URLs Previewer (screenshots, WordPress, sheets)
-- ✅ KW Research (projects, SERP analysis, cannibalization)
-- ✅ Link Building (campaigns, scoring, risk model)
-- ✅ Analytics (stats, activity, system status)
-- ✅ SEO Tools (integrations, API config)
+- ✅ **Overview** — executive KPI cards + highest-risk workflows
+- ✅ **Workflow Portfolio** — real n8n sync, health/risk scores, search/filter, export, docs, gated activate/deactivate
+- ✅ **Error Center** — fingerprint clustering, severity, AI failure analysis, alert dispatch (Telegram/email)
+- ✅ **Templates & AI Builder** — import workflows as templates; NL → safe workflow spec (draft only)
+- ✅ **SEO Packs** — grouped, n8n-orchestrated site analyses with run history
+- ✅ **ROI** — estimated business value / hours saved / API cost + MD/CSV/JSON reports
+- ✅ URLs Previewer · KW Research · Link Building · Analytics · SEO Tools (existing modules)
+
+> All n8n calls are server-side and read-only by default; writes (activate/deactivate)
+> require explicit confirmation + reason + audit. AI receives only redacted input.
+> See `docs/RUNBOOKS.md` for operations and `CURRENT_STATE_AUDIT.md` for the audit.
 
 ## Environment Setup
 
