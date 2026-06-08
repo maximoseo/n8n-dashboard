@@ -86,6 +86,23 @@ FIRECRAWL_API_KEY=your-firecrawl-key
 OPENAI_API_KEY=your-openai-key
 ```
 
+See `.env.example` for the full, documented list (placeholders only — never commit secrets).
+
+### Workflow Portfolio sync (read-only)
+
+The Workflows tab can show real n8n workflows + executions with health/risk
+scores, persisted in Supabase (`n8nmon_*` tables). To enable:
+
+1. Apply the migration `supabase/migrations/0001_n8n_core.sql` (Supabase SQL editor or CLI).
+2. Set server envs: `N8N_API_KEY`, `N8N_BASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SYNC_SECRET`.
+3. Trigger a sync — UI "Sync now" button, or machine/cron:
+   ```bash
+   SYNC_SECRET=… APP_BASE_URL=https://n8n-dashboard.maximo-seo.ai npm run sync:n8n
+   ```
+
+Until a sync runs, the tab gracefully falls back to the live `/api/n8n/workflows` route.
+All n8n calls are server-side and **read-only** in this version.
+
 ## Local Development
 
 ```bash
