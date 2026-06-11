@@ -7,6 +7,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NEXT_PUBLIC_SEO_AUDIT_BRIDGE
+        value: "1"
+      - key: NEXT_PUBLIC_BASE_PATH
+        value: /n8n-app
       - key: NEXT_PUBLIC_SUPABASE_URL
         value: https://wtpczvyupmavzrxisvcm.supabase.co
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
