@@ -21,10 +21,20 @@ services:
         sync: false
       - key: AUTH_RATE_LIMIT_REDIS_TOKEN
         sync: false
-      # --- n8n read-only sync (added by command-center slice) ---
+      # --- n8n read-only sync + multi-instance monitoring ---
+      # Legacy single-instance compatibility for existing routes.
       - key: N8N_BASE_URL
         value: https://websiseo.app.n8n.cloud
       - key: N8N_API_KEY
+        sync: false
+      # Named instance vars for the multi-instance probe and future poller.
+      - key: N8N_INSTANCE_1_URL
+        value: https://maximoseo.app.n8n.cloud
+      - key: N8N_INSTANCE_1_API_KEY
+        sync: false
+      - key: N8N_INSTANCE_2_URL
+        value: https://websiseo.app.n8n.cloud
+      - key: N8N_INSTANCE_2_API_KEY
         sync: false
       # Server-only: lets the sync job persist cached metrics to Supabase.
       - key: SUPABASE_SERVICE_ROLE_KEY

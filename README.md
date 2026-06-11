@@ -1,12 +1,12 @@
 # n8n Dashboard - MaximoSEO
 
-Modern dashboard with Supabase Auth, dark theme, and 6 SEO modules.
+Modern n8n monitoring dashboard for MaximoSEO with Supabase Auth, real n8n connectivity checks, workflow portfolio health, SEO operations modules, and server-side integrations.
 
 ## Quick Deploy to Render
 
 1. Go to [dashboard.render.com](https://dashboard.render.com)
 2. Click **New +** → **Blueprint**
-3. Connect GitHub and select `maximoseo/n8n-dashboard-improved`
+3. Connect GitHub and select `maximoseo/n8n-dashboard`
 4. Click **Deploy** (render.yaml auto-configures everything)
 
 ## Working APIs & MCPs
@@ -84,9 +84,21 @@ NEXT_PUBLIC_SUPABASE_URL=https://wtpczvyupmavzrxisvcm.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[SUPABASE_ANON_KEY]
 ```
 
+Server-side n8n monitoring keys live in Render/env/password-manager stores only:
+```bash
+# Legacy compatibility for existing single-instance routes
+N8N_BASE_URL=https://websiseo.app.n8n.cloud
+N8N_API_KEY=[SERVER_SIDE_KEY]
+
+# Multi-instance monitoring registry
+N8N_INSTANCE_1_URL=https://maximoseo.app.n8n.cloud
+N8N_INSTANCE_1_API_KEY=[SERVER_SIDE_KEY]
+N8N_INSTANCE_2_URL=https://websiseo.app.n8n.cloud
+N8N_INSTANCE_2_API_KEY=[SERVER_SIDE_KEY]
+```
+
 Optional for extra features:
 ```
-N8N_API_KEY=your-n8n-key
 FIRECRAWL_API_KEY=your-firecrawl-key
 OPENAI_API_KEY=your-openai-key
 ```
@@ -99,14 +111,18 @@ The Workflows tab can show real n8n workflows + executions with health/risk
 scores, persisted in Supabase (`n8nmon_*` tables). To enable:
 
 1. Apply the migration `supabase/migrations/0001_n8n_core.sql` (Supabase SQL editor or CLI).
-2. Set server envs: `N8N_API_KEY`, `N8N_BASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SYNC_SECRET`.
-3. Trigger a sync — UI "Sync now" button, or machine/cron:
+2. Set server envs: legacy `N8N_API_KEY`/`N8N_BASE_URL`, multi-instance probe keys `N8N_INSTANCE_1_API_KEY`/`N8N_INSTANCE_2_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SYNC_SECRET`.
+3. Check multi-instance connectivity:
+   ```bash
+   npm run probe:n8n
+   ```
+4. Trigger a sync — UI "Sync now" button, or machine/cron:
    ```bash
    SYNC_SECRET=… APP_BASE_URL=https://n8n-dashboard.maximo-seo.ai npm run sync:n8n
    ```
 
 Until a sync runs, the tab gracefully falls back to the live `/api/n8n/workflows` route.
-All n8n calls are server-side and **read-only** in this version.
+All n8n calls are server-side and **read-only** unless an explicit production mutation is confirmed.
 
 ## Local Development
 
@@ -118,6 +134,7 @@ npm run dev
 
 ## Links
 
-- **Live URL**: https://n8n-dashboard-3229.onrender.com
-- **GitHub**: https://github.com/maximoseo/n8n-dashboard-improved
+- **Production Live URL**: https://n8n-dashboard.maximo-seo.ai
+- **Render origin**: https://n8n-dashboard-v3.onrender.com
+- **GitHub**: https://github.com/maximoseo/n8n-dashboard
 - **Supabase**: https://wtpczvyupmavzrxisvcm.supabase.co

@@ -2,12 +2,17 @@
   "name": "n8n-dashboard-improved",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
     "render:static": "node scripts/render-static-export.mjs",
     "start": "next start",
     "test": "node --test \"src/lib/__tests__/**/*.test.ts\"",
+    "baseline": "node scripts/baseline.mjs",
+    "probe:n8n": "node scripts/probe-instance.mjs",
     "sync:n8n": "node scripts/sync-n8n.mjs"
   },
   "keywords": [],
