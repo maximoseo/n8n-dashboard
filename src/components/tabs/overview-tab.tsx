@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/lib/supabase'
+import { N8nProbeCard } from '@/components/n8n-probe-card'
 import { computeOverviewKpis, type KpiWorkflow, type OverviewKpis } from '@/lib/aggregate'
 import { Activity, AlertTriangle, CheckCircle2, Gauge, Loader2, Pause, ShieldAlert, Workflow, Zap } from 'lucide-react'
 
@@ -77,6 +78,8 @@ export function OverviewTab() {
         <h1 className="text-2xl font-bold text-white flex items-center gap-2"><Gauge className="w-6 h-6 text-blue-500" /> Executive Overview</h1>
         <p className="text-slate-400 mt-1">Automation health at a glance · source: {source}</p>
       </div>
+
+      <N8nProbeCard />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <Metric label="Total workflows" value={kpis.total} icon={<Workflow className="w-4 h-4" />} />

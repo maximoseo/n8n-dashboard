@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-06-11T08:03:05.028Z",
+  "instances": [
+    {
+      "id": "maximoseo",
+      "name": "MaximoSEO n8n",
+      "host": "maximoseo.app.n8n.cloud",
+      "instanceUrl": "https://maximoseo.app.n8n.cloud",
+      "configured": false,
+      "status": "unconfigured",
+      "checkedAt": "2026-06-11T08:03:05.028Z",
+      "latencyMs": 0,
+      "checks": [],
+      "evidence": {
+        "instance_url": "https://maximoseo.app.n8n.cloud",
+        "ts": "2026-06-11T08:03:05.028Z",
+        "payload_ref": "n8n-api:workflows,n8n-api:executions"
+      }
+    },
+    {
+      "id": "websiseo",
+      "name": "Websiseo n8n",
+      "host": "websiseo.app.n8n.cloud",
+      "instanceUrl": "https://websiseo.app.n8n.cloud",
+      "configured": true,
+      "status": "auth_failed",
+      "error": "n8n API authentication failed. Rotate/provision the server-side key.",
+      "checkedAt": "2026-06-11T08:03:05.028Z",
+      "latencyMs": 100,
+      "checks": [
+        {
+          "target": "workflows",
+          "ok": false,
+          "statusCode": 401,
+          "latencyMs": 93,
+          "payloadRef": "n8n-api:workflows"
+        },
+        {
+          "target": "executions",
+          "ok": false,
+          "statusCode": 401,
+          "latencyMs": 63,
+          "payloadRef": "n8n-api:executions"
+        }
+      ],
+      "evidence": {
+        "instance_url": "https://websiseo.app.n8n.cloud",
+        "ts": "2026-06-11T08:03:05.028Z",
+        "payload_ref": "n8n-api:workflows,n8n-api:executions"
+      }
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "reachable": 0,
+    "authFailed": 1,
+    "unreachable": 0,
+    "unconfigured": 1
+  }
+}

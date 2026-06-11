@@ -33,9 +33,19 @@ export function hasEnv(...names: string[]): boolean {
 }
 
 export const serverEnv = {
-  // n8n
+  // n8n legacy single-instance compatibility
   N8N_API_KEY: read('N8N_API_KEY'),
   N8N_BASE_URL: read('N8N_BASE_URL', 'https://websiseo.app.n8n.cloud'),
+
+  // n8n multi-instance monitoring. Values are server-side only.
+  N8N_INSTANCE_1_URL: read('N8N_INSTANCE_1_URL', 'https://maximoseo.app.n8n.cloud'),
+  N8N_INSTANCE_1_API_KEY: read('N8N_INSTANCE_1_API_KEY'),
+  N8N_INSTANCE_2_URL: read('N8N_INSTANCE_2_URL', 'https://websiseo.app.n8n.cloud'),
+  N8N_INSTANCE_2_API_KEY: read('N8N_INSTANCE_2_API_KEY'),
+  N8N_MAXIMOSEO_BASE_URL: read('N8N_MAXIMOSEO_BASE_URL'),
+  N8N_MAXIMOSEO_API_KEY: read('N8N_MAXIMOSEO_API_KEY'),
+  N8N_WEBSISEO_BASE_URL: read('N8N_WEBSISEO_BASE_URL'),
+  N8N_WEBSISEO_API_KEY: read('N8N_WEBSISEO_API_KEY'),
   SYNC_SECRET: read('SYNC_SECRET'),
 
   // Supabase (server)
@@ -49,7 +59,13 @@ export const serverEnv = {
 /** Returns a list of human-readable warnings for optional-but-recommended vars. */
 export function envHealth(): { ok: boolean; warnings: string[] } {
   const warnings: string[] = []
-  if (!serverEnv.N8N_API_KEY) warnings.push('N8N_API_KEY not set — n8n sync and live views are disabled.')
+  const hasWebsiseoKey = Boolean(
+    serverEnv.N8N_INSTANCE_2_API_KEY || serverEnv.N8N_WEBSISEO_API_KEY || serverEnv.N8N_API_KEY
+  )
+  const hasMaximoSeoKey = Boolean(serverEnv.N8N_INSTANCE_1_API_KEY || serverEnv.N8N_MAXIMOSEO_API_KEY)
+
+  if (!hasWebsiseoKey) warnings.push('Websiseo n8n API key not set — websiseo live monitoring is disabled.')
+  if (!hasMaximoSeoKey) warnings.push('MaximoSEO n8n API key not set — maximoseo live monitoring is disabled.')
   if (!serverEnv.SUPABASE_SERVICE_ROLE_KEY)
     warnings.push('SUPABASE_SERVICE_ROLE_KEY not set — n8n sync cannot persist cached metrics.')
   return { ok: warnings.length === 0, warnings }

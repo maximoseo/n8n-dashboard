@@ -2,9 +2,14 @@
 
 ## 0. First-time setup
 1. Apply migrations `supabase/migrations/000{1..4}_*.sql` to the Supabase project.
-2. Set env (Render): `N8N_API_KEY`, `N8N_BASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SYNC_SECRET`.
+2. Set env (Render): legacy `N8N_API_KEY`/`N8N_BASE_URL` for existing single-instance routes, plus multi-instance probe keys `N8N_INSTANCE_1_URL`, `N8N_INSTANCE_1_API_KEY`, `N8N_INSTANCE_2_URL`, `N8N_INSTANCE_2_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SYNC_SECRET`.
+   - `N8N_INSTANCE_1_URL=https://<your-first-instance>.app.n8n.cloud`
+   - `N8N_INSTANCE_2_URL=https://<your-second-instance>.app.n8n.cloud`
+   - Keep all API key values in Render/env/password-manager stores only. Never paste or commit them.
+   - Rotate any API key or password that was shared in chat before using it for staging/production access.
    Optional: `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` (AI), `TELEGRAM_BOT_TOKEN`+`TELEGRAM_ALERT_CHAT_ID` / `RESEND_API_KEY`+`ALERT_EMAIL` (alerts), `N8N_SITE_PACK_WEBHOOK_URL` (SEO packs).
-3. Trigger the first sync: **Workflows → Sync now**, or `npm run sync:n8n`.
+3. Verify connectivity: authenticated `GET /api/n8n/probe`, or local `npm run probe:n8n` with env values set.
+4. Trigger the first sync: **Workflows → Sync now**, or `npm run sync:n8n`.
 
 ## 1. Workflow failure
 1. Open **Error Center**; review clustered failures (severity = blast radius + frequency).
@@ -19,8 +24,11 @@
 3. Verify the new state after the next sync.
 
 ## 3. Credential / API outage
-1. **Workflows → Sync status** card shows instance API status (`reachable`/`unreachable`).
-2. If unreachable, verify `N8N_API_KEY` validity and n8n availability before retrying.
+1. **Overview → n8n instance connectivity** shows each configured instance as `reachable`, `auth_failed`, `unreachable`, or `unconfigured`.
+2. If an instance is `unconfigured`, set the matching server-side env key in Render/password-manager; do not add it to source files.
+3. If an instance is `auth_failed`, rotate/provision the matching n8n API key in Render/password-manager before retrying.
+4. If an instance is `unreachable`, confirm n8n Cloud/network availability before retrying.
+5. The probe never returns upstream response bodies or key material; inspect Render logs only for sanitized status/context.
 
 ## 4. New automation request
 1. **Templates → AI Builder**: describe the goal → **Generate spec** (a draft plan, never auto-activated).
