@@ -28,6 +28,11 @@ export default function LoginPage() {
   const [message, setMessage] = useState('')
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_SEO_AUDIT_BRIDGE === '1') {
+      router.replace('/')
+      return
+    }
+
     if (typeof window === 'undefined') {
       return
     }
@@ -36,7 +41,11 @@ export default function LoginPage() {
     if (params.get('message') === 'password-reset') {
       setMessage('Your password has been reset. Please sign in.')
     }
-  }, [])
+  }, [router])
+
+  if (process.env.NEXT_PUBLIC_SEO_AUDIT_BRIDGE === '1') {
+    return null
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

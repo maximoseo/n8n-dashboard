@@ -2,12 +2,23 @@
 
 import { supabase } from '@/lib/supabase'
 
-/** Client-side fetch that attaches the Supabase access token as a Bearer header. */
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
+const isSeoAuditBridge = process.env.NEXT_PUBLIC_SEO_AUDIT_BRIDGE === '1'
+
+export function appFetchPath(input: string): string {
+  if (!basePath || !input.startsWith('/api/')) return input
+  if (input.startsWith(`${basePath}/`)) return input
+  return `${basePath}${input}`
+}
+
+/** Client-side fetch that attaches the Supabase access token as a Bearer header outside the SEO Audit bridge. */
 export async function authedFetch(input: string, init: RequestInit = {}): Promise<Response> {
-  const { data: { session } } = await supabase.auth.getSession()
-  const headers: Record<string, string> = { ...(init.headers as Record<string, string>) }
-  if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`
-  return fetch(input, { ...init, headers })
+  const headers = new Headers(init.headers)
+  if (!isSeoAuditBridge) {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.access_token) headers.set('Authorization', `Bearer ${session.access_token}`)
+  }
+  return fetch(appFetchPath(input), { ...init, headers })
 }
 
 /** Trigger a browser download from a fetch Response body. */

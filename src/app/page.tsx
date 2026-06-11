@@ -1,31 +1,19 @@
-'use client'
-
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
 import { Dashboard } from '@/components/dashboard'
-import { useAuth } from '@/hooks/useAuth'
+import { HomeAuthGate } from '@/components/home-auth-gate'
+import { hasValidSeoAuditBridgeHeader, isSeoAuditBridgeRequired } from '@/lib/server-auth'
 
-export default function Home() {
-  const router = useRouter()
-  const { user, loading } = useAuth()
+export const dynamic = 'force-dynamic'
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login')
+export default async function Home() {
+  if (isSeoAuditBridgeRequired()) {
+    const requestHeaders = await headers()
+    if (!hasValidSeoAuditBridgeHeader(requestHeaders)) {
+      notFound()
     }
-  }, [user, loading, router])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
+    return <Dashboard />
   }
 
-  if (!user) {
-    return null
-  }
-
-  return <Dashboard />
+  return <HomeAuthGate />
 }

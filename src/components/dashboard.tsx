@@ -26,10 +26,14 @@ export function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const router = useRouter()
-  const { signOut } = useAuth()
+  const { signOut, isSeoAuditBridge } = useAuth()
 
   const handleLogout = async () => {
     await signOut()
+    if (isSeoAuditBridge) {
+      window.location.href = 'https://seo-audit-pro.maximo-seo.ai/'
+      return
+    }
     router.push('/login')
   }
 

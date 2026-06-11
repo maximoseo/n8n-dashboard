@@ -5,10 +5,16 @@ import { supabase } from '@/lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
 
 export function useAuth() {
+  const isSeoAuditBridge = process.env.NEXT_PUBLIC_SEO_AUDIT_BRIDGE === '1'
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (isSeoAuditBridge) {
+      setLoading(false)
+      return
+    }
+
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
@@ -22,7 +28,7 @@ export function useAuth() {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [isSeoAuditBridge])
 
   const signIn = async (identifier: string, password: string) => {
     const response = await fetch('/api/auth/sign-in', {
@@ -57,6 +63,9 @@ export function useAuth() {
   }
 
   const signOut = async () => {
+    if (isSeoAuditBridge) {
+      return { error: null }
+    }
     const { error } = await supabase.auth.signOut()
     return { error }
   }
@@ -79,5 +88,6 @@ export function useAuth() {
     signOut,
     signInWithOAuth,
     isAuthenticated: !!user,
+    isSeoAuditBridge,
   }
 }
